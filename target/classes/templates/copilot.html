@@ -293,7 +293,7 @@
                 <i class="bi bi-window-stack"></i> 📺 开启悬浮窗
             </button>
 
-            <button class="btn btn-outline-warning btn-sm" id="captureScreenBtn" style="border-radius: 8px;">
+            <button class="btn btn-outline-warning btn-sm d-none" id="captureScreenBtn" style="border-radius: 8px;">
                 <i class="bi bi-camera"></i> 📷 屏幕截图
             </button>
 
@@ -689,38 +689,51 @@
         }
     });
 
+    let sharedStream = null;
+    let sharedVideo = null;
+
     // 原生屏幕截图逻辑
     captureScreenBtn.addEventListener('click', async () => {
         try {
-            // 请求屏幕媒体流
-            const stream = await navigator.mediaDevices.getDisplayMedia({
-                video: { displaySurface: "monitor" }
-            });
-            
-            // 动态创建 video 播放媒体
-            const video = document.createElement('video');
-            video.srcObject = stream;
-            video.play();
-            
-            await new Promise(r => video.onplaying = r);
+            if (!sharedStream || !sharedStream.active) {
+                // 请求屏幕媒体流
+                sharedStream = await navigator.mediaDevices.getDisplayMedia({
+                    video: { displaySurface: "monitor" }
+                });
+                
+                // 监听用户通过浏览器原生界面停止共享
+                sharedStream.getVideoTracks()[0].addEventListener('ended', () => {
+                    sharedStream = null;
+                    if (sharedVideo) {
+                        sharedVideo.pause();
+                        sharedVideo.srcObject = null;
+                        sharedVideo = null;
+                    }
+                });
+
+                // 动态创建 video 播放媒体
+                sharedVideo = document.createElement('video');
+                sharedVideo.srcObject = sharedStream;
+                sharedVideo.play();
+                
+                await new Promise(r => sharedVideo.onplaying = r);
+            }
             
             // 利用 Canvas 捕获帧
             const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
+            canvas.width = sharedVideo.videoWidth;
+            canvas.height = sharedVideo.videoHeight;
             const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(sharedVideo, 0, 0, canvas.width, canvas.height);
             
-            // 立即停止所有媒体轨道以关闭屏幕共享状态条
-            stream.getTracks().forEach(track => track.stop());
-            
-            // 导出 blob
+            // 导出 blob，改用 image/jpeg，兼容后端原生 Java ImageIO，不需要 JAI
             canvas.toBlob(blob => {
                 uploadImageForOcr(blob);
-            }, 'image/png');
+            }, 'image/jpeg', 0.95);
         } catch (e) {
             console.error("Screen capture failed:", e);
             alert("屏幕截图未获授权或捕获失败：" + e.message);
+            sharedStream = null;
         }
     });
 
@@ -743,7 +756,7 @@
         updatePipContent("📸 正在识别截图文本...", "⏳ OCR 运行中...");
 
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append('file', file, 'screenshot.jpg');
         formData.append('mode', modeSelect.value);
 
         try {

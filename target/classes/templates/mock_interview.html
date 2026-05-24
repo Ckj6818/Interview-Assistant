@@ -1338,7 +1338,7 @@
 
         } catch (error) {
             console.error(error);
-            previewText.innerText = "网络异常，无法连接到面试服务器�?;
+            previewText.innerText = "网络异常，无法连接到面试服务器...";
             setPanelState('thinking');
             isRequesting = false;
         }
@@ -1349,13 +1349,13 @@
         
         if (turnCount >= MAX_TURNS) {
             setPanelState('thinking');
-            previewText.innerText = "【模拟面试已达最大轮次，正在生成评估报告...�?;
+            previewText.innerText = "【模拟面试已达最大轮次，正在生成评估报告...】";
             setTimeout(() => {
                 executeFinish();
             }, 2000);
         } else {
             setPanelState('listening');
-            previewText.innerText = "【您可以点击麦克风进行回答，或点击右下角结束面试�?;
+            previewText.innerText = "【您可以点击麦克风进行回答，或点击右下角结束面试】";
         }
     }
 
