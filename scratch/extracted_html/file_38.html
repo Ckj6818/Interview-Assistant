@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+2: <html lang="zh" xmlns:th="http://www.thymeleaf.org">
+3: <head>
+4:     <meta charset="UTF-8">
+5:     <meta name="viewport" content="width=device-width, initial-scale=1">
+6:     <title>全真模拟面试大厅 - InterviewAI</title>
+7:     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+8:     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+9:     <style>
+10:         body {
+11:             background-color: #0f172a;
+12:             color: #e2e8f0;
+13:             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+14:             min-height: 100vh;
+15:         }
+16:         .sidebar {
+17:             min-height: 100vh;
+18:             background-color: #1e293b;
+19:             border-right: 1px solid #334155;
+20:             box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+21:         }
+22:         .nav-link {
+23:             color: #94a3b8;
+24:             font-weight: 500;
+25:             margin-bottom: 0.5rem;
+26:             border-radius: 8px;
+27:             padding: 10px 15px;
+28:             transition: all 0.2s;
+29:         }
+30:         .nav-link:hover {
+31:             background-color: #334155;
+32:             color: #f8fafc;
+33:         }
+34:         .nav-link.active {
+35:             background-color: #3b82f6;
+36:             color: white;
+37:             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+38:         }
+39:         .lobby-card {
+40:             background-color: #1e293b;
+4
+<truncated 5785 bytes>
+">
+153:                             <div class="d-flex justify-content-between align-items-center mb-2">
+154:                                 <span class="badge bg-success bg-opacity-20 text-success px-3 py-2 rounded-pill border border-success border-opacity-10" th:text="${question.category}">Java</span>
+155:                                 <span class="text-muted small"><i class="bi bi-activity text-success me-1"></i> 面试官就绪</span>
+156:                             </div>
+157:                             <h5 class="card-title fw-bold mt-2 text-white" th:text="${question.title}">面试主题</h5>
+158:                             <p class="card-text text-muted flex-grow-1 mt-2 small lh-base">
+159:                                 面试官将围绕该知识领域展开深度询问。不仅测试基础理论，更会通过多轮对答层层剥笋，探究你的技术天花板。
+160:                             </p>
+161:                             
+162:                             <div class="mt-4 text-end">
+163:                                 <a th:href="@{'/mock-interview/' + ${question.id}}" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm">
+164:                                     <i class="bi bi-telephone-fill me-1"></i> 开始语音面试
+165:                                 </a>
+166:                             </div>
+167:                         </div>
+168:                     </div>
+169:                 </div>
+170:             </div>
+171:             
+172:             <div th:if="${questions == null || questions.size() == 0}" class="text-center py-5 text-muted">
+173:                 <i class="bi bi-inbox fs-1"></i>
+174:                 <p class="mt-3">暂无该分类下的面试主题</p>
+175:             </div>
+176: 
+177:         </div>
+178:     </div>
+179: </div>
+180: 
+181: <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+182: </body>
+183: </html>

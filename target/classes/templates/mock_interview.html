@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全真模拟面试 - MindSpark 面之光</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- Markdown & Mermaid & KaTeX -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <link rel="stylesheet" th:href="@{/css/modern-theme.css}">
+    <style>
+        :root {
+            --bg-dark: #07090e;
+            --card-bg: rgba(17, 20, 34, 0.45);
+            --primary-neon: #10b981;
+            --secondary-neon: #3b82f6;
+            --accent-orange: #f59e0b;
+            --danger-red: #ef4444;
+            --border-color: rgba(255, 255, 255, 0.06);
+            --text-light: #f8fafc;
+            --text-white-50: #cbd5e1;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        /* 背景微光效果 */
+        .glow-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.08) 0%, transparent 40%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* 顶部导航 */
+        .navbar-custom {
+            background-color: rgba(9, 11, 17, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 10;
+        }
+
+        /* 主容器布局：左右分�?*/
+        .main-layout {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 左侧语音呼叫面板 */
+        .voice-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            position: relative;
+        }
+
+        /* 右侧对话历史折叠�?*/
+        .chat-sidebar {
+            width: 380px;
+            background-color: rgba(9, 11, 17, 0.95);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 5;
+        }
+
+        .chat-sidebar.collapsed {
+            width: 0;
+            opacity: 0;
+            overflow: hidden;
+            border-left: none;
+        }
+
+        /* 面试官大头像与脉冲波 */
+        .avatar-container {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ai-avatar {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--secondary-neon), var(--primary-neon));
+            border: 4px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            color: white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            z-index: 2;
+            transition: all 0.4s;
+        }
+
+        /* 呼吸/发声动画�?*/
+        .avatar-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid var(--primary-neon);
+            opacity: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* 发声中 (AI Speaking) */
+        .status-speaking .ai-avatar {
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
+            border-color: var(--primary-neon);
+        }
+
+        .status-speaking .avatar-ring {
+            animation: ring-pulse-green 2s infinite ease-out;
+        }
+
+        /* 录音中 (User Speaking) */
+        .status-listening .ai-avatar {
+            background: linear-gradient(135deg, var(--danger-red), var(--accent-orange));
+            box-shadow: 0 0 35px rgba(239, 68, 68, 0.7);
+            border-color: var(--danger-red);
+        }
+
+        .status-listening .avatar-ring {
+            border-color: var(--danger-red);
+            animation: ring-pulse-red 1.5s infinite ease-out;
+        }
+
+        /* 思考中 (AI Thinking) */
+        .status-thinking .ai-avatar {
+            animation: orb-float 3s ease-in-out infinite;
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+            border-color: var(--secondary-neon);
+        }
+
+        /* 声波跳动特效 */
+        .voice-wave {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            height: 40px;
+            margin-bottom: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .voice-wave.active {
+            opacity: 1;
+        }
+
+        .wave-bar {
+            width: 4px;
+            height: 8px;
+            background-color: var(--primary-neon);
+            border-radius: 2px;
+            animation: wave-bounce 1s ease-in-out infinite alternate;
+        }
+
+        .wave-bar:nth-child(2) { animation-delay: 0.1s; height: 16px; }
+        .wave-bar:nth-child(3) { animation-delay: 0.25s; height: 28px; }
+        .wave-bar:nth-child(4) { animation-delay: 0.4s; height: 36px; background-color: var(--secondary-neon); }
+        .wave-bar:nth-child(5) { animation-delay: 0.2s; height: 20px; }
+        .wave-bar:nth-child(6) { animation-delay: 0.35s; height: 32px; background-color: var(--secondary-neon); }
+        .wave-bar:nth-child(7) { animation-delay: 0.15s; height: 12px; }
+
+        .status-listening .wave-bar {
+            background-color: var(--danger-red);
+        }
+
+        /* 文字实时预览区 */
+        .transcript-preview {
+            max-width: 600px;
+            width: 90%;
+            min-height: 80px;
+            background: rgba(17, 20, 34, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 15px 25px;
+            text-align: center;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            color: #e2e8f0;
+        }
+
+        .status-listening .transcript-preview {
+            border-color: rgba(239, 68, 68, 0.4);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.1);
+        }
+
+        /* 控制按钮区域 */
+        .controls-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .large-mic-btn {
+            width: 86px;
+            height: 86px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 2px solid var(--border-color);
+            color: #94a3b8;
+            font-size: 2.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .large-mic-btn:hover {
+            transform: scale(1.05);
+            border-color: var(--secondary-neon);
+            color: white;
+            box-shadow: 0 15px 30px rgba(59, 130, 246, 0.25);
+        }
+
+        .large-mic-btn:active, .large-mic-btn.active {
+            background: linear-gradient(135deg, var(--danger-red), #b91c1c) !important;
+            border-color: var(--danger-red) !important;
+            color: white !important;
+            transform: scale(0.95);
+            box-shadow: 0 0 35px rgba(239, 68, 68, 0.6) !important;
+        }
+
+        .mic-instructions {
+            font-size: 0.88rem;
+            color: var(--text-white-50);
+            font-weight: 500;
+            animation: pulse-text 2s infinite;
+        }
+
+        .status-listening .mic-instructions {
+            color: var(--danger-red);
+            font-weight: bold;
+        }
+
+        /* 快捷浮动按钮 */
+        .input-switcher {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            z-index: 10;
+        }
+
+        .aux-controls {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            z-index: 10;
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            background-color: rgba(17, 20, 34, 0.6);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            transition: all 0.2s;
+        }
+
+        .btn-circle:hover {
+            background-color: rgba(255,255,255,0.05);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-circle.active {
+            background-color: var(--primary-neon);
+            color: white;
+            border-color: var(--primary-neon);
+        }
+
+        /* 对话历史流样式 */
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(9, 11, 17, 0.95);
+        }
+
+        .chat-history-flow {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .chat-bubble-item {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bubble-label {
+            font-size: 0.8rem;
+            color: var(--text-white-50);
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .bubble-content {
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            max-width: 85%;
+        }
+
+        .chat-bubble-item.ai-msg {
+            align-items: flex-start;
+        }
+
+        .chat-bubble-item.ai-msg .bubble-content {
+            background-color: rgba(17, 20, 34, 0.45);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            border-top-left-radius: 0;
+        }
+
+        .chat-bubble-item.user-msg {
+            align-items: flex-end;
+        }
+
+        .chat-bubble-item.user-msg .bubble-content {
+            background-color: var(--secondary-neon);
+            color: white;
+            border-top-right-radius: 0;
+        }
+
+        /* 面试准备遮罩�?*/
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-dark);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s;
+        }
+
+        .glass-card-prep {
+            background: rgba(17, 20, 34, 0.45);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 550px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .glass-card-prep::-webkit-scrollbar {
+            width: 6px;
+        }
+        .glass-card-prep::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        /* 键盘输入文本输入框弹�?*/
+        .keyboard-input-drawer {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) translateY(100%);
+            width: 600px;
+            max-width: 90%;
+            background-color: #111422;
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            border-radius: 20px 20px 0 0;
+            padding: 20px 25px;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.3s cubic-bezier(0.1, 0.8, 0.3, 1);
+            z-index: 20;
+        }
+
+        .keyboard-input-drawer.active {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        #keyboardText {
+            resize: none;
+            background-color: #07090e;
+            border: 1px solid var(--border-color);
+            color: white;
+            border-radius: 10px;
+        }
+
+        #keyboardText:focus {
+            box-shadow: none;
+            border-color: var(--secondary-neon);
+        }
+
+        /* 关键帧动�?*/
+        @keyframes ring-pulse-green {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.4); opacity: 0; }
+        }
+
+        @keyframes ring-pulse-red {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        @keyframes wave-bounce {
+            0% { transform: scaleY(0.3); }
+            100% { transform: scaleY(1.1); }
+        }
+
+        @keyframes orb-float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+
+        @keyframes pulse-text {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        /* AI 笔试秒解内嵌样式 */
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 25px 15px;
+            text-align: center;
+            cursor: pointer;
+            background: rgba(7, 9, 14, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--danger-red);
+            background: rgba(239, 68, 68, 0.05);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
+        }
+        .drop-zone i {
+            font-size: 2.2rem;
+            color: var(--danger-red);
+            margin-bottom: 8px;
+            transition: transform 0.3s ease;
+        }
+        .drop-zone:hover i {
+            transform: scale(1.1);
+        }
+        
+        .preview-container {
+            display: none;
+            position: relative;
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background: #07090e;
+            min-height: 180px;
+            align-items: center;
+            justify-content: center;
+        }
+        .preview-img {
+            max-height: 180px;
+            max-width: 100%;
+            object-fit: contain;
+            display: block;
+        }
+        .reupload-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(7, 9, 14, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ef4444;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            backdrop-filter: blur(4px);
+            transition: all 0.2s;
+            font-weight: 600;
+            z-index: 20;
+        }
+        .reupload-btn:hover {
+            background: #ef4444;
+            color: #fff;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #64748b;
+            transition: all 0.3s;
+        }
+        .status-dot.idle {
+            background-color: #64748b;
+        }
+        .status-dot.loading {
+            background-color: var(--danger-red);
+            box-shadow: 0 0 10px var(--danger-red);
+            animation: status-blink 1.2s infinite;
+        }
+        .status-dot.done {
+            background-color: #10b981;
+            box-shadow: 0 0 10px #10b981;
+        }
+        @keyframes status-blink {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .scanner-container {
+            display: none;
+            position: relative;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 10px;
+            overflow: hidden;
+        }
+        .scan-line {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--danger-red), transparent);
+            box-shadow: 0 0 10px var(--danger-red);
+            animation: scan 2s linear infinite;
+            z-index: 10;
+        }
+        @keyframes scan {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+        .scan-log {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.75rem;
+            color: var(--danger-red);
+            margin-top: 15px;
+            min-height: 100px;
+            max-height: 140px;
+            overflow-y: auto;
+            text-align: left;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
+        }
+        .scan-log-line {
+            margin-bottom: 4px;
+            opacity: 0;
+            transform: translateX(-5px);
+            animation: log-fadeIn 0.3s forwards;
+        }
+
+        .solution-container {
+            display: none;
+            margin-top: 15px;
+        }
+        
+        .answer-card {
+            background: linear-gradient(135deg, rgba(6, 78, 59, 0.15) 0%, rgba(15, 23, 42, 0.6) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-left: 4px solid #10b981;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .reasoning-card {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.12) 0%, rgba(15, 23, 42, 0.6) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            border-left: 4px solid #8b5cf6;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .code-block {
+            background: #050811;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Fira Code', 'Courier New', Courier, monospace;
+            color: #f8fafc;
+            overflow-x: auto;
+            margin: 8px 0;
+            white-space: pre;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+        
+        .ans-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #f1f5f9;
+        }
+
+        .reasoning-text {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #e2e8f0;
+        }
+
+        .copy-btn {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .copy-btn:hover {
+            background: #10b981;
+            color: white;
+        }
+        .sidebar-header .nav-link {
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+        .sidebar-header .nav-link.active {
+            background-color: rgba(59, 130, 246, 0.25) !important;
+            border-color: var(--secondary-neon) !important;
+            color: var(--text-light) !important;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+        }
+        .sidebar-header .nav-link:not(.active):hover {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+        }
+    </style>
+</head>
+<body class="status-thinking">
+
+<div class="glow-overlay"></div>
+
+<!-- 侧边�?-->
+<div class="sidebar d-flex flex-column justify-content-between py-4">
+    <div>
+        <div class="logo-container mb-4 px-3">
+            <div class="logo-icon me-2">
+                <i class="bi bi-robot text-white fs-5"></i>
+            </div>
+            <div>
+                <h4 class="logo-text m-0 fw-bold text-white" style="font-size: 1.1rem; background: linear-gradient(135deg, #3b82f6, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">MindSpark 面之光</h4>
+                <div style="color: #64748b; font-size: 0.75rem; font-weight: 500;">智能面试辅助平台</div>
+            </div>
+        </div>
+        <div class="px-3">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="/"><i class="bi bi-grid-fill me-2"></i> 系统首页</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/questions"><i class="bi bi-journal-text me-2"></i> 题库大厅</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/mock-interview"><i class="bi bi-mic me-2"></i> 模拟面试</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/copilot"><i class="bi bi-rocket-takeoff me-2"></i> 面试助手</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/resume"><i class="bi bi-file-earmark-person me-2"></i> 简历优�</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/records"><i class="bi bi-clock-history me-2"></i> 面试记录</a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    <div class="px-3">
+        <form action="/logout" method="post" style="margin: 0;">
+            <button type="submit" class="nav-link py-2 px-1 text-start" style="font-size: 0.88rem; gap: 8px; border: none; background: transparent; width: 100%; cursor: pointer;">
+               <i class="bi bi-box-arrow-right me-2"></i> 退出登录
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- 右侧主体 -->
+<div class="main-content" style="height: 100vh; overflow: hidden; display: flex; flex-direction: column; padding: 0;">
+
+    <!-- 顶部导航�?-->
+    <nav class="navbar navbar-custom py-3">
+        <div class="container-fluid pe-4 ps-5">
+            <a class="navbar-brand text-white fw-bold d-flex align-items-center" href="/">
+                <i class="bi bi-chevron-left me-2"></i> 退出模拟面试
+            </a>
+            <div class="d-flex align-items-center">
+                <span class="badge bg-warning bg-opacity-25 text-warning px-3 py-2 rounded-pill me-3 border border-warning border-opacity-20">
+                    <i class="bi bi-clock-fill me-1"></i> <span id="timerText">00:00</span>
+                </span>
+                <span class="text-white-50 small me-2">正在面试中</span>
+                <strong class="text-white text-truncate" style="max-width: 250px;" id="interviewTopicTitle">全真模拟综合面试</strong>
+            </div>
+            <div>
+                <button class="btn btn-outline-danger px-4 rounded-pill btn-sm border-opacity-50" onclick="finishConfirm()">
+                    <i class="bi bi-stop-circle-fill me-1"></i> 结束面试生成报告
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主页面布局 -->
+    <div class="main-layout">
+        
+        <!-- 准备界面（启动遮罩） -->
+        <div class="loading-overlay" id="prepOverlay">
+            <div class="glass-card-prep" style="max-width: 650px; padding: 30px;">
+                <i class="bi bi-robot text-primary display-5 mb-2"></i>
+                <h3 class="fw-bold text-white mb-2">进入 AI 全真模拟面试�</h3>
+                <p class="text-light small mb-3" style="opacity: 0.85;">我们将模拟真实电话/语音面试。AI 面试官将主动提问并进行针对性追问。</p>
+                
+                <!-- 个性化 RAG 设置 -->
+                <div class="card border border-secondary border-opacity-30 rounded-4 text-start mb-3" style="background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(10px);">
+                    <div class="card-body p-3">
+                        <h6 class="text-white fw-bold mb-3 d-flex align-items-center justify-content-between">
+                            <span><i class="bi bi-sliders2-vertical text-info me-2"></i> 个性化面试设定 (RAG 检索增强)</span>
+                            <div class="btn-group btn-group-sm">
+                                <button type="button" class="btn btn-outline-info rounded-pill px-2 py-0" style="font-size: 0.75rem;" onclick="applyTemplate('autonomous')">自动驾驶点云模板</button>
+                                <button type="button" class="btn btn-outline-info rounded-pill px-2 py-0 ms-1" style="font-size: 0.75rem;" onclick="applyTemplate('finance')">金融分析模板</button>
+                            </div>
+                        </h6>
+                        
+                        <div class="row g-2 mb-2">
+                            <div class="col-md-6">
+                                <label class="form-label text-white-50 small mb-1">目标公司</label>
+                                <input type="text" id="targetCompanyInput" class="form-control form-control-sm dark-input" placeholder="例如: 百度, 字节跳动, 摩根大通">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-white-50 small mb-1">目标岗位</label>
+                                <input type="text" id="targetJobInput" class="form-control form-control-sm dark-input" placeholder="例如: 点云算法工程师, 金融分析师">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="form-label text-white-50 small mb-1">个人简历内容(用于个性化追问 & 简历挖掘)</label>
+                            <textarea id="resumeInput" class="form-control form-control-sm dark-input" style="resize: none;" rows="4" placeholder="粘贴您的个人简历文本、项目经历等。例如：主导自动驾驶激光雷达三维点云感知项目，使用PointNet++进行点云分割..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-info border-0 text-start bg-opacity-10 bg-primary text-info small mb-3">
+                    <i class="bi bi-info-circle-fill me-2"></i> <strong>面试贴士：</strong>
+                    <ol class="m-0 mt-1 ps-3">
+                        <li>点击开始按钮，系统将开启 TTS 语音合成，请确认音量已调大。</li>
+                        <li>面试采用浏览器自带语音识别，若首次使用请授权麦克风权限。</li>
+                        <li>为获得最佳体验，请使用 Chrome 等支持 SpeechRecognition 的浏览器。</li>
+                    </ol>
+                </div>
+                <button class="btn btn-primary btn-lg w-100 py-3 rounded-pill fw-bold shadow" onclick="startInterviewSession()">
+                    <i class="bi bi-telephone-outbound me-2"></i> 开始语音通话
+                </button>
+            </div>
+        </div>
+
+        <!-- 左侧：语音交互面板 -->
+        <div class="voice-panel" id="mainVoicePanel">
+            <!-- 状态栏标题 -->
+            <h4 class="mb-4 text-center fw-bold" id="statusTitle" style="letter-spacing: 1px;">AI 面试官已连接...</h4>
+
+            <!-- 大头像及呼吸声波 -->
+            <div class="avatar-container">
+                <div class="avatar-ring"></div>
+                <div class="ai-avatar">
+                    <i class="bi bi-robot"></i>
+                </div>
+            </div>
+
+            <!-- 动画声波 -->
+            <div class="voice-wave" id="visualizerWave">
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+            </div>
+
+            <!-- 实时结果预览 -->
+            <div class="transcript-preview" id="previewText">
+                AI 面试官正在思考开场白，请稍等...
+            </div>
+
+            <!-- 控制按钮 -->
+            <div class="controls-area">
+                <div class="large-mic-btn" id="voiceMicBtn">
+                    <i class="bi bi-mic-fill"></i>
+                </div>
+                <span class="mic-instructions" id="micInstruction">实时收音中，点击静音 (或停顿2.5秒自动发送)</span>
+            </div>
+
+            <!-- 左下：切换键盘 -->
+            <div class="input-switcher">
+                <button class="btn-circle" id="toggleKeyboardBtn" title="切换文本键盘输入">
+                    <i class="bi bi-keyboard-fill"></i>
+                </button>
+            </div>
+
+            <!-- 右下：辅助音量设置等 -->
+            <div class="aux-controls">
+                <button class="btn-circle active" id="toggleTtsBtn" title="开启/关闭语音播报">
+                    <i class="bi bi-volume-up-fill"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 文本键盘输入抽屉 -->
+        <div class="keyboard-input-drawer" id="keyboardDrawer">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-bold text-white-50 small"><i class="bi bi-keyboard me-1"></i> 文字键盘输入</span>
+                <button type="button" class="btn-close btn-close-white btn-sm" onclick="toggleKeyboardDrawer(false)"></button>
+            </div>
+            <div class="input-group">
+                <textarea id="keyboardText" class="form-control" rows="2" placeholder="输入你想回答的话..."></textarea>
+                <button class="btn btn-primary px-4 fw-bold" id="keyboardSendBtn">
+                    <i class="bi bi-send-fill"></i> 发送
+                </button>
+            </div>
+        </div>
+
+        <!-- 右侧：面试对话历史实录 -->
+        <div class="chat-sidebar" id="sidebarHistory">
+            <div class="sidebar-header d-flex align-items-center justify-content-between py-2 px-3">
+                <span class="text-white small fw-bold">
+                    <i class="bi bi-chat-dots-fill text-info me-1"></i> 对话实录
+                </span>
+                <button class="btn btn-link text-white-50 p-0 border-0" id="closeHistoryBtn"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="tab-content flex-1 overflow-hidden" style="height: calc(100% - 57px); display: flex; flex-direction: column;">
+                <div class="tab-pane fade show active chat-history-flow" id="historyContainer" role="tabpanel" style="flex: 1; overflow-y: auto;">
+                    <!-- 聊天泡泡在此追加 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- 结束面试二次确认 Modal -->
+<div class="modal fade" id="confirmFinishModal" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(5px);">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background-color: #111422; border: 1px solid var(--border-color); border-radius: 18px;">
+            <div class="modal-body p-4 text-center">
+                <i class="bi bi-exclamation-triangle-fill text-warning display-4 mb-3 d-block"></i>
+                <h4 class="fw-bold text-white mb-2">确定结束当前模拟面试吗？</h4>
+                <p class="text-white-50">结束面试后，AI 将根据本场的所有问答细节为您生成详细的能力模型雷达图和诊断报告。</p>
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <button class="btn btn-outline-light px-4 rounded-pill" data-bs-dismiss="modal">继续面试</button>
+                    <button class="btn btn-danger px-4 rounded-pill" onclick="executeFinish()">确认结束</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // 不再写死 questionId
+    let targetCompany = '';
+    let targetJob = '';
+    let resumeText = '';
+        const resumeTemplates = {
+        autonomous: {
+            company: '阿尔法自动驾驶科技有限公司',
+            job: '自动驾驶三维点云感知算法专家',
+            resume: '【个人简历】\n姓名：张三\n求职意向：自动驾驶点云感知算法专家\n工作经历：\n2024年 - 至今 | 某头部自动驾驶公司 | 资深点云算法工程师\n- 负责自动驾驶激光雷达三维点云感知项目。\n- 深入优化三维点云深度学习模型，主导基于 PointNet++ 和 PointPillars 的点云分割与三维目标检测（3D Object Detection）网络研发。\n- 针对车载毫米波雷达与 LiDAR 点云数据进行多传感器融合（Multi-sensor Fusion），实现极端天气下障碍物检测精度提升 15%。\n- 解决大规模点云场景下的实时性瓶颈，通过 TensorRT 对感知算法进行端到端加速，将推理延迟从 80ms 降低至 22ms。'
+        },
+        finance: {
+            company: '华尔街环球资产管理公司',
+            job: '高级金融分析师(M&A)',
+            resume: '【个人简历】\n姓名：李四\n求职意向：高级金融分析师\n工作经历：\n2023年 - 2025年 | 头部投资银行 | 投资银行部高级分析师\n- 深度参与多个大型跨国并购（M&A）及 IPO 业务，主导财务建模与估值工作。\n- 精通贴现现金流（Discounted Cash Flow, DCF）模型，负责对目标公司进行财务预测（Financial Forecasting）、自由现金流（FCF）计算以及加权平均资本成本（WACC）测算。\n- 独立编写行业研究报告与投资备忘录（Investment Memorandum），评估宏观政策与微观财务指标对项目估值的影响。'
+        }
+    };
+
+    function applyTemplate(key) {
+        const tpl = resumeTemplates[key];
+        if (tpl) {
+            document.getElementById('targetCompanyInput').value = tpl.company;
+            document.getElementById('targetJobInput').value = tpl.job;
+            document.getElementById('resumeInput').value = tpl.resume;
+        }
+    }
+    
+    // UI elements
+    const mainVoicePanel = document.getElementById('mainVoicePanel');
+    const statusTitle = document.getElementById('statusTitle');
+    const visualizerWave = document.getElementById('visualizerWave');
+    const previewText = document.getElementById('previewText');
+    const voiceMicBtn = document.getElementById('voiceMicBtn');
+    const micInstruction = document.getElementById('micInstruction');
+    const toggleTtsBtn = document.getElementById('toggleTtsBtn');
+    const closeHistoryBtn = document.getElementById('closeHistoryBtn');
+    const sidebarHistory = document.getElementById('sidebarHistory');
+    const historyContainer = document.getElementById('historyContainer');
+    const prepOverlay = document.getElementById('prepOverlay');
+    const timerText = document.getElementById('timerText');
+    
+    // Keyboard inputs
+    const toggleKeyboardBtn = document.getElementById('toggleKeyboardBtn');
+    const keyboardDrawer = document.getElementById('keyboardDrawer');
+    const keyboardText = document.getElementById('keyboardText');
+    const keyboardSendBtn = document.getElementById('keyboardSendBtn');
+
+    let ttsEnabled = true;
+    let messages = []; // Chat history array formatted as {role, content}
+    
+    // 预加载系统的语音包库
+    let availableVoices = [];
+    if (window.speechSynthesis && window.speechSynthesis.onvoiceschanged !== undefined) {
+        window.speechSynthesis.onvoiceschanged = () => {
+            availableVoices = window.speechSynthesis.getVoices();
+        };
+    }
+    let timerInterval = null;
+    let secondsElapsed = 0;
+    let isRequesting = false;
+    let currentSpeechText = '';
+
+    // Audio status states: 'thinking' (thinking & waiting api), 'speaking' (AI outputting audio), 'listening' (recording user speech)
+    function setPanelState(state) {
+        mainVoicePanel.classList.remove('status-speaking', 'status-listening', 'status-thinking');
+        
+        if (state === 'speaking') {
+            mainVoicePanel.classList.add('status-speaking');
+            statusTitle.innerText = "面试官正在提问...";
+            statusTitle.style.color = "var(--primary-neon)";
+            visualizerWave.classList.add('active');
+        } else if (state === 'listening') {
+            mainVoicePanel.classList.add('status-listening');
+            statusTitle.innerText = "实时收音中，点击静音";
+            statusTitle.style.color = "var(--danger-red)";
+            visualizerWave.classList.add('active');
+        } else {
+            mainVoicePanel.classList.add('status-thinking');
+            statusTitle.innerText = "面试官思考中...";
+            statusTitle.style.color = "var(--secondary-neon)";
+            visualizerWave.classList.remove('active');
+        }
+    }
+
+
+
+    closeHistoryBtn.addEventListener('click', () => sidebarHistory.classList.add('collapsed'));
+
+    // Toggle TTS
+    toggleTtsBtn.addEventListener('click', () => {
+        ttsEnabled = !ttsEnabled;
+        toggleTtsBtn.classList.toggle('active', ttsEnabled);
+        if (!ttsEnabled) {
+            window.speechSynthesis.cancel();
+        }
+    });
+
+    // Toggle Keyboard Drawer
+    toggleKeyboardBtn.addEventListener('click', () => {
+        keyboardDrawer.classList.toggle('active');
+        if (keyboardDrawer.classList.contains('active')) {
+            keyboardText.focus();
+        }
+    });
+
+    function toggleKeyboardDrawer(show) {
+        if (show) keyboardDrawer.classList.add('active');
+        else keyboardDrawer.classList.remove('active');
+    }
+
+    // Timer functions
+    function startTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        secondsElapsed = 0;
+        timerInterval = setInterval(() => {
+            secondsElapsed++;
+            const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+            const secs = String(secondsElapsed % 60).padStart(2, '0');
+            timerText.innerText = `${mins}:${secs}`;
+        }, 1000);
+    }
+
+    // webkitSpeechRecognition setups
+    let recognition = null;
+    let isInterviewActive = false;
+    let isMuted = false;
+
+    if ('webkitSpeechRecognition' in window) {
+        recognition = new webkitSpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'zh-CN';
+
+        recognition.onstart = function() {
+            if (mainVoicePanel.classList.contains('status-speaking')) {
+                // Keep speaking
+            } else if (mainVoicePanel.classList.contains('status-thinking')) {
+                // Keep thinking
+            } else {
+                setPanelState('listening');
+                previewText.innerHTML = "正在聆听，请自由回答...";
+            }
+            currentSpeechText = '';
+        };
+
+        let speechTimeout = null;
+        recognition.onresult = function(event) {
+            if (mainVoicePanel.classList.contains('status-thinking') || isMuted) {
+                return;
+            }
+
+            let interimTranscript = '';
+            let finalTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    finalTranscript += event.results[i][0].transcript;
+                } else {
+                    interimTranscript += event.results[i][0].transcript;
+                }
+            }
+            
+            let liveText = finalTranscript || interimTranscript;
+            if (liveText.trim().length() > 0) {
+                // Interrupt AI speech
+                if (mainVoicePanel.classList.contains('status-speaking') || (window.speechSynthesis && window.speechSynthesis.speaking)) {
+                    if (window.speechSynthesis) {
+                        window.speechSynthesis.cancel();
+                    }
+                    setPanelState('listening');
+                    previewText.innerHTML = "正在打断，请继续说话...";
+                }
+
+                currentSpeechText = liveText;
+                previewText.innerText = liveText;
+                
+                // VAD: 2.5 seconds of silence
+                if (speechTimeout) clearTimeout(speechTimeout);
+                speechTimeout = setTimeout(() => {
+                    if (isInterviewActive && !isMuted) {
+                        const answer = currentSpeechText.trim();
+                        if (answer) {
+                            submitAnswer(answer);
+                            currentSpeechText = '';
+                        }
+                    }
+                }, 2500);
+            }
+        };
+
+        recognition.onerror = function(event) {
+            console.error("Speech Recognition Error: ", event.error);
+            if (event.error === 'not-allowed') {
+                isInterviewActive = false;
+                previewText.innerText = "麦克风权限被拒绝，请检查权限设置。";
+                setPanelState('thinking');
+            }
+        };
+
+        recognition.onend = function() {
+            if (isInterviewActive && !isMuted) {
+                try {
+                    recognition.start();
+                } catch(e) {
+                    console.error("Auto-restart recognition failed:", e);
+                }
+            }
+        };
+    } else {
+        voiceMicBtn.classList.add('disabled');
+        micInstruction.innerText = "当前浏览器不支持语音输入，请使用键盘输入";
+        toggleKeyboardDrawer(true);
+    }
+
+    if (recognition) {
+        voiceMicBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!isInterviewActive) return;
+            
+            isMuted = !isMuted;
+            voiceMicBtn.classList.toggle('active', !isMuted);
+            
+            if (isMuted) {
+                micInstruction.innerText = "已静音，点击恢复收音";
+                previewText.innerText = "【麦克风已静音，面试官听不到您的声音】";
+                try {
+                    recognition.stop();
+                } catch(err) {}
+            } else {
+                micInstruction.innerText = "实时收音中，点击静音";
+                previewText.innerText = "正在聆听，请自由回答...";
+                try {
+                    recognition.start();
+                } catch(err) {}
+            }
+        });
+    }
+
+    keyboardSendBtn.addEventListener('click', () => {
+        const text = keyboardText.value.trim();
+        if (!text) return;
+        keyboardText.value = '';
+        toggleKeyboardDrawer(false);
+        submitAnswer(text);
+    });
+
+    keyboardText.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            keyboardSendBtn.click();
+        }
+    });
+
+    function startInterviewSession() {
+        targetCompany = document.getElementById('targetCompanyInput').value.trim();
+        targetJob = document.getElementById('targetJobInput').value.trim();
+        resumeText = document.getElementById('resumeInput').value.trim();
+
+        if (targetJob) {
+            document.getElementById('interviewTopicTitle').innerText = targetJob;
+        }
+
+        prepOverlay.style.opacity = '0';
+        setTimeout(() => {
+            prepOverlay.style.display = 'none';
+        }, 500);
+
+        startTimer();
+
+        // Continuous VAD Voice Capturing Activation
+        isInterviewActive = true;
+        isMuted = false;
+        if (recognition) {
+            voiceMicBtn.classList.add('active');
+            micInstruction.innerText = "实时收音中，点击静音";
+            try {
+                recognition.start();
+            } catch(e) {
+                console.error('Failed to start voice capturing on session start:', e);
+            }
+        }
+
+        getNextAiTurn();
+    }
+
+    let turnCount = 0;
+    const MAX_TURNS = 8;
+
+    async function submitAnswer(userInput) {
+        if (isRequesting) return;
+        isRequesting = true;
+
+        addMessageToUi('user', userInput);
+        messages.push({ role: 'user', content: userInput });
+        turnCount++;
+        
+        setPanelState('thinking');
+        previewText.innerText = "面试官正在思考与准备下一轮问题...";
+
+        await getNextAiTurn();
+    }
+
+    async function getNextAiTurn() {
+        isRequesting = true;
+        setPanelState('thinking');
+
+        try {
+            let slicedMessages = [];
+            if (messages.length > 0 && messages[0].role === 'system') {
+                slicedMessages.push(messages[0]);
+                slicedMessages.push(...messages.slice(1).slice(-6));
+            } else {
+                slicedMessages = messages.slice(-6);
+            }
+
+            const payload = {
+                messages: slicedMessages,
+                company: targetCompany,
+                job: targetJob,
+                resume: resumeText
+            };
+            
+            const response = await fetch('/mock-interview/chat-stream', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            
+            if (!response.ok) {
+                previewText.innerText = "面试官暂时断开连接，请重试";
+                setPanelState('thinking');
+                isRequesting = false;
+                return;
+            }
+
+            setPanelState('speaking');
+            
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder("utf-8");
+            let aiFullReply = "";
+            let sentenceBuffer = "";
+            previewText.innerText = "";
+            
+            if (ttsEnabled && 'speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+
+            const speakBuffer = (textBuffer) => {
+                if (ttsEnabled && 'speechSynthesis' in window && textBuffer.trim().length > 0) {
+                    const cleanText = textBuffer.replace(/[*#`]/g, '').replace(/([。！？；])/g, '$1 ').trim();
+                    if (!cleanText) return;
+                    
+                    const utterance = new SpeechSynthesisUtterance(cleanText);
+                    utterance.lang = 'zh-CN';
+                    utterance.rate = 1.0;
+                    utterance.pitch = 1.0;
+                    
+                    if (availableVoices.length === 0) {
+                        availableVoices = window.speechSynthesis.getVoices();
+                    }
+                    
+                    let bestVoice = null;
+                    const preferredKeywords = ['Xiaoxiao', 'Natural', 'Online', 'Ting-Ting', 'Google'];
+                    for (let keyword of preferredKeywords) {
+                        bestVoice = availableVoices.find(v => v.lang.includes('zh') && v.name.includes(keyword));
+                        if (bestVoice) break;
+                    }
+                    if (!bestVoice) {
+                        bestVoice = availableVoices.find(v => v.lang.includes('zh-CN')) || availableVoices.find(v => v.lang.includes('zh'));
+                    }
+                    if (bestVoice) {
+                        utterance.voice = bestVoice;
+                    }
+                    
+                    window.speechSynthesis.speak(utterance);
+                }
+            };
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                
+                const chunk = decoder.decode(value, { stream: true });
+                const lines = chunk.split('\n');
+                
+                for (const line of lines) {
+                    if (line.startsWith('data:')) {
+                        let text = line.substring(5);
+                        if (text.trim() === '[DONE]') continue;
+                        
+                        aiFullReply += text;
+                        sentenceBuffer += text;
+                        previewText.innerText = aiFullReply;
+                        
+                        if (/[.?!。？�?�?；]$/.test(text.trim()) || sentenceBuffer.length > 40) {
+                            speakBuffer(sentenceBuffer);
+                            sentenceBuffer = "";
+                        }
+                    }
+                }
+            }
+            
+            if (sentenceBuffer.length > 0) {
+                speakBuffer(sentenceBuffer);
+            }
+            
+            messages.push({ role: 'assistant', content: aiFullReply });
+            addMessageToUi('ai', aiFullReply);
+
+            onAiTurnComplete();
+
+        } catch (error) {
+            console.error(error);
+            previewText.innerText = "网络异常，无法连接到面试服务器�?;
+            setPanelState('thinking');
+            isRequesting = false;
+        }
+    }
+
+    function onAiTurnComplete() {
+        isRequesting = false;
+        
+        if (turnCount >= MAX_TURNS) {
+            setPanelState('thinking');
+            previewText.innerText = "【模拟面试已达最大轮次，正在生成评估报告...�?;
+            setTimeout(() => {
+                executeFinish();
+            }, 2000);
+        } else {
+            setPanelState('listening');
+            previewText.innerText = "【您可以点击麦克风进行回答，或点击右下角结束面试�?;
+        }
+    }
+
+    function addMessageToUi(role, content) {
+        const item = document.createElement('div');
+        item.className = `chat-bubble-item ${role === 'ai' ? 'ai-msg' : 'user-msg'}`;
+        
+        const label = document.createElement('div');
+        label.className = 'bubble-label';
+        label.innerText = role === 'ai' ? 'AI 面试�? : '�?;
+        
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble-content markdown-body';
+        
+        if (typeof marked !== 'undefined') {
+            bubble.innerHTML = marked.parse(content);
+        } else {
+            bubble.innerHTML = content.replace(/\n/g, '<br>');
+        }
+        
+        item.appendChild(label);
+        item.appendChild(bubble);
+        
+        historyContainer.appendChild(item);
+        
+        setTimeout(() => {
+            if (window.renderMathInElement) {
+                renderMathInElement(bubble, {
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false}
+                    ]
+                });
+            }
+            if (typeof mermaid !== 'undefined') {
+                mermaid.init(undefined, bubble.querySelectorAll('.language-mermaid'));
+            }
+        }, 100);
+        
+        historyContainer.scrollTop = historyContainer.scrollHeight;
+    }
+
+    const confirmFinishModal = new bootstrap.Modal(document.getElementById('confirmFinishModal'));
+
+    function finishConfirm() {
+        confirmFinishModal.show();
+    }
+
+    async function executeFinish() {
+        confirmFinishModal.hide();
+        window.speechSynthesis.cancel();
+        
+        // Stop voice recognition
+        isInterviewActive = false;
+        if (recognition) {
+            try {
+                recognition.stop();
+            } catch(e) {}
+        }
+        
+        prepOverlay.style.display = 'flex';
+        prepOverlay.style.opacity = '1';
+        prepOverlay.innerHTML = `
+            <div class="glass-card-prep">
+                <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
+                <h3 class="fw-bold text-white mb-2">正在评估全场面试表现...</h3>
+                <p class="text-white-50">AI 正在深度审查您的多轮对答记录，打分并编排雷达图各项能力评测。请稍等几秒钟。</p>
+            </div>
+        `;
+
+        let fullLog = '';
+        messages.forEach(msg => {
+            if (msg.role !== 'system') {
+                fullLog += `${msg.role === 'user' ? '候选人' : '面试官'}: ${msg.content}\n\n`;
+            }
+        });
+
+        const payload = {
+            chatLog: fullLog,
+            company: targetCompany,
+            job: targetJob,
+            resume: resumeText
+        };
+
+        try {
+            const response = await fetch('/mock-interview/finish', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                window.location.href = '/report/' + data.recordId;
+            } else {
+                alert("评分生成失败，请重试。");
+                location.reload();
+            }
+        } catch (error) {
+            console.error(error);
+            alert("提交出错，网络连接中断！");
+            location.reload();
+        }
+    }
+
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar && !document.querySelector('.sidebar-toggle')) {
+            const toggleBtn = document.createElement('div');
+            toggleBtn.className = 'sidebar-toggle';
+            toggleBtn.innerHTML = '<i class="bi bi-chevron-left"></i>';
+            toggleBtn.onclick = function() {
+                sidebar.classList.toggle('collapsed');
+                const mainContent = document.querySelector('.main-content');
+                if (mainContent) mainContent.classList.toggle('expanded');
+                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+            };
+            sidebar.appendChild(toggleBtn);
+            
+            document.querySelectorAll('.sidebar .nav-link, .sidebar .btn').forEach(el => {
+                Array.from(el.childNodes).forEach(node => {
+                    if (node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 0) {
+                        const span = document.createElement('span');
+                        span.className = 'nav-text';
+                        span.textContent = node.textContent;
+                        el.replaceChild(span, node);
+                    }
+                });
+            });
+
+            if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                sidebar.classList.add('collapsed');
+                const mainContent = document.querySelector('.main-content');
+                if (mainContent) mainContent.classList.add('expanded');
+            }
+        }
+    });
+</script>
+</body>
+</html>

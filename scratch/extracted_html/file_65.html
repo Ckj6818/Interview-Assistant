@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+2: <html lang="zh" xmlns:th="http://www.thymeleaf.org">
+3: <head>
+4:     <meta charset="UTF-8">
+5:     <meta name="viewport" content="width=device-width, initial-scale=1">
+6:     <title>面试记录 - InterviewAI</title>
+7:     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+8:     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+9:     <style>
+10:         body {
+11:             background-color: #0f172a;
+12:             color: #e2e8f0;
+13:             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+14:             min-height: 100vh;
+15:         }
+16:         .sidebar {
+17:             min-height: 100vh;
+18:             background-color: #1e293b;
+19:             border-right: 1px solid #334155;
+20:             box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+21:         }
+22:         .nav-link {
+23:             color: #94a3b8;
+24:             font-weight: 500;
+25:             margin-bottom: 0.5rem;
+26:             border-radius: 8px;
+27:             padding: 10px 15px;
+28:             transition: all 0.2s;
+29:         }
+30:         .nav-link:hover {
+31:             background-color: #334155;
+32:             color: #f8fafc;
+33:         }
+34:         .nav-link.active {
+35:             background-color: #3b82f6;
+36:             color: white;
+37:             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+38:         }
+39:         .record-card {
+40:             background-color: #1e293b;
+41:             border: 1
+<truncated 3027 bytes>
+ text-truncate" th:text="${record.topic}" style="max-width: 70%;">面试题目</h5>
+101:                                 <span class="badge bg-success bg-opacity-20 text-success rounded-pill px-3 fs-6" th:text="${record.score} + ' 分'">90 分</span>
+102:                             </div>
+103:                             <p class="card-text text-muted small mb-3">
+104:                                 <i class="bi bi-calendar3 me-1"></i> <span th:text="${#temporals.format(record.createTime, 'yyyy-MM-dd HH:mm')}">时间</span>
+105:                             </p>
+106:                             <p class="card-text text-secondary" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" th:text="${record.feedbackReport}">
+107:                                 反馈报告摘要...
+108:                             </p>
+109:                         </div>
+110:                         <div class="card-footer bg-transparent border-0 text-end pb-3">
+111:                             <a th:href="@{'/report/' + ${record.id}}" class="btn btn-sm btn-outline-primary rounded-pill px-3">查看完整报告</a>
+112:                         </div>
+113:                     </div>
+114:                 </div>
+115:             </div>
+116: 
+117:             <div th:if="${records == null || records.size() == 0}" class="text-center py-5 text-muted">
+118:                 <i class="bi bi-clipboard-x fs-1 text-secondary"></i>
+119:                 <p class="mt-3">您还没有进行过模拟面试，快去<a th:href="@{/questions}" class="text-primary text-decoration-none">题库大厅</a>或<a th:href="@{/mock-interview}" class="text-info text-decoration-none">全真模拟面试</a>试试吧！</p>
+120:             </div>
+121: 
+122:         </div>
+123:     </div>
+124: </div>
+125: 
+126: <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+127: </body>
+128: </html>

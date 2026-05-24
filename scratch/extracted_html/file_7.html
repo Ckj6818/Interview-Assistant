@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+2: <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+3: <head>
+4:     <meta charset="UTF-8">
+5:     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+6:     <title>瀹炴椂闈㈣瘯鎻愯瘝鍣?(Copilot) - InterviewAI</title>
+7:     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+8:     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+9:     <style>
+10:         body {
+11:             background-color: #0f172a;
+12:             color: #e2e8f0;
+13:             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+14:             height: 100vh;
+15:             display: flex;
+16:             flex-direction: column;
+17:             overflow: hidden;
+18:         }
+19:         .navbar-dark-custom {
+20:             background-color: #1e293b;
+21:             border-bottom: 1px solid #334155;
+22:         }
+23:         .main-container {
+24:             flex: 1;
+25:             display: flex;
+26:             overflow: hidden;
+27:         }
+28:         .left-panel {
+29:             width: 45%;
+30:             border-right: 1px solid #334155;
+31:             display: flex;
+32:             flex-direction: column;
+33:             padding: 20px;
+34:         }
+35:         .right-panel {
+36:             width: 55%;
+37:             display: flex;
+38:             flex-direction: column;
+39:             padding: 20px;
+40:             background-color: #0b0f19;
+41:         }
+42:         .card
+<truncated 11624 bytes>
+stion(text);
+305:         manualInput.value = '';
+306:     });
+307: 
+308:     // 鏍稿績璇锋眰锛氳Е鍙戝悗绔?AI 蹇€熺敓鎴愭彁璇峔n309:     async function getAiSuggestion(text) {
+310:         if (suggestionPlaceholder) suggestionPlaceholder.remove();
+311: 
+312:         // 1. 鍒涘缓 AI 鎻愯瘝鍗＄墖锛屽苟鏄剧ず姝ｅ湪璁＄畻鎻愮ず
+313:         const card = document.createElement('div');
+314:         card.className = 'suggestion-card';
+315:         card.innerHTML = `
+316:             <div class="text-warning small mb-2"><i class="bi bi-cpu"></i> AI 瀹炴椂鎻愯瘝寤鸿涓?..</div>
+317:             <div class="lh-lg" style="color: #94a3b8;">姝ｅ湪涓烘偍鏁寸悊绛旈濂楄矾...</div>
+318:         `;
+319:         suggestionBox.appendChild(card);
+320:         suggestionBox.scrollTop = suggestionBox.scrollHeight;
+321: 
+322:         try {
+323:             const response = await fetch('/api/copilot/suggest', {
+324:                 method: 'POST',
+325:                 headers: { 'Content-Type': 'application/json' },
+326:                 body: JSON.stringify({ text: text })
+327:             });
+328:             const data = await response.json();
+329: 
+330:             if (data.success) {
+331:                 // 鏍煎紡鍖栬緭鍑轰负鎹㈣杞负HTML
+332:                 const formattedHtml = data.suggestion.replace(/\
+/g, '<br>');
+333:                 card.innerHTML = `
+334:                     <div class="text-warning small mb-2"><i class="bi bi-lightbulb-fill"></i> 閽堝闂锛氣€?{text}鈥?/div>
+335:                     <div class="lh-lg text-white" style="font-size: 1.05rem;">${formattedHtml}</div>
+336:                 `;
+337:             } else {
+338:                 card.innerHTML = `<div class="text-danger">AI 鎻愯瘝澶辫触</div>`;
+339:             }
+340:         } catch (error) {
+341:             card.innerHTML = `<div class="text-danger">缃戠粶寤惰繜/杩炴帴閿欒</div>`;
+342:         }
+343:     }
+344: </script>
+345: </body>
+346: </html>

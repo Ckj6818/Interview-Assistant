@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+2: <html lang="zh" xmlns:th="http://www.thymeleaf.org">
+3: <head>
+4:     <meta charset="UTF-8">
+5:     <meta name="viewport" content="width=device-width, initial-scale=1">
+6:     <title>在线作答 - LeetCode IDE - InterviewAI</title>
+7:     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+8:     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+9:     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+10:     <!-- Quill.js 依赖 -->
+11:     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+12:     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+13:     <style>
+14:         :root {
+15:             --bg-base: #0a0e17;
+16:             --bg-panel: #111827;
+17:             --bg-editor: #1e293b;
+18:             --border-color: #374151;
+19:             --text-primary: #f3f4f6;
+20:             --text-secondary: #9ca3af;
+21:             --color-primary: #3b82f6;
+22:             --color-success: #10b981;
+23:             --color-warning: #f59e0b;
+24:             --color-danger: #ef4444;
+25:             --color-purple: #8b5cf6;
+26:         }
+27: 
+28:         body {
+29:             background-color: var(--bg-base);
+30:             color: var(--text-primary);
+31:             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+32:
+<truncated 34582 bytes>
+secondary mb-1">AI 编译器诊断意见：</div>
+764:                     <div id="diagnosticLog" class="text-muted" style="white-space: pre-wrap;">-</div>
+765:                 </div>
+766:             </div>
+767:         </div>
+768: 
+769:     </div>
+770: </div>
+771: 
+772: <!-- 底部控制按钮栏 -->
+773: <div class="action-bar">
+774:     <div>
+775:         <a th:href="@{/questions}" class="btn btn-sm btn-outline-secondary text-white border-secondary d-flex align-items-center gap-1 py-2 px-3">
+776:             <i class="bi bi-chevron-left"></i> 返回题库
+777:         </a>
+778:     </div>
+779:     <div class="d-flex align-items-center gap-3">
+780:         <button id="btnRunCode" class="btn btn-run btn-action py-2 px-3" onclick="runCode()">
+781:             <i class="bi bi-play-fill"></i> 运行代码
+782:         </button>
+783:         <button class="btn btn-submit btn-action py-2 px-4" onclick="submitCode()">
+784:             <i class="bi bi-send-fill"></i> 提交解答
+785:         </button>
+786:     </div>
+787: </div>
+788: 
+789: <!-- 结算 Modal (成绩看板) -->
+790: <div class="modal fade" id="submitResultModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="submitResultModalLabel" aria-hidden="true">
+791:     <div class="modal-dialog modal-dialog-centered modal-lg">
+792:         <div class="modal-content modal-content-dark">
+793:             <div class="modal-header modal-header-custom">
+794:                 <h5 class="modal-title fw-bold text-success d-flex align-items-center gap-2" id="submitResultModalLabel">
+795:                     <i class="bi bi-check-circle-fill"></i> 提交成功！解答已记录
+796:                 </h5>
+797:             </div>
+798:             <div class="modal-body p-4">
+799:                 <div class="row align-items-center">
+800:                     <!-- 雷达图展示 -->
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.
+"}
+{"step_index":3412,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-22T09:19:32Z","content":"I will view the rest of the `leetcode.html` file to see the script section and the remainder of the page.","tool_calls":[{"name":"view_file","args":{"AbsolutePath":""H:\\java spring\\interviewai\\src\\main\\esources\\templates\\leetcode.html"","StartLine":"801","toolAction":""Viewing leetcode.html chunk 2"","toolSummary":""Viewing leetcode.html chunk 2""}}]}
+{"step_index":3413,"source":"MODEL","type":"VIEW_FILE","status":"DONE","created_at":"2026-05-22T09:19:37Z","content":"Created At: 2026-05-22T09:19:37Z
+Completed At: 2026-05-22T09:19:37Z
+File Path: `file:///H:/java%20spring/interviewai/src/main/resources/templates/leetcode.html`
+Total Lines: 1258
+Total Bytes: 53195
+Showing lines 801 to 1258
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+801:                     <div class="col-md-5 text-center">
+802:                         <div class="radar-chart-container">
+803:                             <canvas id="scoreRadarChart"></canvas>
+804:                         </div>
+805:                         <h3 class="fw-bold mt-3 text-white">综合得分: <span id="modalScore" class="text-warning">88</span></h3>
+806:                     </div>
+807:                     <!-- 核心点评与建议 -->
+808:                     <div class="col-md-7 border-start border-secondary ps-4">
+809:                         <h5 class="fw-bold mb-3"><i class="bi bi-file-earmark-bar-graph text-primary"></i> 测评摘要</h5>
+810:                         <div class="mb-3 text-secondary" style="font-size: 0.95rem; line-height: 1.6; max-height: 150px; overflow-y: auto;" id="modalFeedback">
+811:                             正在解析测评报告...
+812:                         </div>
+813:                         
+814:                         <h5 class="fw-bold mb-2 mt-4"><i class="bi bi-lightbulb text-warning"></i> 优化方向</h5>
+815:                         <div class="text-secondary small" style="line-height: 1.6;" id="modalSuggestions">
+816:                             建议优化堆调整过程。
+817:                         </div>
+818:                     </div>
+819:                 </div>
+820:             </div>
+821:             <div class="modal-footer modal-footer-custom justify-content-between">
+822:                 <a th:href="@{/questions}" class="btn btn-outline-secondary text-white border-secondary">返
+<truncated 18164 bytes>
+ctx = document.getElementById('scoreRadarChart').getContext('2d');
+1216:         if (chartInstance) {
+1217:             chartInstance.destroy();
+1218:         }
+1219: 
+1220:         chartInstance = new Chart(ctx, {
+1221:             type: 'radar',
+1222:             data: {
+1223:                 labels: ['专业基础', '逻辑算法', '代码规范', '边界处理'],
+1224:                 datasets: [{
+1225:                     label: '能力表现',
+1226:                     data: [
+1227:                         record.foundationScore || 60,
+1228:                         record.logicScore || 60,
+1229:                         record.communicationScore || 60,
+1230:                         record.stressScore || 60
+1231:                     ],
+1232:                     backgroundColor: 'rgba(59, 130, 246, 0.2)',
+1233:                     borderColor: 'rgba(59, 130, 246, 0.8)',
+1234:                     pointBackgroundColor: 'rgba(16, 185, 129, 1)',
+1235:                     pointBorderColor: '#fff',
+1236:                     pointHoverBackgroundColor: '#fff',
+1237:                     pointHoverBorderColor: 'rgba(59, 130, 246, 1)'
+1238:                 }]
+1239:             },
+1240:             options: {
+1241:                 scales: {
+1242:                     r: {
+1243:                         angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+1244:                         grid: { color: 'rgba(255, 255, 255, 0.1)' },
+1245:                         pointLabels: { color: '#9ca3af', font: { size: 11 } },
+1246:                         ticks: { display: false, max: 100, min: 0 }
+1247:                     }
+1248:                 },
+1249:                 plugins: {
+1250:                     legend: { display: false }
+1251:                 }
+1252:             }
+1253:         });
+1254:     }
+1255: </script>
+1256: </body>
+1257: </html>

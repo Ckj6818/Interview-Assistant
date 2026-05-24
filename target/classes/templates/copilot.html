@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 实时面试提词器 (Copilot) - MindSpark 面之光</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    
+    <!-- Markdown & Mermaid & KaTeX -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <link rel="stylesheet" th:href="@{/css/modern-theme.css}">
+    
+    <style>
+        :root {
+            --bg-dark: #07090e;
+            --card-bg: rgba(17, 20, 34, 0.45);
+            --primary-neon: #10b981;
+            --secondary-neon: #3b82f6;
+            --accent-orange: #f59e0b;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-light: #f8fafc;
+            --text-white-50: #cbd5e1;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .navbar-dark-custom {
+            background-color: rgba(9, 11, 17, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            z-index: 10;
+        }
+
+        .main-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 25% 50% 25%;
+            overflow: hidden;
+            height: calc(100vh - 73px);
+        }
+
+        /* 共享面板样式 */
+        .panel {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 15px;
+            height: 100%;
+        }
+
+        .left-panel {
+            border-right: 1px solid var(--border-color);
+            background-color: #0b0d16;
+        }
+
+        .middle-panel {
+            background-color: #07090e;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .right-panel {
+            background-color: #0b0d16;
+        }
+
+        .card-dark {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            backdrop-filter: blur(15px);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .card-dark:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .card-header-dark {
+            background-color: rgba(9, 11, 17, 0.8);
+            padding: 15px 20px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-body-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        /* 气泡消息样式 */
+        .speech-bubble {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin-bottom: 15px;
+            max-width: 100%;
+            animation: fadeIn 0.3s ease-out;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .suggestion-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(15, 23, 42, 0.6));
+            border-left: 5px solid var(--accent-orange);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            animation: slideIn 0.3s ease-out;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .analysis-card {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(15, 23, 42, 0.6));
+            border-left: 5px solid var(--secondary-neon);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            animation: slideIn 0.3s ease-out;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .markdown-body {
+            font-size: 0.98rem;
+            line-height: 1.6;
+        }
+
+        .markdown-body ul, .markdown-body ol {
+            padding-left: 20px;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-15px); } to { opacity: 1; transform: translateX(0); } }
+        
+        /* 录音波纹动画 */
+        .wave-container {
+            display: flex;
+            align-items: center;
+            height: 20px;
+            gap: 4px;
+        }
+
+        .wave-bar {
+            width: 3px;
+            height: 100%;
+            background-color: var(--primary-neon);
+            animation: wave 1s ease-in-out infinite;
+            display: none;
+            border-radius: 2px;
+        }
+
+        .recording .wave-bar {
+            display: block;
+        }
+
+        .wave-bar:nth-child(2) { animation-delay: 0.15s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.3s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.45s; }
+        .wave-bar:nth-child(5) { animation-delay: 0.6s; }
+        @keyframes wave { 0%, 100% { transform: scaleY(0.25); } 50% { transform: scaleY(1); } }
+        
+        .status-badge {
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 30px;
+            letter-spacing: 0.5px;
+        }
+        
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* 隐蔽模式 (Stealth Mode) */
+        body.stealth-mode {
+            background-color: #000 !important;
+            color: #555 !important;
+        }
+
+        body.stealth-mode .navbar-dark-custom {
+            display: none !important;
+        }
+
+        body.stealth-mode .main-container {
+            height: 100vh;
+        }
+
+        body.stealth-mode .card-dark, 
+        body.stealth-mode .panel, 
+        body.stealth-mode .left-panel, 
+        body.stealth-mode .middle-panel, 
+        body.stealth-mode .right-panel {
+            background: #000 !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        body.stealth-mode .card-header-dark, 
+        body.stealth-mode .badge, 
+        body.stealth-mode .btn, 
+        body.stealth-mode i, 
+        body.stealth-mode .input-group,
+        body.stealth-mode .btn-group,
+        body.stealth-mode label,
+        body.stealth-mode textarea {
+            display: none !important;
+        }
+
+        body.stealth-mode .speech-bubble, 
+        body.stealth-mode .suggestion-card, 
+        body.stealth-mode .analysis-card {
+            background: #000 !important;
+            border: none !important;
+            box-shadow: none !important;
+            color: #555 !important;
+            font-family: 'Consolas', monospace;
+            font-size: 11px !important;
+            padding: 2px 0;
+            margin: 0 0 5px 0;
+        }
+
+        body.stealth-mode .text-warning, 
+        body.stealth-mode .text-primary, 
+        body.stealth-mode .text-white, 
+        body.stealth-mode .text-muted {
+            color: #444 !important;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 顶部导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-dark-custom py-3">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand text-white fw-bold d-flex align-items-center" href="/questions">
+            <i class="bi bi-robot text-warning me-2 fs-4"></i> MindSpark 面之光 Copilot
+            <span class="ms-2 px-2 py-0.5 bg-danger bg-opacity-25 border border-danger border-opacity-50 rounded text-danger" style="font-size: 0.75rem;">实时提词</span>
+        </a>
+        
+        <!-- 模式选择与功能 -->
+        <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2">
+                <span class="text-secondary small">提词模式:</span>
+                <select class="form-select bg-dark border-secondary text-white w-auto" id="modeSelect" style="border-radius: 8px;">
+                    <option value="normal" selected>💬 普通模式 (分点回答)</option>
+                    <option value="algorithm">💻 算法题模式 (最优解/复杂度)</option>
+                    <option value="system_design">🏛️ 系统设计模式 (架构/高并发)</option>
+                    <option value="detailed">🔍 详细模式 (源码级/排坑)</option>
+                    <option value="conversational">🗣️ 口语化表达 (自然连贯)</option>
+                    <option value="phone_interview">📞 电话面试 (纯口述逻辑)</option>
+                </select>
+            </div>
+            
+            <button class="btn btn-outline-info btn-sm" id="pipBtn" style="border-radius: 8px;" title="开启画中画悬浮窗，在屏幕最上层显示提词">
+                <i class="bi bi-window-stack"></i> 📺 开启悬浮窗
+            </button>
+
+            <button class="btn btn-outline-warning btn-sm" id="captureScreenBtn" style="border-radius: 8px;">
+                <i class="bi bi-camera"></i> 📷 屏幕截图
+            </button>
+
+            <span class="status-badge bg-secondary text-white" id="appStatus">未开启</span>
+            <a href="/questions" class="btn btn-outline-light btn-sm" style="border-radius: 8px;"><i class="bi bi-house"></i> 返回大厅</a>
+        </div>
+    </div>
+</nav>
+
+<div class="main-container">
+    <!-- 左侧：意图分析与上下文输入 -->
+    <div class="panel left-panel">
+        <div class="card-dark">
+            <div class="card-header-dark" style="color: #60a5fa;">
+                <span><i class="bi bi-search me-2"></i> 面试意图与重点</span>
+            </div>
+            
+            <!-- 上下文上下文输入 -->
+            <div class="p-3 border-bottom border-secondary" style="background: rgba(0,0,0,0.2);">
+                <div class="mb-2">
+                    <label class="form-label small text-secondary mb-1">候选人简历上下文</label>
+                    <textarea class="form-control bg-dark text-white border-secondary small" id="resumeContext" rows="2" placeholder="粘贴简历重点内容..."></textarea>
+                </div>
+                <div>
+                    <label class="form-label small text-secondary mb-1">目标岗位要求 (JD)</label>
+                    <textarea class="form-control bg-dark text-white border-secondary small" id="jdContext" rows="2" placeholder="粘贴职位要求..."></textarea>
+                </div>
+            </div>
+            
+            <div class="card-body-scroll" id="analysisBox">
+                <div class="text-center text-muted py-5" id="analysisPlaceholder">
+                    <i class="bi bi-cpu fs-1 mb-3 text-secondary"></i>
+                    <p class="small">等待面试官发言或截图分析，AI 将在此自动为您解析考察点与回答方向</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 中间：AI 实时高分应答提纲 -->
+    <div class="panel middle-panel">
+        <div class="card-dark" style="background-color: rgba(11, 15, 25, 0.6);">
+            <div class="card-header-dark" style="color: #f59e0b; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                <span><i class="bi bi-chat-left-text me-2"></i> 实时高分应答提纲</span>
+                <span class="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-50">AI 智能辅助</span>
+            </div>
+            <div class="card-body-scroll" id="suggestionBox">
+                <div class="text-center text-muted py-5" id="suggestionPlaceholder">
+                    <i class="bi bi-lightning-charge fs-1 mb-3 text-secondary"></i>
+                    <p>等待捕捉语音输入，高分回答结构将在此展开</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 右侧：语音转文字捕捉 -->
+    <div class="panel right-panel">
+        <div class="card-dark">
+            <div class="card-header-dark" style="color: #34d399;">
+                <span><i class="bi bi-mic me-2"></i> 实时语音捕捉转写</span>
+                <div class="wave-container" id="waveAnimation">
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                </div>
+            </div>
+            
+            <div class="card-body-scroll" id="transcriptionBox">
+                <div class="text-center text-muted py-5" id="listeningPlaceholder">
+                    <i class="bi bi-volume-up fs-1 mb-3 text-secondary"></i>
+                    <p class="small">点击下方“开始捕捉”并说话，或者使用 Ctrl+V 粘贴截图进行 OCR 解析</p>
+                </div>
+            </div>
+            
+            <!-- 人声方向配置 -->
+            <div class="px-3 pt-3">
+                <div class="btn-group w-100" role="group">
+                    <input type="radio" class="btn-check" name="speakerRadio" id="speakerInterviewer" value="interviewer" checked>
+                    <label class="btn btn-outline-primary btn-sm" for="speakerInterviewer">🔊 面试官声音</label>
+                    <input type="radio" class="btn-check" name="speakerRadio" id="speakerMe" value="me">
+                    <label class="btn btn-outline-success btn-sm" for="speakerMe">🗣️ 我的声音</label>
+                </div>
+            </div>
+            
+            <div class="p-3 border-top border-secondary bg-dark bg-opacity-25 d-flex gap-2">
+                <button class="btn btn-success flex-grow-1 py-3 fw-bold" id="startBtn" style="border-radius: 12px;">
+                    <i class="bi bi-play-fill me-1"></i> 开始捕捉 (自动重连)
+                </button>
+                <button class="btn btn-danger py-3 px-4" id="stopBtn" disabled style="border-radius: 12px;">
+                    <i class="bi bi-stop-fill"></i>
+                </button>
+                <button class="btn btn-outline-secondary py-3" id="clearBtn" title="清空" style="border-radius: 12px;">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+            
+            <div class="px-3 pb-3">
+                <div class="input-group">
+                    <input type="text" class="form-control bg-dark border-secondary text-white" id="manualInput" placeholder="在此手动输入问题或内容..." style="border-radius: 8px 0 0 8px;">
+                    <button class="btn btn-warning" id="manualSubmit" style="border-radius: 0 8px 8px 0;">发送</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const appStatus = document.getElementById('appStatus');
+    const transcriptionBox = document.getElementById('transcriptionBox');
+    const suggestionBox = document.getElementById('suggestionBox');
+    const analysisBox = document.getElementById('analysisBox');
+    const modeSelect = document.getElementById('modeSelect');
+    
+    const listeningPlaceholder = document.getElementById('listeningPlaceholder');
+    const suggestionPlaceholder = document.getElementById('suggestionPlaceholder');
+    const analysisPlaceholder = document.getElementById('analysisPlaceholder');
+    const waveAnimation = document.getElementById('waveAnimation');
+    const manualInput = document.getElementById('manualInput');
+    const manualSubmit = document.getElementById('manualSubmit');
+    const pipBtn = document.getElementById('pipBtn');
+    const captureScreenBtn = document.getElementById('captureScreenBtn');
+
+    let recognition = null;
+    let isListening = false;
+    let currentBubble = null;
+    window.activePipWindow = null;
+
+    if ('webkitSpeechRecognition' in window) {
+        recognition = new webkitSpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'zh-CN';
+
+        recognition.onstart = () => {
+            isListening = true;
+            appStatus.innerText = '正在捕捉';
+            appStatus.className = 'status-badge bg-success text-white';
+            waveAnimation.classList.add('recording');
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+        };
+
+        recognition.onresult = (event) => {
+            if (listeningPlaceholder) listeningPlaceholder.remove();
+            
+            let interimTranscript = '';
+            let finalTranscript = '';
+
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    finalTranscript += event.results[i][0].transcript;
+                } else {
+                    interimTranscript += event.results[i][0].transcript;
+                }
+            }
+
+            if (!currentBubble) {
+                currentBubble = document.createElement('div');
+                currentBubble.className = 'speech-bubble';
+                
+                // 根据当前捕捉的声音主体添加不同标签
+                const isMe = document.getElementById('speakerMe') && document.getElementById('speakerMe').checked;
+                const badgeClass = isMe ? 'bg-success' : 'bg-primary';
+                const badgeText = isMe ? '我' : '面试官';
+                currentBubble.innerHTML = `<span class="badge ${badgeClass} me-2">${badgeText}</span><span class="bubble-text"></span>`;
+                transcriptionBox.appendChild(currentBubble);
+            }
+
+            const bubbleTextSpan = currentBubble.querySelector('.bubble-text');
+            bubbleTextSpan.innerText = finalTranscript || interimTranscript;
+            transcriptionBox.scrollTop = transcriptionBox.scrollHeight;
+
+            if (finalTranscript) {
+                getAiSuggestion(finalTranscript);
+                currentBubble = null;
+            }
+        };
+
+        recognition.onend = () => {
+            if (isListening) {
+                // 意外停止时自动重连
+                try {
+                    recognition.start();
+                } catch (e) {
+                    console.error("Failed to auto-restart recognition:", e);
+                }
+            }
+        };
+
+        recognition.onerror = (err) => {
+            console.error('Speech recognition error:', err);
+        };
+    } else {
+        startBtn.innerText = '不支持语音输入';
+        startBtn.disabled = true;
+    }
+
+    startBtn.addEventListener('click', () => {
+        if (recognition) {
+            isListening = true;
+            recognition.start();
+        }
+    });
+
+    stopBtn.addEventListener('click', () => {
+        isListening = false;
+        if (recognition) {
+            recognition.stop();
+        }
+        appStatus.innerText = '已暂停';
+        appStatus.className = 'status-badge bg-secondary text-white';
+        waveAnimation.classList.remove('recording');
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+    });
+
+    clearBtn.addEventListener('click', () => {
+        transcriptionBox.innerHTML = '';
+        suggestionBox.innerHTML = '';
+        analysisBox.innerHTML = '';
+        currentBubble = null;
+        updatePipContent("等待输入...", "期待您的对答...");
+    });
+
+    manualSubmit.addEventListener('click', () => {
+        const text = manualInput.value.trim();
+        if (!text) return;
+        
+        if (listeningPlaceholder) listeningPlaceholder.remove();
+        const bubble = document.createElement('div');
+        bubble.className = 'speech-bubble';
+        const isMe = document.getElementById('speakerMe') && document.getElementById('speakerMe').checked;
+        const badgeClass = isMe ? 'bg-success' : 'bg-primary';
+        const badgeText = isMe ? '我 (手动)' : '面试官 (手动)';
+        bubble.innerHTML = `<span class="badge ${badgeClass} me-2">${badgeText}</span><span>${text}</span>`;
+        transcriptionBox.appendChild(bubble);
+        transcriptionBox.scrollTop = transcriptionBox.scrollHeight;
+        
+        getAiSuggestion(text);
+        manualInput.value = '';
+    });
+
+    manualInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            manualSubmit.click();
+        }
+    });
+
+    // 核心接口调用：请求 AI 实时提词
+    async function getAiSuggestion(text) {
+        if (suggestionPlaceholder) suggestionPlaceholder.remove();
+        if (analysisPlaceholder) analysisPlaceholder.remove();
+
+        const selectedMode = modeSelect.value;
+        const resumeText = document.getElementById('resumeContext').value;
+        const targetJd = document.getElementById('jdContext').value;
+        const isMe = document.getElementById('speakerMe') && document.getElementById('speakerMe').checked;
+
+        // 创建临时解析卡片占位
+        const cardAnswer = document.createElement('div');
+        cardAnswer.className = 'suggestion-card';
+        cardAnswer.innerHTML = `
+            <div class="text-warning small mb-2"><i class="bi bi-cpu"></i> AI 正在为您构思高分回答...</div>
+            <div class="lh-lg" style="color: #94a3b8;">正在连线模型思考中...</div>
+        `;
+        suggestionBox.appendChild(cardAnswer);
+        suggestionBox.scrollTop = suggestionBox.scrollHeight;
+
+        const cardAnalysis = document.createElement('div');
+        cardAnalysis.className = 'analysis-card';
+        cardAnalysis.innerHTML = `
+            <div class="text-primary small mb-2"><i class="bi bi-search"></i> 深度意图分析中...</div>
+            <div class="lh-lg" style="color: #94a3b8;">正在解构问题考察要点...</div>
+        `;
+        analysisBox.appendChild(cardAnalysis);
+        analysisBox.scrollTop = analysisBox.scrollHeight;
+
+        updatePipContent("💡 AI 正在思考中...", "⏳ 意图重点解析中...");
+
+        try {
+            const response = await fetch('/api/copilot/suggest', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    text: text, 
+                    mode: selectedMode,
+                    resumeText: resumeText,
+                    targetJd: targetJd,
+                    isUserSpeaking: isMe
+                })
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                let formattedAnalysis = data.analysis || '';
+                let formattedAnswer = data.answer || '';
+                
+                // 将 Markdown 渲染为 HTML 格式
+                if (typeof marked !== 'undefined') {
+                    formattedAnalysis = marked.parse(formattedAnalysis);
+                    formattedAnswer = marked.parse(formattedAnswer);
+                } else {
+                    formattedAnalysis = formattedAnalysis.replace(/\n/g, '<br>');
+                    formattedAnswer = formattedAnswer.replace(/\n/g, '<br>');
+                }
+                
+                cardAnalysis.innerHTML = `
+                    <div class="text-primary small mb-2 fw-bold"><i class="bi bi-search"></i> 意图与核心方向</div>
+                    <div class="text-white markdown-body">${formattedAnalysis}</div>
+                `;
+                
+                cardAnswer.innerHTML = `
+                    <div class="text-warning small mb-2 fw-bold"><i class="bi bi-lightbulb-fill"></i> 高分对答提纲：${text}</div>
+                    <div class="lh-lg text-white markdown-body" style="font-size: 1.05rem;">${formattedAnswer}</div>
+                `;
+
+                // 异步渲染 Latex 公式与 Mermaid 图表
+                setTimeout(() => {
+                    if (window.renderMathInElement) {
+                        renderMathInElement(cardAnswer, {
+                            delimiters: [
+                                {left: "$$", right: "$$", display: true},
+                                {left: "$", right: "$", display: false}
+                            ]
+                        });
+                    }
+                    if (typeof mermaid !== 'undefined') {
+                        mermaid.init(undefined, cardAnswer.querySelectorAll('.language-mermaid'));
+                    }
+                    
+                    // 同步到 PiP 窗口
+                    updatePipContent(cardAnalysis.innerHTML, cardAnswer.innerHTML);
+                }, 100);
+            } else {
+                const errMsg = `<div class="text-danger">大模型响应异常</div>`;
+                cardAnalysis.innerHTML = errMsg;
+                cardAnswer.innerHTML = errMsg;
+                updatePipContent(errMsg, errMsg);
+            }
+        } catch (error) {
+            const errDetail = `<div class="text-danger">连线中断：${error.message}</div>`;
+            cardAnalysis.innerHTML = errDetail;
+            cardAnswer.innerHTML = errDetail;
+            updatePipContent(errDetail, errDetail);
+        }
+    }
+
+    // ==========================================
+    // 隐蔽模式 (Stealth Mode) - Esc 键切换
+    // ==========================================
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.body.classList.toggle('stealth-mode');
+            if (window.activePipWindow) {
+                // 如果画中画存在，也顺便给个控制台提醒
+                console.log("Stealth mode toggled on main window");
+            }
+        }
+    });
+
+    // ==========================================
+    // 截图 OCR 上传 (支持 Ctrl+V 与 拖拽)
+    // ==========================================
+    window.addEventListener('paste', e => {
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        for (let index in items) {
+            const item = items[index];
+            if (item.kind === 'file' && item.type.startsWith('image/')) {
+                const blob = item.getAsFile();
+                uploadImageForOcr(blob);
+            }
+        }
+    });
+
+    document.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    });
+
+    document.addEventListener('drop', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            const file = e.dataTransfer.files[0];
+            if (file.type.startsWith('image/')) {
+                uploadImageForOcr(file);
+            }
+        }
+    });
+
+    // 原生屏幕截图逻辑
+    captureScreenBtn.addEventListener('click', async () => {
+        try {
+            // 请求屏幕媒体流
+            const stream = await navigator.mediaDevices.getDisplayMedia({
+                video: { displaySurface: "monitor" }
+            });
+            
+            // 动态创建 video 播放媒体
+            const video = document.createElement('video');
+            video.srcObject = stream;
+            video.play();
+            
+            await new Promise(r => video.onplaying = r);
+            
+            // 利用 Canvas 捕获帧
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // 立即停止所有媒体轨道以关闭屏幕共享状态条
+            stream.getTracks().forEach(track => track.stop());
+            
+            // 导出 blob
+            canvas.toBlob(blob => {
+                uploadImageForOcr(blob);
+            }, 'image/png');
+        } catch (e) {
+            console.error("Screen capture failed:", e);
+            alert("屏幕截图未获授权或捕获失败：" + e.message);
+        }
+    });
+
+    async function uploadImageForOcr(file) {
+        if (suggestionPlaceholder) suggestionPlaceholder.remove();
+        if (analysisPlaceholder) analysisPlaceholder.remove();
+
+        const cardAnswer = document.createElement('div');
+        cardAnswer.className = 'suggestion-card';
+        cardAnswer.innerHTML = `<div class="lh-lg" style="color: #94a3b8;">正在读取屏幕图像...</div>`;
+        suggestionBox.appendChild(cardAnswer);
+        suggestionBox.scrollTop = suggestionBox.scrollHeight;
+
+        const cardAnalysis = document.createElement('div');
+        cardAnalysis.className = 'analysis-card';
+        cardAnalysis.innerHTML = `<div class="lh-lg" style="color: #94a3b8;">OCR 图片文本识别中...</div>`;
+        analysisBox.appendChild(cardAnalysis);
+        analysisBox.scrollTop = analysisBox.scrollHeight;
+
+        updatePipContent("📸 正在识别截图文本...", "⏳ OCR 运行中...");
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('mode', modeSelect.value);
+
+        try {
+            const response = await fetch('/api/copilot/ocr-suggest', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                let formattedAnalysis = data.analysis || '';
+                let formattedAnswer = data.answer || '';
+                const formattedOcr = (data.ocrText || '').replace(/\n/g, '<br>');
+                
+                if (typeof marked !== 'undefined') {
+                    formattedAnalysis = marked.parse(formattedAnalysis);
+                    formattedAnswer = marked.parse(formattedAnswer);
+                } else {
+                    formattedAnalysis = formattedAnalysis.replace(/\n/g, '<br>');
+                    formattedAnswer = formattedAnswer.replace(/\n/g, '<br>');
+                }
+
+                cardAnalysis.innerHTML = `
+                    <div class="text-primary small mb-2 fw-bold"><i class="bi bi-camera"></i> 提取的图片内容</div>
+                    <div class="text-white small mb-3 opacity-50" style="max-height: 80px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 6px;">${formattedOcr}</div>
+                    <div class="text-primary small mb-2 fw-bold"><i class="bi bi-search"></i> 截图意图与重难点</div>
+                    <div class="text-white markdown-body">${formattedAnalysis}</div>
+                `;
+                
+                cardAnswer.innerHTML = `
+                    <div class="text-warning small mb-2 fw-bold"><i class="bi bi-lightbulb-fill"></i> 对标解答 / 实时纠正</div>
+                    <div class="lh-lg text-white markdown-body" style="font-size: 1.05rem;">${formattedAnswer}</div>
+                `;
+
+                setTimeout(() => {
+                    if (window.renderMathInElement) {
+                        renderMathInElement(cardAnswer, {
+                            delimiters: [
+                                {left: "$$", right: "$$", display: true},
+                                {left: "$", right: "$", display: false}
+                            ]
+                        });
+                    }
+                    if (typeof mermaid !== 'undefined') {
+                        mermaid.init(undefined, cardAnswer.querySelectorAll('.language-mermaid'));
+                    }
+                    
+                    // 同步到 PiP 窗口
+                    updatePipContent(cardAnalysis.innerHTML, cardAnswer.innerHTML);
+                }, 100);
+            } else {
+                const failMsg = `<div class="text-danger">OCR 识别失败: ${data.error || '解析出错'}</div>`;
+                cardAnalysis.innerHTML = failMsg;
+                cardAnswer.innerHTML = failMsg;
+                updatePipContent(failMsg, failMsg);
+            }
+        } catch (error) {
+            const connErr = `<div class="text-danger">OCR 连线超时或中断</div>`;
+            cardAnalysis.innerHTML = connErr;
+            cardAnswer.innerHTML = connErr;
+            updatePipContent(connErr, connErr);
+        }
+    }
+
+    // ==========================================
+    // 画中画 (Document Picture-in-Picture)
+    // ==========================================
+    pipBtn.addEventListener('click', async () => {
+        if (!('documentPictureInPicture' in window)) {
+            alert("您的浏览器不支持原生网页画中画 (Document Picture-in-Picture)，建议使用最新版的 Chrome / Edge / Opera 浏览器体验此特性。");
+            return;
+        }
+
+        try {
+            // 打开 PiP 窗口
+            const pipWindow = await documentPictureInPicture.requestWindow({
+                width: 420,
+                height: 520
+            });
+            
+            window.activePipWindow = pipWindow;
+
+            // 构造画中画窗口内部的样式与 DOM 结构
+            const pipDoc = pipWindow.document;
+            pipDoc.open();
+            pipDoc.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>MindSpark 面试悬浮提词</title>
+                    <style>
+                        body {
+                            background-color: #0b0f19;
+                            color: #e2e8f0;
+                            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                            margin: 0;
+                            padding: 15px;
+                            display: flex;
+                            flex-direction: column;
+                            height: 100vh;
+                            box-sizing: border-box;
+                            overflow: hidden;
+                        }
+                        .pip-header {
+                            font-size: 0.8rem;
+                            font-weight: bold;
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
+                            color: #94a3b8;
+                            padding-bottom: 8px;
+                            border-bottom: 1px solid rgba(255,255,255,0.06);
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                        }
+                        .pip-container {
+                            flex: 1;
+                            display: flex;
+                            flex-direction: column;
+                            overflow-y: auto;
+                            gap: 15px;
+                            margin-top: 15px;
+                            padding-right: 2px;
+                        }
+                        .pip-card {
+                            background: rgba(22, 30, 49, 0.45);
+                            border: 1px solid rgba(255,255,255,0.06);
+                            border-radius: 12px;
+                            padding: 15px;
+                            font-size: 0.95rem;
+                            line-height: 1.6;
+                        }
+                        .pip-card-title {
+                            font-weight: bold;
+                            font-size: 0.85rem;
+                            text-transform: uppercase;
+                            margin-bottom: 8px;
+                        }
+                        .pip-card-title.analysis { color: #60a5fa; }
+                        .pip-card-title.answer { color: #f59e0b; }
+                        .pip-footer {
+                            margin-top: 12px;
+                            display: flex;
+                            gap: 10px;
+                        }
+                        .pip-btn {
+                            flex: 1;
+                            background: #3b82f6;
+                            border: none;
+                            color: white;
+                            padding: 12px;
+                            border-radius: 8px;
+                            font-size: 0.85rem;
+                            font-weight: bold;
+                            cursor: pointer;
+                            transition: all 0.2s;
+                        }
+                        .pip-btn:hover { background: #2563eb; }
+                        .pip-btn.screenshot { background: #ef4444; }
+                        .pip-btn.screenshot:hover { background: #dc2626; }
+                        
+                        /* Markdown elements inside PiP */
+                        pre, code {
+                            background: rgba(0,0,0,0.3);
+                            padding: 2px 5px;
+                            border-radius: 4px;
+                            font-family: monospace;
+                        }
+                        pre {
+                            padding: 10px;
+                            overflow-x: auto;
+                            display: block;
+                        }
+                        ul, ol {
+                            padding-left: 20px;
+                            margin: 5px 0;
+                        }
+                        ::-webkit-scrollbar { width: 4px; }
+                        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="pip-header">
+                        <span>MindSpark Copilot 悬浮提词</span>
+                        <span style="color: #10b981; font-size: 0.75rem;">● 实时侦听中</span>
+                    </div>
+                    <div class="pip-container">
+                        <div class="pip-card">
+                            <div class="pip-card-title analysis">🎯 面试意图</div>
+                            <div id="pipAnalysis">等待捕捉提问...</div>
+                        </div>
+                        <div class="pip-card">
+                            <div class="pip-card-title answer">💡 回答大纲</div>
+                            <div id="pipAnswer">答案提纲将在此同步展现...</div>
+                        </div>
+                    </div>
+                    <div class="pip-footer">
+                        <button class="pip-btn screenshot" id="pipScreenshotBtn">📷 屏幕截图</button>
+                    </div>
+                </body>
+                </html>
+            `);
+            pipDoc.close();
+
+            // 绑定画中画内部的“截图”按钮事件，代理触发主页面的 captureScreenBtn 点击
+            const pipScreenshotBtn = pipDoc.getElementById('pipScreenshotBtn');
+            pipScreenshotBtn.addEventListener('click', () => {
+                captureScreenBtn.click();
+            });
+
+            // 监听关闭事件
+            pipWindow.addEventListener('pagehide', () => {
+                window.activePipWindow = null;
+            });
+
+            // 初始化当前内容同步到画中画
+            const curAnalysis = analysisBox.querySelector('.markdown-body') ? analysisBox.innerHTML : '等待捕捉提问...';
+            const curAnswer = suggestionBox.querySelector('.markdown-body') ? suggestionBox.innerHTML : '答案提纲将在此同步展现...';
+            updatePipContent(curAnalysis, curAnswer);
+
+        } catch (e) {
+            console.error("Failed to open picture-in-picture window:", e);
+            alert("开启画中画悬浮窗失败：" + e.message);
+        }
+    });
+
+    // 将内容实时同步刷新到画中画窗口中
+    function updatePipContent(analysisHtml, answerHtml) {
+        if (window.activePipWindow) {
+            const pipDoc = window.activePipWindow.document;
+            const pipAnalysisDiv = pipDoc.getElementById('pipAnalysis');
+            const pipAnswerDiv = pipDoc.getElementById('pipAnswer');
+            
+            if (pipAnalysisDiv) pipAnalysisDiv.innerHTML = analysisHtml;
+            if (pipAnswerDiv) pipAnswerDiv.innerHTML = answerHtml;
+        }
+    }
+</script>
+</body>
+</html>

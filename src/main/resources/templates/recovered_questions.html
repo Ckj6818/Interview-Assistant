@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>������ - MindSpark ��֮��</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #070913;
+            --bg-surface: rgba(17, 24, 39, 0.45);
+            --bg-surface-hover: rgba(31, 41, 55, 0.6);
+            --bg-surface-active: rgba(59, 130, 246, 0.15);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-color-hover: rgba(255, 255, 255, 0.15);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            
+            --color-primary: #3b82f6;
+            --color-primary-glow: rgba(59, 130, 246, 0.3);
+            --color-success: #10b981;
+            --color-success-glow: rgba(16, 185, 129, 0.25);
+            --color-warning: #f59e0b;
+            --color-warning-glow: rgba(245, 158, 11, 0.25);
+            --color-danger: #ef4444;
+            --color-danger-glow: rgba(239, 68, 68, 0.25);
+            --color-purple: #8b5cf6;
+            --color-purple-glow: rgba(139, 92, 246, 0.25);
+            --color-cyan: #06b6d4;
+            --color-cyan-glow: rgba(6, 182, 212, 0.25);
+        }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.08) 0px, transparent 50%),
+                radial-gradient(at 50% 0%, rgba(139, 92, 246, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.05) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ����� */
+        .sidebar {
+            min-height: 100vh;
+            background-color: #0b0f19;
+            border-right: 1px solid var(--border-color);
+            box-shadow: 4px 0 25px rgba(0, 0, 0, 0.4);
+            position: fixed;
+            width: 250px;
+            z-index: 100;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 2.5rem;
+            min-height: 100vh;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-success));
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .logo-text {
+            background: linear-gradient(to right, #3b82f6, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            font-size: 1.3rem;
+            margin: 0;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+            border-radius: 10px;
+            padding: 12px 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .nav-link:hover {
+            background-color: var(--bg-surface-hover);
+            color: var(--text-primary);
+            transform: translateX(4px);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, var(--color-primary), #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        /* ������Ƭ��� */
+        .glass-panel {
+            background: var(--bg-surface);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-panel:hover {
+            border-color: var(--border-color-hover);
+        }
+
+        /* ����ͳ�ƿ��� */
+        .stats-panel {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+        }
+
+        .stat-card {
+            border-right: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .stat-card:last-child {
+            border-right: none;
+        }
+
+        .stat-val {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+
+        /* ��⿨Ƭ��ʽ */
+        .category-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            background: rgba(17, 24, 39, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .category-card:hover {
+            background: var(--bg-surface-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .category-card.active {
+            background: rgba(59, 130, 246, 0.08);
+            border-color: var(--color-primary);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+        }
+
+        .category-card.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--color-primary), var(--color-purple));
+            border-radius: 0 4px 4px 0;
+        }
+
+        .category-icon-wrapper {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .category-icon-wrapper.color-0 { background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.35)); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.2); }
+        .category-icon-wrapper.color-1 { background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.35)); color: #c084fc; border: 1px solid rgba(139, 92, 246, 0.2); }
+        .category-icon-wrapper.color-2 { background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.35)); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .category-icon-wrapper.color-3 { background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.35)); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.2); }
+        .category-icon-wrapper.color-4 { background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(6, 182, 212, 0.35)); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.2); }
+        .category-icon-wrapper.color-all { background: linear-gradient(135deg, rgba(243, 244, 246, 0.08), rgba(243, 244, 246, 0.22)); color: #f3f4f6; border: 1px solid rgba(243, 244, 246, 0.15); }
+
+        .category-info {
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .category-name {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin: 0 0 3px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .category-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .category-progress {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .category-progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--color-primary), var(--color-purple));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        /* ��� Banner */
+        .bank-banner {
+            padding: 2.2rem;
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(31, 41, 55, 0.3) 0%, rgba(17, 24, 39, 0.65) 100%);
+            border: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        .bank-banner::after {
+            content: '';
+            position: absolute;
+            right: -10%;
+            top: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .bank-banner-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #ffffff, #d1d5db);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.8rem;
+        }
+
+        .bank-banner-desc {
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            max-width: 80%;
+        }
+
+        .bank-banner-stats {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .bank-banner-stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bank-banner-stat-val {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .bank-banner-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        .bank-banner-progress-wrapper {
+            flex-grow: 1;
+            max-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .bank-banner-progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .bank-banner-progress {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .bank-banner-progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--color-primary), var(--color-success));
+            border-radius: 10px;
+            transition: width 0.6s ease;
+        }
+
+        /* �����͹��˹����� */
+        .filter-toolbar {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 18px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-box {
+            background-color: rgba(10, 15, 26, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-grow: 1;
+            min-width: 200px;
+        }
+
+        .search-input {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            width: 100%;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .filter-select {
+            background-color: rgba(10, 15, 26, 0.4);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            outline: none;
+            cursor: pointer;
+            min-width: 100px;
+            transition: border-color 0.2s;
+        }
+
+        .filter-select:focus {
+            border-color: var(--color-primary);
+        }
+
+        .filter-select option {
+            background-color: #0b0f19;
+            color: var(--text-primary);
+        }
+
+        /* ��ͼ�л����� */
+        .view-control-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .btn-view-toggle {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-view-toggle:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+        }
+
+        .btn-view-toggle.active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-outline-action {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-outline-action:hover {
+            border-color: var(--text-secondary);
+            color: var(--text-primary);
+        }
+
+        /* �½�Ŀ¼�ַ��ٴ�� */
+        .chapter-accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .chapter-card {
+            background: rgba(17, 24, 39, 0.25);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .chapter-card:hover {
+            border-color: var(--border-color-hover);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .chapter-header {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            background: rgba(31, 41, 55, 0.2);
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        .chapter-header:hover {
+            background: rgba(31, 41, 55, 0.35);
+        }
+
+        .chapter-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chapter-indicator {
+            width: 4px;
+            height: 18px;
+            border-radius: 2px;
+        }
+        .chapter-easy .chapter-indicator { background: var(--color-success); box-shadow: 0 0 8px var(--color-success); }
+        .chapter-medium .chapter-indicator { background: var(--color-warning); box-shadow: 0 0 8px var(--color-warning); }
+        .chapter-hard .chapter-indicator { background: var(--color-danger); box-shadow: 0 0 8px var(--color-danger); }
+
+        .chapter-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .chapter-header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chapter-progress-badge {
+            font-size: 0.78rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            font-weight: 500;
+        }
+
+        .chapter-toggle-icon {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            transition: transform 0.3s ease;
+        }
+
+        .chapter-card.expanded .chapter-toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .chapter-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(10, 15, 26, 0.15);
+        }
+
+        .chapter-card.expanded .chapter-body {
+            max-height: 2000px;
+        }
+
+        .chapter-content {
+            padding: 20px;
+        }
+
+        /* �� (Section) */
+        .section-wrapper {
+            margin-bottom: 22px;
+        }
+
+        .section-wrapper:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        /* ��Ŀ�� (Question Row Card) */
+        .question-row-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 18px;
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: all 0.25s ease;
+        }
+
+        .question-row-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .question-row-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
+            transform: translateX(4px);
+        }
+
+        .question-left-side {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+            flex-grow: 1;
+        }
+
+        .question-status-icon {
+            font-size: 1.15rem;
+            flex-shrink: 0;
+        }
+
+        .status-solved {
+            color: var(--color-success);
+            text-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .status-unsolved {
+            color: var(--text-muted);
+        }
+
+        .question-row-title {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: color 0.2s;
+        }
+
+        .question-row-title:hover {
+            color: var(--color-primary);
+        }
+
+        .question-right-side {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        /* �����Ѷ����� */
+        .badge-difficulty {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+            min-width: 55px;
+        }
+
+        .difficulty-easy { background-color: rgba(16, 185, 129, 0.12); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .difficulty-medium { background-color: rgba(245, 158, 11, 0.12); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.2); }
+        .difficulty-hard { background-color: rgba(239, 68, 68, 0.12); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
+
+        .badge-type {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+
+        .type-code { background-color: rgba(139, 92, 246, 0.12); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.2); }
+        .type-conceptual { background-color: rgba(6, 182, 212, 0.12); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.2); }
+        
+        .badge-category {
+            background-color: rgba(59, 130, 246, 0.08);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 500;
+        }
+
+        .btn-challenge {
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-challenge-solid {
+            background: linear-gradient(135deg, var(--color-primary), #1d4ed8);
+            border: none;
+            color: white;
+        }
+
+        .btn-challenge-solid:hover {
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+            transform: translateY(-1px);
+            color: white;
+        }
+
+        .btn-challenge-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-challenge-outline:hover {
+            background-color: var(--bg-surface-hover);
+            border-color: var(--color-primary);
+            color: var(--text-primary);
+        }
+
+        /* ��ͳƽ�̱������ */
+        .table-container {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        }
+
+        .leetcode-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .leetcode-table th {
+            background-color: rgba(31, 41, 55, 0.35);
+            padding: 14px 20px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        .leetcode-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.92rem;
+            vertical-align: middle;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+
+        .leetcode-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .leetcode-table tr:hover td {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+    </style>
+    <link rel="stylesheet" th:href="@{/css/modern-theme.css}">
+</head>
+<body>
+
+<!-- ����� -->
+<!-- 侧边栏 -->
+<div class="sidebar d-flex flex-column justify-content-between py-4">
+    <div>
+        <div class="logo-container mb-4 px-3">
+            <div class="logo-icon me-2">
+                <i class="bi bi-robot text-white fs-5"></i>
+            </div>
+            <div>
+                <h4 class="logo-text m-0 fw-bold text-white" style="font-size: 1.1rem; background: linear-gradient(135deg, #3b82f6, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">MindSpark 面之光</h4>
+                <div style="color: #64748b; font-size: 0.75rem; font-weight: 500;">智能面试辅助平台</div>
+            </div>
+        </div>
+        <div class="px-3">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="/"><i class="bi bi-grid-fill me-2"></i> 系统首页</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/questions"><i class="bi bi-journal-text me-2"></i> 题库大厅</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/mock-interview"><i class="bi bi-mic me-2"></i> 模拟面试</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/copilot"><i class="bi bi-rocket-takeoff me-2"></i> 面试助手</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/resume"><i class="bi bi-file-earmark-person me-2"></i> 简历优化</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/records"><i class="bi bi-clock-history me-2"></i> 面试记录</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="px-3">
+        <button class="btn w-100 mb-3 d-flex align-items-center justify-content-center gap-2" 
+                style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: #f1f5f9; font-size: 0.85rem; padding: 10px; border-radius: 8px; font-weight: 500;"
+                onclick="window.location.href='/mock-interview'">
+            <i class="bi bi-plus-lg"></i> 开始新面试
+        </button>
+        <ul class="nav flex-column border-top pt-3" style="border-color: rgba(255,255,255,0.05) !important;">
+            <li class="nav-item">
+                <a class="nav-link py-2 px-1" href="#" style="font-size: 0.88rem; gap: 8px;"><i class="bi bi-gear me-2"></i> 设置</a>
+            </li>
+            <li class="nav-item">
+                <form action="/logout" method="post" style="margin: 0;">
+                    <button type="submit" class="nav-link py-2 px-1 text-start" style="font-size: 0.88rem; gap: 8px; border: none; background: transparent; width: 100%;">
+                       <i class="bi bi-box-arrow-right me-2"></i> 退出登录
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="main-content">
+    
+    <!-- �����ۺϴ������� -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold m-0" style="letter-spacing: -0.5px;">����������</h2>
+            <p class="text-secondary m-0 mt-1">��ս�󳧾����㷨�������ĸ��ͨ����ά�� AI ������ϲ���ȫ������רҵʵ��</p>
+        </div>
+    </div>
+
+    <!-- ȫ���������� -->
+    <div class="row g-4">
+        
+        <!-- ������רҵ���ۺϿ�Ƭ -->
+        <div class="col-lg-3 col-md-4">
+            <h5 class="fw-bold mb-3 d-flex align-items-center gap-2" style="font-size: 0.95rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">
+                <i class="bi bi-collection-play"></i> ��ѡ�������
+            </h5>
+            
+            <div class="pe-1" style="max-height: calc(100vh - 200px); overflow-y: auto;">
+                
+                <!-- �ۺϿ�Ƭ��ȫ�����ࣩ -->
+                <div class="category-card" id="cat-card-all" onclick="selectCategory('')">
+                    <div class="category-icon-wrapper color-all">
+                        <i class="bi bi-grid-fill"></i>
+                    </div>
+                    <div class="category-info">
+                        <h5 class="category-name">ȫ���ۺ����</h5>
+                        <div class="category-meta">
+                            <span class="category-count" id="cat-count-all">�� 0 ��</span>
+                            <span class="category-progress-text" id="cat-progress-text-all">0%</span>
+                        </div>
+                        <div class="category-progress">
+                            <div class="category-progress-bar" id="cat-progress-bar-all" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ѭ���������� -->
+                <div th:each="cat : ${categories}" 
+                     class="category-card" 
+                     th:id="'cat-card-' + ${catStat.index}" 
+                     th:data-category="${cat}"
+                     onclick="selectCategory(this.getAttribute('data-category'))">
+                    
+                    <div class="category-icon-wrapper" th:classappend="'color-' + ${catStat.index % 5}">
+                        <i class="bi" th:classappend="${catStat.index % 5 == 0 ? 'bi-braces' : (catStat.index % 5 == 1 ? 'bi-database' : (catStat.index % 5 == 2 ? 'bi-cpu' : (catStat.index % 5 == 3 ? 'bi-bezier2' : 'bi-terminal')))}"></i>
+                    </div>
+                    <div class="category-info">
+                        <h5 class="category-name" th:text="${cat}">Java����</h5>
+                        <div class="category-meta">
+                            <span class="category-count" th:id="'cat-count-' + ${catStat.index}">�� 0 ��</span>
+                            <span class="category-progress-text" th:id="'cat-progress-text-' + ${catStat.index}">0%</span>
+                        </div>
+                        <div class="category-progress">
+                            <div class="category-progress-bar" th:id="'cat-progress-bar-' + ${catStat.index}" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ����������ʾ����Banner���۵��½ڴ��/��ͳƽ�̱���б�� -->
+        <div class="col-lg-9 col-md-8">
+            
+            <!-- ������� Banner -->
+            <div class="bank-banner" id="bank-banner">
+                <h3 class="bank-banner-title" id="banner-title">������������...</h3>
+                <p class="bank-banner-desc" id="banner-desc">����������...</p>
+                
+                <div class="bank-banner-stats">
+                    <div class="bank-banner-stat-item">
+                        <span class="bank-banner-stat-val" id="banner-total-count">0</span>
+                        <span class="bank-banner-stat-label">��Ŀ����</span>
+                    </div>
+                    <div class="bank-banner-stat-item">
+                        <span class="bank-banner-stat-val text-success" id="banner-solved-count">0</span>
+                        <span class="bank-banner-stat-label">��ͨ��</span>
+                    </div>
+                    <div class="bank-banner-stat-item">
+                        <span class="bank-banner-stat-val text-info" id="banner-update-time">2026-05-22</span>
+                        <span class="bank-banner-stat-label">����ʱ��</span>
+                    </div>
+                    
+                    <div class="bank-banner-progress-wrapper">
+                        <div class="bank-banner-progress-info">
+                            <span>��ǰ���ͨ�ؽ���</span>
+                            <span id="banner-progress-percent">0%</span>
+                        </div>
+                        <div class="bank-banner-progress">
+                            <div class="bank-banner-progress-bar" id="banner-progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- �����͹��˹����� (�����ǰ������) -->
+            <form id="filter-form" onsubmit="event.preventDefault(); return false;" class="filter-toolbar">
+                <!-- ������ -->
+                <div class="search-box">
+                    <i class="bi bi-search text-secondary"></i>
+                    <input type="text" id="search-input" class="search-input" placeholder="������Ŀ���ơ�������ؼ��ֿ��ٹ���...">
+                </div>
+
+                <!-- �Ѷȹ��� -->
+                <select id="difficulty-select" class="filter-select" onchange="onFilterChange()">
+                    <option value="">ȫ���Ѷ�</option>
+                    <option value="��">��</option>
+                    <option value="�е�">�е�</option>
+                    <option value="����">����</option>
+                </select>
+
+                <!-- ���͹��� -->
+                <select id="type-select" class="filter-select" onchange="onFilterChange()">
+                    <option value="">ȫ������</option>
+                    <option value="code">������</option>
+                    <option value="conceptual">������</option>
+                </select>
+
+                <!-- ״̬���� -->
+                <select id="status-select" class="filter-select" onchange="onFilterChange()">
+                    <option value="">ȫ��״̬</option>
+                    <option value="solved">�ѽ��</option>
+                    <option value="unsolved">δ���</option>
+                </select>
+
+                <!-- ���ð�ť -->
+                <button type="button" class="btn-outline-action" onclick="resetFilters()">
+                    <i class="bi bi-arrow-counterclockwise"></i> ����
+                </button>
+            </form>
+
+            <!-- ��ͼ���½ڲ����� -->
+            <div class="view-control-bar">
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn-view-toggle" id="btn-view-outline" onclick="setViewMode('outline')">
+                        <i class="bi bi-list-nested"></i> ����˼�½ڴ��
+                    </button>
+                    <button type="button" class="btn-view-toggle" id="btn-view-list" onclick="setViewMode('list')">
+                        <i class="bi bi-table"></i> LeetCode�б�
+                    </button>
+                </div>
+                
+                <!-- �½���ͼ�µ�չ��������� -->
+                <div id="chapter-controls" class="d-flex gap-2">
+                    <button type="button" class="btn-outline-action" onclick="toggleAllChapters(true)">
+                        <i class="bi bi-chevron-double-down"></i> չ��ȫ��
+                    </button>
+                    <button type="button" class="btn-outline-action" onclick="toggleAllChapters(false)">
+                        <i class="bi bi-chevron-double-up"></i> �۵�ȫ��
+                    </button>
+                </div>
+            </div>
+
+            <!-- 1. ����˼�����½��ַ��ٴ������ -->
+            <div id="outline-view-container" class="chapter-accordion">
+                <!-- �� JavaScript ��̬��Ⱦ����Ŀ¼��� -->
+            </div>
+
+            <!-- 2. ��ͳƽ�̱���б����� -->
+            <div id="list-view-container" class="table-container" style="display: none;">
+                <table class="leetcode-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">״̬</th>
+                            <th>��Ŀ����</th>
+                            <th style="width: 150px;">����</th>
+                            <th style="width: 110px;">�Ѷ�</th>
+                            <th style="width: 110px;">����</th>
+                            <th style="width: 140px; text-align: right;">����</th>
+                        </tr>
+                    </thead>
+                    <tbody id="list-view-tbody">
+                        <!-- �� JavaScript ��̬��Ⱦ�б����� -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ��״̬ -->
+            <div id="empty-state" class="glass-panel text-center py-5 text-secondary mt-3" style="display: none;">
+                <i class="bi bi-inbox fs-1 d-block mb-3" style="color: var(--text-muted);"></i>
+                û���ҵ�����ɸѡ��������Ŀ���볢�Ը����ؼ��ʻ��������
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Thymeleaf ���� JS ���� -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // ���ע���ȫ���������ʼ״̬��ʹ����ʽ JSON �ַ��������Խ������ null ����
+    const allQuestionsJson = /*[[${allQuestionsJson}]]*/ "[]";
+    const allQuestions = JSON.parse(allQuestionsJson || "[]");
+    
+    const solvedTopicsJson = /*[[${solvedTopicsJson}]]*/ "[]";
+    const solvedTopicsList = JSON.parse(solvedTopicsJson || "[]");
+    const solvedTopics = new Set(solvedTopicsList);
+    
+    // ��ʼ������������
+    let currentCategory = /*[[${currentCategory}]]*/ "";
+    let currentSearch = /*[[${currentSearch}]]*/ "";
+    let currentDifficulty = /*[[${currentDifficulty}]]*/ "";
+    let currentType = /*[[${currentType}]]*/ "";
+    let currentStatus = /*[[${currentStatus}]]*/ "";
+    
+    // ��ͼģʽĬ��״̬
+    // ���ѡ���˾���� category ��û������������Ĭ��Ϊ�����ͼ������Ϊƽ���б���ͼ
+    let activeView = (currentCategory && !currentSearch) ? "outline" : "list";
+    
+    // �����б����ݣ����ڶ�̬ɫ�ʺ�ѭ����λ
+    const categoriesJson = /*[[${categoriesJson}]]*/ "[]";
+    const categoriesList = JSON.parse(categoriesJson || "[]");
+    
+    // ҳ����ؾ���
+    document.addEventListener("DOMContentLoaded", () => {
+        // ͬ����˴���ĳ�ʼ��������ֵ��ǰ��������/�������
+        document.getElementById("search-input").value = currentSearch;
+        document.getElementById("difficulty-select").value = currentDifficulty;
+        document.getElementById("type-select").value = currentType;
+        document.getElementById("status-select").value = currentStatus;
+        
+        // �����������ļ�ʱ��Ӧ
+        document.getElementById("search-input").addEventListener("input", (e) => {
+            currentSearch = e.target.value.trim();
+            // ����������ʱ��Ϊ�˷���ֱ�۳��֣������ǰ�Ǵ��ģʽ���Զ�ƽ���л��б���ͼ
+            if (currentSearch && activeView === "outline") {
+                activeView = "list";
+            }
+            filterAndRender();
+            updateURL();
+        });
+        
+        // ��ʼ��ͳ�Ƽ�������Ⱦ
+        calculateSidebarMetrics();
+        filterAndRender();
+    });
+
+    // ������������������Ŀ������������������
+    function calculateSidebarMetrics() {
+        // ȫվ�ۺ�
+        const allTotal = allQuestions.length;
+        let allSolved = 0;
+        allQuestions.forEach(q => {
+            if (solvedTopics.has(q.title)) {
+                allSolved++;
+            }
+        });
+        
+        const allPercent = allTotal > 0 ? Math.round((allSolved * 100) / allTotal) : 0;
+        document.getElementById("cat-count-all").innerText = `�� ${allTotal} ��`;
+        document.getElementById("cat-progress-text-all").innerText = `${allPercent}%`;
+        document.getElementById("cat-progress-bar-all").style.width = `${allPercent}%`;
+        
+        // ѭ��������������
+        categoriesList.forEach((cat, index) => {
+            const catQuestions = allQuestions.filter(q => q.category === cat);
+            const total = catQuestions.length;
+            let solved = 0;
+            catQuestions.forEach(q => {
+                if (solvedTopics.has(q.title)) {
+                    solved++;
+                }
+            });
+            const percent = total > 0 ? Math.round((solved * 100) / total) : 0;
+            
+            const countEl = document.getElementById(`cat-count-${index}`);
+            const textEl = document.getElementById(`cat-progress-text-${index}`);
+            const barEl = document.getElementById(`cat-progress-bar-${index}`);
+            
+            if (countEl) countEl.innerText = `�� ${total} ��`;
+            if (textEl) textEl.innerText = `${percent}%`;
+            if (barEl) barEl.style.width = `${percent}%`;
+        });
+    }
+
+    // ���ݵ�ǰ�Ĺ��˱�����ɸѡ��Ŀ�б�
+    function getFilteredQuestions() {
+        return allQuestions.filter(q => {
+            // �������
+            if (currentCategory && q.category !== currentCategory) {
+                return false;
+            }
+            // �Ѷȹ���
+            if (currentDifficulty && q.difficulty !== currentDifficulty) {
+                return false;
+            }
+            // ���͹���
+            if (currentType && q.questionType !== currentType) {
+                return false;
+            }
+            // ״̬����
+            if (currentStatus) {
+                const isSolved = solvedTopics.has(q.title);
+                if (currentStatus === 'solved' && !isSolved) return false;
+                if (currentStatus === 'unsolved' && isSolved) return false;
+            }
+            // ��������
+            if (currentSearch) {
+                const s = currentSearch.toLowerCase();
+                const titleMatch = q.title && q.title.toLowerCase().includes(s);
+                const catMatch = q.category && q.category.toLowerCase().includes(s);
+                if (!titleMatch && !catMatch) return false;
+            }
+            return true;
+        });
+    }
+
+    // ������Ⱦ��������
+    function filterAndRender() {
+        // ������࿨Ƭ�ļ���״̬
+        updateSidebarActiveState();
+        
+        // ��ȡ���˺����Ŀ
+        const filtered = getFilteredQuestions();
+        
+        // ��Ⱦ Banner
+        renderBanner(filtered);
+        
+        // �����״̬
+        if (filtered.length === 0) {
+            document.getElementById("outline-view-container").style.display = "none";
+            document.getElementById("list-view-container").style.display = "none";
+            document.getElementById("empty-state").style.display = "block";
+            document.getElementById("chapter-controls").style.display = "none";
+            return;
+        } else {
+            document.getElementById("empty-state").style.display = "none";
+        }
+        
+        // ������ͼģʽ������Ⱦ
+        if (activeView === "outline") {
+            document.getElementById("outline-view-container").style.display = "flex";
+            document.getElementById("list-view-container").style.display = "none";
+            document.getElementById("chapter-controls").style.display = "flex";
+            renderOutlineView(filtered);
+        } else {
+            document.getElementById("outline-view-container").style.display = "none";
+            document.getElementById("list-view-container").style.display = "block";
+            document.getElementById("chapter-controls").style.display = "none";
+            renderListView(filtered);
+        }
+        
+        // ������ͼ�л���ť�ĸ���
+        updateViewToggleButtons();
+    }
+
+    // ��������������࿨Ƭ�ĸ���
+    function updateSidebarActiveState() {
+        // ��������и���
+        document.getElementById("cat-card-all").classList.remove("active");
+        categoriesList.forEach((cat, index) => {
+            const card = document.getElementById(`cat-card-${index}`);
+            if (card) card.classList.remove("active");
+        });
+        
+        // ����ѡ�п�Ƭ
+        if (!currentCategory) {
+            document.getElementById("cat-card-all").classList.add("active");
+        } else {
+            const index = categoriesList.indexOf(currentCategory);
+            if (index !== -1) {
+                const card = document.getElementById(`cat-card-${index}`);
+                if (card) card.classList.add("active");
+            }
+        }
+    }
+
+    // ��̬���ƶ����� Banner ����
+    function renderBanner(filteredList) {
+        const titleEl = document.getElementById("banner-title");
+        const descEl = document.getElementById("banner-desc");
+        const totalEl = document.getElementById("banner-total-count");
+        const solvedEl = document.getElementById("banner-solved-count");
+        const percentEl = document.getElementById("banner-progress-percent");
+        const barEl = document.getElementById("banner-progress-bar");
+        
+        // ����������/������������µ��������ѽ����
+        const total = currentCategory ? allQuestions.filter(q => q.category === currentCategory).length : allQuestions.length;
+        let solved = 0;
+        const subList = currentCategory ? allQuestions.filter(q => q.category === currentCategory) : allQuestions;
+        subList.forEach(q => {
+            if (solvedTopics.has(q.title)) {
+                solved++;
+            }
+        });
+        
+        const percent = total > 0 ? Math.round((solved * 100) / total) : 0;
+        
+        totalEl.innerText = total;
+        solvedEl.innerText = solved;
+        percentEl.innerText = `${percent}%`;
+        barEl.style.width = `${percent}%`;
+        
+        if (currentCategory) {
+            titleEl.innerText = `��${currentCategory}��רҵ����ͨ�����`;
+            descEl.innerText = `��������˴��ڡ�${currentCategory}��������ϵ�����Ƶ������������ĺ���ʵս����AI��ѡ���Ų��䱸����ȴ���ɳ��/ѧϰͨ�����⻷����������ս��ȫ�溻ʵ��ĺ��ľ�������`;
+        } else {
+            titleEl.innerText = `ȫջ����ʦ�ۺ�������`;
+            descEl.innerText = `����ȫ�ܿ�������ʦ��ˢ���Ӫ�����Ǻ������㷨���ᡢ��ģ�Ϳ�����ϵͳ�ܹ������ݿ�ȸ�������顣������ľ�Ʒ��⼴�������ϸ���Ĵ���½�Ŀ¼��`;
+        }
+    }
+
+    // �л���ͼģʽ������˼��� / LeetCode�б��
+    function setViewMode(view) {
+        activeView = view;
+        filterAndRender();
+    }
+
+    // ������ͼģʽ��ť�ĸ���״̬
+    function updateViewToggleButtons() {
+        const btnOutline = document.getElementById("btn-view-outline");
+        const btnList = document.getElementById("btn-view-list");
+        
+        btnOutline.classList.remove("active");
+        btnList.classList.remove("active");
+        
+        if (activeView === "outline") {
+            btnOutline.classList.add("active");
+        } else {
+            btnList.classList.add("active");
+        }
+    }
+
+    // �������Ƭ����¼�
+    function selectCategory(cat) {
+        currentCategory = cat;
+        // ����ѡ���˾������Ĭ�Ͻ����½ڴ��ģʽ���������ƽ���б�ģʽ
+        activeView = cat ? "outline" : "list";
+        
+        filterAndRender();
+        updateURL();
+    }
+
+    // ������ɸѡ����������ʱ
+    function onFilterChange() {
+        currentDifficulty = document.getElementById("difficulty-select").value;
+        currentType = document.getElementById("type-select").value;
+        currentStatus = document.getElementById("status-select").value;
+        
+        filterAndRender();
+        updateURL();
+    }
+
+    // ��������ɸѡ����
+    function resetFilters() {
+        currentSearch = "";
+        currentDifficulty = "";
+        currentType = "";
+        currentStatus = "";
+        
+        document.getElementById("search-input").value = "";
+        document.getElementById("difficulty-select").value = "";
+        document.getElementById("type-select").value = "";
+        document.getElementById("status-select").value = "";
+        
+        filterAndRender();
+        updateURL();
+    }
+
+    // ��̬ͬ���������ַ���Ĳ�����ʹ��ҳ��ˢ�²���ʧ״̬���Ҳ�����ҳ�����¼���
+    function updateURL() {
+        const params = new URLSearchParams();
+        if (currentCategory) params.set("category", currentCategory);
+        if (currentDifficulty) params.set("difficulty", currentDifficulty);
+        if (currentType) params.set("type", currentType);
+        if (currentStatus) params.set("status", currentStatus);
+        if (currentSearch) params.set("search", currentSearch);
+        
+        const newRelativePathQuery = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+        history.pushState(null, '', newRelativePathQuery);
+    }
+
+    // չ�����������е��½ڴ�ٿ�Ƭ
+    function toggleAllChapters(expand) {
+        const cards = document.querySelectorAll(".chapter-card");
+        cards.forEach(card => {
+            if (expand) {
+                card.classList.add("expanded");
+            } else {
+                card.classList.remove("expanded");
+            }
+        });
+    }
+
+    // �����½ڵ��۵�����
+    function toggleChapter(element) {
+        const card = element.closest(".chapter-card");
+        card.classList.toggle("expanded");
+    }
+
+    // ������Ⱦ������˼�½ڴ����ͼ
+    function renderOutlineView(questions) {
+        const container = document.getElementById("outline-view-container");
+        container.innerHTML = ""; // �������
+        
+        // ���ռ򵥡��еȡ����ѻ��������½�
+        const chapters = [
+            { id: "easy", name: "��һ�£���������Ļ���ƪ (��)", difficulty: "��", class: "chapter-easy" },
+            { id: "medium", name: "�ڶ��£��м��볡��ʵսƪ (�е�)", difficulty: "�е�", class: "chapter-medium" },
+            { id: "hard", name: "�����£��ײ��뼫����սƪ (����)", difficulty: "����", class: "chapter-hard" }
+        ];
+        
+        chapters.forEach(chapter => {
+            // ��ȡ���Ѷ��µ�������Ŀ�����û�� difficulty �ֶΣ����������ݣ���Ĭ�Ϲ��롰�򵥡��½��Է���ʧ
+            const chapQuestions = questions.filter(q => {
+                const diff = q.difficulty || "��";
+                return diff === chapter.difficulty;
+            });
+            if (chapQuestions.length === 0) return; // ���½�����Ŀʱ����Ⱦ
+            
+            // ������½ڵ�������������
+            const total = chapQuestions.length;
+            let solved = 0;
+            chapQuestions.forEach(q => {
+                if (solvedTopics.has(q.title)) solved++;
+            });
+            
+            // ���ִ�����͸�����С��
+            const codeQuestions = chapQuestions.filter(q => q.questionType === "code");
+            const conceptualQuestions = chapQuestions.filter(q => q.questionType === "conceptual" || !q.questionType);
+            
+            // �����½��ַ��ٹǼ� HTML
+            const cardDiv = document.createElement("div");
+            cardDiv.className = `chapter-card expanded ${chapter.class}`; // Ĭ��չ��
+            
+            let chapterHTML = `
+                <div class="chapter-header" onclick="toggleChapter(this)">
+                    <div class="chapter-header-left">
+                        <div class="chapter-indicator"></div>
+                        <h4 class="chapter-title">${chapter.name}</h4>
+                    </div>
+                    <div class="chapter-header-right">
+                        <span class="chapter-progress-badge">����� ${solved} / ${total} ��</span>
+                        <i class="bi bi-chevron-down chapter-toggle-icon"></i>
+                    </div>
+                </div>
+                <div class="chapter-body">
+                    <div class="chapter-content">
+            `;
+            
+            // 1. ����ʵս��
+            if (codeQuestions.length > 0) {
+                chapterHTML += `
+                    <div class="section-wrapper">
+                        <div class="section-title">���� ���������㷨����</div>
+                `;
+                codeQuestions.forEach(q => {
+                    chapterHTML += renderQuestionRowHTML(q);
+                });
+                chapterHTML += `</div>`;
+            }
+            
+            // 2. ���۷�����
+            if (conceptualQuestions.length > 0) {
+                chapterHTML += `
+                    <div class="section-wrapper">
+                        <div class="section-title">���� ���ļܹ���ԭ�����</div>
+                `;
+                conceptualQuestions.forEach(q => {
+                    chapterHTML += renderQuestionRowHTML(q);
+                });
+                chapterHTML += `</div>`;
+            }
+            
+            chapterHTML += `
+                    </div>
+                </div>
+            `;
+            
+            cardDiv.innerHTML = chapterHTML;
+            container.appendChild(cardDiv);
+        });
+    }
+
+    // �������������ɴ��ģʽ�µ�����Ŀ��Ƭ�� HTML �ַ���
+    function renderQuestionRowHTML(q) {
+        const isSolved = solvedTopics.has(q.title);
+        const statusIcon = isSolved 
+            ? `<i class="bi bi-check-circle-fill status-solved" title="�ѽ��"></i>` 
+            : `<i class="bi bi-circle status-unsolved" title="δ����"></i>`;
+            
+        const typeStr = q.questionType === 'code' ? '������' : '������';
+        const typeBadgeClass = q.questionType === 'code' ? 'type-code' : 'type-conceptual';
+        const typeBadge = `<span class="badge-type ${typeBadgeClass}">${typeStr}</span>`;
+            
+        const diffStr = q.difficulty ? q.difficulty : '��';
+        const difficultyClass = diffStr === '��' 
+            ? 'difficulty-easy' 
+            : (diffStr === '�е�' ? 'difficulty-medium' : 'difficulty-hard');
+            
+        const difficultyBadge = `<span class="badge-difficulty ${difficultyClass}">${diffStr}</span>`;
+        
+        const solveUrl = `/questions/${q.id}/solve`;
+        
+        const btnText = isSolved ? "������ս" : "��ʼ��ս";
+        const btnClass = isSolved ? "btn-challenge btn-challenge-outline" : "btn-challenge btn-challenge-solid";
+        const btnIcon = isSolved ? "bi-arrow-repeat" : "bi-play-fill";
+        
+        return `
+            <div class="question-row-card">
+                <div class="question-left-side">
+                    <div class="question-status-icon">${statusIcon}</div>
+                    <a href="${solveUrl}" class="question-row-title">${q.title}</a>
+                </div>
+                <div class="question-right-side">
+                    ${typeBadge}
+                    ${difficultyBadge}
+                    <a href="${solveUrl}" class="${btnClass}">
+                        <i class="bi ${btnIcon}"></i> ${btnText}
+                    </a>
+                </div>
+            </div>
+        `;
+    }
+
+    // ������Ⱦ��LeetCode ��ͳ�б���ͼ
+    function renderListView(questions) {
+        const tbody = document.getElementById("list-view-tbody");
+        tbody.innerHTML = ""; // ��ձ��
+        
+        questions.forEach(q => {
+            const isSolved = solvedTopics.has(q.title);
+            const statusIcon = isSolved 
+                ? `<td><i class="bi bi-check-circle-fill text-success fs-5" title="�ѽ��"></i></td>` 
+                : `<td><i class="bi bi-circle text-secondary fs-5" title="δ���"></i></td>`;
+                
+            const solveUrl = `/questions/${q.id}/solve`;
+            
+            const diffStr = q.difficulty ? q.difficulty : '��';
+            const difficultyClass = diffStr === '��' 
+                ? 'difficulty-easy' 
+                : (diffStr === '�е�' ? 'difficulty-medium' : 'difficulty-hard');
+            const difficultyBadge = `<span class="badge-difficulty ${difficultyClass}">${diffStr}</span>`;
+            
+            const typeStr = q.questionType === 'code' ? '������' : '������';
+            const typeBadgeClass = q.questionType === 'code' ? 'type-code' : 'type-conceptual';
+            const typeBadge = `<span class="badge-type ${typeBadgeClass}">${typeStr}</span>`;
+                
+            const btnText = isSolved ? "������ս" : "��ʼ��ս";
+            const btnClass = isSolved ? "btn-challenge btn-challenge-outline" : "btn-challenge btn-challenge-solid";
+            const btnIcon = isSolved ? "bi-arrow-repeat" : "bi-play-fill";
+            
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                ${statusIcon}
+                <td>
+                    <a href="${solveUrl}" class="question-row-title text-decoration-none fw-bold">${q.title}</a>
+                </td>
+                <td>
+                    <span class="badge-category">${q.category}</span>
+                </td>
+                <td>
+                    ${difficultyBadge}
+                </td>
+                <td>
+                    ${typeBadge}
+                </td>
+                <td style="text-align: right;">
+                    <a href="${solveUrl}" class="${btnClass}">
+                        <i class="bi ${btnIcon}"></i> ${btnText}
+                    </a>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+    /*]]>*/
+</script>
+
+</body>
+</html>

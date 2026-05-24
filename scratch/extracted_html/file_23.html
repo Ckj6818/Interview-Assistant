@@ -1,0 +1,239 @@
+﻿<!DOCTYPE html>\
+<html lang=\"zh\" xmlns:th=\"http://www.thymeleaf.org\">\
+<head>\
+    <meta charset=\"UTF-8\">\
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\
+    <title>全真模拟面试大厅 - InterviewAI</title>\
+    <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css\" rel=\"stylesheet\">\
+    <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css\">\
+    <style>\
+        body {\
+            background-color: #0f172a;\
+            color: #e2e8f0;\
+            font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif;\
+            min-height: 100vh;\
+        }\
+        .sidebar {\
+            min-height: 100vh;\
+            background-color: #1e293b;\
+            border-right: 1px solid #334155;\
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);\
+        }\
+        .nav-link {\
+            color: #94a3b8;\
+            font-weight: 500;\
+            margin-bottom: 0.5rem;\
+            border-radius: 8px;\
+            padding: 10px 15px;\
+            transition: all 0.2s;\
+        }\
+        .nav-link:hover {\
+            background-color: #334155;\
+            color: #f8fafc;\
+        }\
+        .nav-link.active {\
+            background-color: #3b82f6;\
+            color: white;\
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);\
+        }\
+        .lobby-card {\
+            background-color: #1e293b;\
+            border: 1px solid #334155;\
+            border-radius: 16px;\
+            transition: all 0.3s ease;\
+            position: relative;\
+            overflow: hidden;\
+        }\
+        .lobby-card::before {\
+            content: '';\
+            position: absolute;\
+            top: 0;\
+            left: 0;\
+            width: 100%;\
+            height: 4px;\
+            background: linear-gradient(90deg, #10b981, #3b82f6);\
+            opacity: 0.8;\
+        }\
+        .lobby-card:hover {\
+            transform: translateY(-5px);\
+            bo
+<truncated 6820 bytes>","Description":""Create mock_interview_lobby.html layout template for independent voice mock interview system."","IsArtifact":"false","Overwrite":"true","TargetFile":""H:\\java spring\\interviewai\\src\\main\\esources\\templates\\mock_interview_lobby.html"","toolAction":""Create mock_interview_lobby.html template file"","toolSummary":""Create mock_interview_lobby.html""}}]}
+{"step_index":655,"source":"MODEL","type":"CODE_ACTION","status":"DONE","created_at":"2026-05-21T12:05:30Z","content":"Created At: 2026-05-21T12:05:30Z
+Completed At: 2026-05-21T12:05:30Z
+Created file file:///H:/java%20spring/interviewai/src/main/resources/templates/mock_interview_lobby.html with requested content.
+If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission."}
+{"step_index":656,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-21T12:05:30Z","tool_calls":[{"name":"view_file","args":{"AbsolutePath":""H:\\java spring\\interviewai\\src\\main\\esources\\templates\\questions.html"","EndLine":"135","StartLine":"120","toolAction":""View questions.html button section"","toolSummary":""questions.html view""}}]}
+{"step_index":657,"source":"MODEL","type":"VIEW_FILE","status":"DONE","created_at":"2026-05-21T12:05:36Z","content":"Created At: 2026-05-21T12:05:36Z
+Completed At: 2026-05-21T12:05:36Z
+File Path: `file:///H:/java%20spring/interviewai/src/main/resources/templates/questions.html`
+Total Lines: 154
+Total Bytes: 6871
+Showing lines 120 to 135
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+120:                             <div class="mb-2">
+121:                                 <span class="badge bg-primary bg-opacity-20 text-info px-3 py-2 rounded-pill" th:text="${question.category}">Java</span>
+122:                             </div>
+123:                             <h5 class="card-title fw-bold mt-2 text-white" th:text="${question.title}">题目名称</h5>
+124:                             <p class="card-text text-muted flex-grow-1 mt-2" style="font-size: 0.95rem;">
+125:                                 <i class="bi bi-shield-lock me-1"></i> 闭卷考试模式<br>
+126:                                 请进入考场作答，提交后方可查看评分与标准参考答案。
+127:                             </p>
+128:                             
+129:                             <div class="mt-3 text-end d-flex justify-content-end gap-2">
+130:                                 <a th:href="@{'/interview/' + ${question.id}}" class="btn btn-outline-light rounded-pill px-3">
+131:                                     <i class="bi bi-play-circle me-1"></i> 单题评测
+132:                                 </a>
+133:                                 <a th:href="@{'/mock-interview/' + ${question.id}}" class="btn btn-primary rounded-pill px-3">
+134:                                     <i class="bi bi-mic me-1"></i> 全真多轮语音对答
+135:                                 </a>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.
+"}
+{"step_index":658,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-21T12:05:36Z","tool_calls":[{"name":"view_file","args":{"AbsolutePath":""H:\\java spring\\interviewai\\src\\main\\esources\\templates\\questions.html"","EndLine":"100","StartLine":"75","toolAction":""View questions.html navigation sidebar"","toolSummary":""questions.html navigation view""}}]}
+{"step_index":659,"source":"MODEL","type":"VIEW_FILE","status":"DONE","created_at":"2026-05-21T12:05:42Z","content":"Created At: 2026-05-21T12:05:42Z
+Completed At: 2026-05-21T12:05:42Z
+File Path: `file:///H:/java%20spring/interviewai/src/main/resources/templates/questions.html`
+Total Lines: 154
+Total Bytes: 6871
+Showing lines 75 to 100
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+75:             <div class="text-center py-3 mb-4">
+76:                 <i class="bi bi-robot text-primary fs-3"></i>
+77:                 <h4 class="logo-text m-0 mt-1">InterviewAI</h4>
+78:             </div>
+79:             <ul class="nav flex-column">
+80:                 <li class="nav-item">
+81:                     <a class="nav-link" th:href="@{/}"><i class="bi bi-house-door me-2"></i> 系统首页</a>
+82:                 </li>
+83:                 <li class="nav-item">
+84:                     <a class="nav-link active" th:href="@{/questions}"><i class="bi bi-journal-text me-2"></i> 题库大厅</a>
+85:                 </li>
+86:                 <li class="nav-item">
+87:                     <a class="nav-link text-info fw-bold" th:href="@{/questions}"><i class="bi bi-mic-fill me-2"></i> 全真模拟面试</a>
+88:                 </li>
+89:                 <li class="nav-item">
+90:                     <a class="nav-link text-warning fw-bold mt-2" th:href="@{/copilot}"><i class="bi bi-rocket-takeoff me-2"></i> 实时提词助手</a>
+91:                 </li>
+92:                 <li class="nav-item">
+93:                     <a class="nav-link" th:href="@{/records}"><i class="bi bi-clock-history me-2"></i> 面试记录</a>
+94:                 </li>
+95:             </ul>
+96:         </div>
+97: 
+98:         <!-- 右侧主体 -->
+99:         <div class="col-md-10 p-4">
+100:             <div class="d-flex justify-content-between align-items-center mb-4">
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.
+"}
+{"step_index":660,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-21T12:05:42Z","tool_calls":[{"name":"multi_replace_file_content","args":{"Description":""Update questions.html to restore the single-turn exam layout for card actions, and correct the navigation link for the voice interview lobby."","Instruction":""Restore card action buttons and correct the mock-interview link."","ReplacementChunks":"[{"AllowMultiple":false,"EndLine":91,"ReplacementContent":"                <li class=\"nav-item\">\
+                    <a class=\"nav-link text-info fw-bold\" th:href=\"@{/mock-interview}\"><i class=\"bi bi-mic-fill me-2\"></i> 全真模拟面试</a>\
+                </li>","StartLine":85,"TargetContent":"                <li class=\"nav-item\">\
+                    <a class=\"nav-link text-info fw-bold\" th:href=\"@{/questions}\"><i class=\"bi bi-mic-fill me-2\"></i> 全真模拟面试</a>\
+                </li>"},{"AllowMultiple":false,"EndLine":137,"ReplacementContent":"                             <div class=\"mt-3 text-end\">\
+                                <a th:href=\"@{'/interview/' + ${question.id}}\" class=\"btn btn-primary rounded-pill px-4\">\
+                                    <i class=\"bi bi-pencil-square me-1\"></i> 开始刷题/考试\
+                                </a>\
+                            </div>","StartLine":128,"TargetContent":"                            <div class=\"mt-3 text-end d-flex justify-content-end gap-2\">\
+                                <a th:href=\"@{'/interview/' + ${question.id}}\" class=\"btn btn-outline-light rounded-pill px-3\">\
+                                    <i class=\"bi bi-play-circle me-1\"></i> 单题评测\
+                                </a>\
+                                <a th:href=\"@{'/mock-interview/' + ${question.id}}\" class=\"btn btn-primary rounded-pill px-3\">\
+                                    <i class=\"bi bi-mic me-1\"></i> 全真多轮语音对答\
+                                </a>\
+                            </div>"}]","TargetFile":""H:\\java spring\\interviewai\\src\\main\\esources\\templates\\questions.html"","toolAction":""Update questions.html buttons and navigation links"","toolSummary":""questions.html update""}}]}
+{"step_index":661,"source":"MODEL","type":"CODE_ACTION","status":"DONE","created_at":"2026-05-21T12:05:49Z","content":"Created At: 2026-05-21T12:05:49Z
+Completed At: 2026-05-21T12:05:49Z
+The following changes were made by the multi_replace_file_content tool to: H:\java spring\interviewai\src\main\esources\templates\questions.html. If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+[diff_block_start]
+@@ -84,7 +84,7 @@
+                     <a class="nav-link active" th:href="@{/questions}"><i class="bi bi-journal-text me-2"></i> 题库大厅</a>
+                 </li>
+                 <li class="nav-item">
+-                    <a class="nav-link text-info fw-bold" th:href="@{/questions}"><i class="bi bi-mic-fill me-2"></i> 全真模拟面试</a>
++                    <a class="nav-link text-info fw-bold" th:href="@{/mock-interview}"><i class="bi bi-mic-fill me-2"></i> 全真模拟面试</a>
+                 </li>
+                 <li class="nav-item">
+                     <a class="nav-link text-warning fw-bold mt-2" th:href="@{/copilot}"><i class="bi bi-rocket-takeoff me-2"></i> 实时提词助手</a>
+@@ -125,12 +125,9 @@
+                                 请进入考场作答，提交后方可查看评分与标准参考答案。
+                             </p>
+                             
+-                            <div class="mt-3 text-end d-flex justify-content-end gap-2">
+-                                <a th:href="@{'/interview/' + ${question.id}}" class="btn btn-outline-light rounded-pill px-3">
+-                                    <i class="bi bi-play-circle me-1"></i> 单题评测
+-                                </a>
+-                                <a th:href="@{'/mock-interview/' + ${question.id}}" class="btn btn-primary rounded-pill px-3">
+-                                    <i class="bi bi-mic me-1"></i> 全真多轮语音对答
++                             <div class="mt-3 text-end">
++                                <a th:href="@{'/interview/' + ${question.id}}" class="btn btn-primary rounded-pill px-4">
++                                    <i class="bi bi-pencil-square me-1"></i> 开始刷题/考试
+                                 </a>
+                             </div>
+                         </div>
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change. It shows up to 3 lines of unchanged lines before and after the modified lines. The actual file contents may have many more lines not shown."}
+{"step_index":662,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-21T12:05:49Z","tool_calls":[{"name":"view_file","args":{"AbsolutePath":""H:\\java spring\\interviewai\\src\\main\\esources\\templates\\index.html"","EndLine":"95","StartLine":"75","toolAction":""View index.html navigation sidebar"","toolSummary":""index.html view""}}]}
+{"step_index":663,"source":"MODEL","type":"VIEW_FILE","status":"DONE","created_at":"2026-05-21T12:05:56Z","content":"Created At: 2026-05-21T12:05:56Z
+Completed At: 2026-05-21T12:05:56Z
+File Path: `file:///H:/java%20spring/interviewai/src/main/resources/templates/index.html`
+Total Lines: 151
+Total Bytes: 6919
+Showing lines 75 to 95
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+75:                     <i class="bi bi-robot text-primary fs-3"></i>
+76:                     <h4 class="logo-text m-0 mt-1">InterviewAI</h4>
+77:                 </div>
+78:                 <ul class="nav flex-column">
+79:                     <li class="nav-item">
+80:                         <a class="nav-link active" th:href="@{/}"><i class="bi bi-house-door me-2"></i> 系统首页</a>
+81:                     </li>
+82:                     <li class="nav-item">
+83:                         <a class="nav-link" th:href="@{/questions}"><i class="bi bi-journal-text me-2"></i> 题库大厅</a>
+84:                     </li>
+85:                     <li class="nav-item">
+86:                         <a class="nav-link text-info fw-bold" th:href="@{/questions}"><i class="bi bi-mic-fill me-2"></i> 全真模拟面试</a>
+87:                     </li>
+88:                     <li class="nav-item">
+89:                         <a class="nav-link text-warning fw-bold mt-2" th:href="@{/copilot}"><i class="bi bi-rocket-takeoff me-2"></i> 实时提词助手</a>
+90:                     </li>
+91:                     <li class="nav-item">
+92:                         <a class="nav-link" th:href="@{/records}"><i class="bi bi-clock-history me-2"></i> 面试记录</a>
+93:                     </li>
+94:                 </ul>
+95:             </div>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.
+"}
+{"step_index":664,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-21T12:05:56Z","tool_calls":[{"name":"view_file","args":{"AbsolutePath":""H:\\java spring\\interviewai\\src\\main\\esources\\templates\\index.html"","EndLine":"151","StartLine":"125","toolAction":""View index.html guide section"","toolSummary":""index.html view""}}]}
+{"step_index":665,"source":"MODEL","type":"VIEW_FILE","status":"DONE","created_at":"2026-05-21T12:06:03Z","content":"Created At: 2026-05-21T12:06:03Z
+Completed At: 2026-05-21T12:06:03Z
+File Path: `file:///H:/java%20spring/interviewai/src/main/resources/templates/index.html`
+Total Lines: 151
+Total Bytes: 6919
+Showing lines 125 to 151
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+125:                             <div>
+126:                                 <h5 class="card-title text-muted">我的面试次数</h5>
+127:                                 <h1 class="display-4 fw-bold text-white" th:text="${userInterviewCount}">0</h1>
+128:                             </div>
+129:                             <i class="bi bi-person-workspace text-success" style="font-size: 4rem; opacity: 0.8;"></i>
+130:                         </div>
+131:                     </div>
+132:                 </div>
+133:             </div>
+134: 
+135:             <div class="card stat-card bg-card-dark mt-2">
+136:                 <div class="card-body p-4">
+137:                     <h5 class="card-title text-white fw-bold mb-3"><i class="bi bi-compass text-warning me-2"></i> 快速指引</h5>
+138:                     <p class="card-text text-muted lh-lg">通过左侧导航栏前往“<strong>题库大厅</strong>”，挑选您感兴趣的题目。您可以进入“<strong>全真模拟面试</strong>”，体验类似微信或 ChatGPT 语音通话的多轮连续追问；也可以进入经典的单轮“<strong>模拟面试室</strong>”快速检验。在您进行真实面试（如腾讯会议）时，还可开启“<strong>实时提词助手</strong>”获得隐形提词帮助。</p>
+139:                     <a th:href="@{/questions}" class="btn btn-primary px-4 rounded-pill mt-2">
+140:                         立即开始面试 <i class="bi bi-arrow-right ms-1"></i>
+141:                     </a>
+142:                 </div>
+143:             </div>
+144:         </div>
+145:     </div>
+146: </div>
+147: 
+148: <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+149: </body>
+150: </html>

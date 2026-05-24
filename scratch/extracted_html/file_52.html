@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+2: <html lang="zh" xmlns:th="http://www.thymeleaf.org">
+3: <head>
+4:     <meta charset="UTF-8">
+5:     <meta name="viewport" content="width=device-width, initial-scale=1">
+6:     <title>题库大厅 - InterviewAI</title>
+7:     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+8:     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+9:     <style>
+10:         body {
+11:             background-color: #0f172a;
+12:             color: #e2e8f0;
+13:             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+14:             min-height: 100vh;
+15:         }
+16:         .sidebar {
+17:             min-height: 100vh;
+18:             background-color: #1e293b;
+19:             border-right: 1px solid #334155;
+20:             box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+21:         }
+22:         .nav-link {
+23:             color: #94a3b8;
+24:             font-weight: 500;
+25:             margin-bottom: 0.5rem;
+26:             border-radius: 8px;
+27:             padding: 10px 15px;
+28:             transition: all 0.2s;
+29:         }
+30:         .nav-link:hover {
+31:             background-color: #334155;
+32:             color: #f8fafc;
+33:         }
+34:         .nav-link.active {
+35:             background-color: #3b82f6;
+36:             color: white;
+37:             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+38:         }
+39:         .question-card {
+40:             background-color: #1e293b;
+41:             borde
+<truncated 3933 bytes>
+历题目 -->
+120:                 <div class="col" th:each="question : ${questions}">
+121:                     <div class="card h-100 question-card">
+122:                         <div class="card-body d-flex flex-column">
+123:                             <div class="mb-2">
+124:                                 <span class="badge bg-primary bg-opacity-20 text-info px-3 py-2 rounded-pill" th:text="${question.category}">Java</span>
+125:                             </div>
+126:                             <h5 class="card-title fw-bold mt-2 text-white" th:text="${question.title}">题目名称</h5>
+127:                             <p class="card-text text-muted flex-grow-1 mt-2" style="font-size: 0.95rem;">
+128:                                 <i class="bi bi-shield-lock me-1"></i> 闭卷考试模式<br>
+129:                                 请进入考场作答，提交后方可查看评分与标准参考答案。
+130:                             </p>
+131:                             
+132:                              <div class="mt-3 text-end">
+133:                                 <a th:href="@{'/interview/' + ${question.id}}" class="btn btn-primary rounded-pill px-4 w-100">
+134:                                     <i class="bi bi-pencil-square me-1"></i> 开始刷题/考试
+135:                                 </a>
+136:                             </div>
+137:                         </div>
+138:                     </div>
+139:                 </div>
+140:             </div>
+141:             
+142:             <div th:if="${questions == null || questions.size() == 0}" class="text-center py-5 text-muted">
+143:                 <i class="bi bi-inbox fs-1"></i>
+144:                 <p class="mt-3">该分类下暂无题目</p>
+145:             </div>
+146: 
+147:         </div>
+148:     </div>
+149: </div>
+150: 
+151: <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+152: </body>
+153: </html>

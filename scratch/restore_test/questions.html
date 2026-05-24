@@ -1,0 +1,26 @@
+﻿# Task Checklist: LeetCode-style Question Hall
+
+## 1. 后端服务与评测逻辑 (LlmService)
+- `[x]` 在 `LlmService.java` 中实现 `runCodeCheck` 方法（大模型模拟编译器，返回测试用例通过情况）。
+- `[x]` 在 `LlmService.java` 中实现 `submitQuestionCheck` 方法（大模型打分，返回结构化评分与改进建议）。
+
+## 2. 控制器与路由升级 (InterviewController)
+- `[x]` 修改 `/questions` 路由，获取当前登录用户的 `InterviewRecord`，并在列表中标注已解答的题目。
+- `[x]` 新增 `/questions/{id}/solve` 路由，渲染 `leetcode.html` 作答界面。
+- `[x]` 新增 `/api/questions/run` POST 接口，供前端运行代码。
+- `[x]` 新增 `/api/questions/submit` POST 接口，评测代码并保存 `InterviewRecord`。
+
+## 3. 题库大厅页面重构 (questions.html)
+- `[x]` 重构 `questions.html`，展示 LeetCode 风格的题目表格列表。
+- `[x]` 实现分类、难度、状态的筛选与标题关键字的即时/表单搜索。
+
+## 4. 在线 IDE 作答页面开发 (leetcode.html)
+- `[x]` 新建 `leetcode.html`，引入 Monaco Editor，并实现双栏自适应布局。
+- `[x]` 实现左栏：题目描述、难度标签、通过状态、可解锁参考答案。
+- `[x]` 实现右栏：Monaco 编辑器、控制台面板（折叠/展开、编译日志、测试用例结果）。
+- `[x]` 实现“运行代码”和“提交代码”的 AJAX 交互及全屏结算成绩单弹窗。
+
+## 5. 项目构建与运行验证
+- `[ ]` 使用 `mvn clean compile` 验证后端代码编译。
+- `[ ]` 启动应用程序并在浏览器中验证端到端刷题交互。
+

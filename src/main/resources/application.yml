@@ -1,0 +1,52 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    # MySQL 连接配置。若您的本地 MySQL 账号密码不同，请修改此处
+    url: jdbc:mysql://localhost:3306/interviewai?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+
+  jpa:
+    # 实体类自动映射建表策略：update (开发环境下自动更新表结构)
+    hibernate:
+      ddl-auto: update
+    # 显示底层执行的 SQL 语句
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+
+  # Thymeleaf 配置（禁用缓存，方便开发调试时实时看到前端修改）
+  thymeleaf:
+    cache: false
+    mode: HTML
+    encoding: UTF-8
+
+  # 初始化 SQL 数据脚本
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data.sql
+      # 忽略如果没有找到脚本等错误
+      continue-on-error: true
+
+# 自定义配置（LLM 大模型 API）
+interviewai:
+  llm:
+    # 是否启用真实 API 调用（为 false 时走本地关键字匹配逻辑，防报错）
+    enable-real-api: true
+    # 您的 OpenAI/DeepSeek 兼容 API URL
+    api-url: https://api.deepseek.com/v1/chat/completions
+    # 您的 API Key
+    api-key: "sk-3d4c04ac92564146b20864cc087cb7eb"
+    # 模型名称
+    model: deepseek-chat

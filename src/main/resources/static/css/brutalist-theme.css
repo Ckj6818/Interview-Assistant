@@ -1,0 +1,186 @@
+/* 
+ * 粗野主义档案时装风格 UI
+ * 美学参考: 高级暗黑废土风 / Rick Owens / ERD
+ * 氛围设定: 反设计、原始、做旧、忧郁、工业奢华。
+ */
+
+:root {
+  /* 严格的单色调色板 */
+  --vanta-black: #000000;
+  --dark-dust: #111111;
+  --charcoal: #1A1A1A;
+  
+  --bone-white: #E5E4E2;
+  --pearl: #F0F0F0;
+  --faded-ash: #737373;
+  
+  /* 极少使用的点缀色 */
+  --blood-red: #660000;
+  
+  /* 字体排版 */
+  --font-grotesque: "Helvetica Neue", Helvetica, Arial, "Inter", sans-serif;
+  --font-typewriter: "Courier New", Courier, "Times New Roman", serif;
+}
+
+/* 1. 基础样式与噪点纹理叠加 */
+body {
+  background-color: var(--vanta-black) !important;
+  color: var(--bone-white) !important;
+  font-family: var(--font-grotesque) !important;
+  letter-spacing: -0.02em;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  min-height: 100vh;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  pointer-events: none; /* 防止噪点层遮挡点击事件 (对 JS 安全) */
+  z-index: 9999;
+  /* 纯 CSS 静态颗粒/噪点 */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.06;
+  mix-blend-mode: screen;
+}
+
+/* 2. 标题排版层级 */
+h1, h2, h3, h4, h5, h6 {
+  text-transform: uppercase;
+  letter-spacing: -0.06em;
+  line-height: 0.85;
+  margin: 0 0 1.5rem 0;
+  font-weight: 900;
+  color: var(--pearl);
+}
+
+h1 { font-size: clamp(3rem, 8vw, 7rem); }
+h2 { font-size: clamp(2rem, 5vw, 4rem); color: var(--bone-white); }
+
+p {
+  color: var(--faded-ash);
+  line-height: 1.4;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0;
+}
+
+/* 3. 全局粗野主义覆盖 */
+* {
+  border-radius: 0px !important; /* 绝对锐利的直角 */
+}
+
+/* 4. 面试镜头 / 头像视图 */
+.video-wrapper, .avatar-container, video, canvas {
+  border: 1px solid var(--bone-white) !important;
+  filter: grayscale(100%) contrast(140%) brightness(85%) !important;
+  background-color: var(--dark-dust);
+  box-shadow: 12px 12px 0px var(--charcoal) !important;
+  padding: 8px; /* 像原始的监控探头一样给它加上边框 */
+  transition: none !important;
+}
+
+/* 5. 按钮与导航 */
+button, .btn, a.btn, input[type="submit"] {
+  background-color: transparent !important;
+  color: var(--bone-white) !important;
+  border: 1px solid var(--bone-white) !important;
+  padding: 12px 24px !important;
+  text-transform: uppercase;
+  font-family: var(--font-grotesque);
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  box-shadow: 6px 6px 0px var(--charcoal) !important;
+  transition: none !important; /* 突兀、激进，杜绝任何平滑过渡 */
+}
+
+button:hover, .btn:hover, a.btn:hover, input[type="submit"]:hover {
+  background-color: var(--bone-white) !important;
+  color: var(--vanta-black) !important;
+  box-shadow: 0px 0px 0px transparent !important;
+  transform: translate(6px, 6px) !important;
+}
+
+/* 警示按钮 (严重错误 / 结束面试) */
+.btn-end, .btn-danger, .error-state, .btn-outline-danger {
+  border-color: var(--blood-red) !important;
+  color: var(--blood-red) !important;
+  box-shadow: 6px 6px 0px var(--blood-red) !important;
+}
+
+.btn-end:hover, .btn-danger:hover, .error-state:hover, .btn-outline-danger:hover {
+  background-color: var(--blood-red) !important;
+  color: var(--vanta-black) !important;
+}
+
+/* 6. 聊天 / 逐字稿容器 (老式终端/日志簿风格) */
+.chat-window, .transcript-box, .log-container, .chat-history-flow, .chat-sidebar {
+  background-color: var(--vanta-black) !important;
+  border: 1px solid var(--faded-ash) !important;
+  padding: 2.5rem 1.5rem !important;
+  font-family: var(--font-typewriter) !important; /* 复古终端机质感 */
+  color: var(--bone-white) !important;
+  line-height: 1.7;
+  overflow-y: auto;
+  box-shadow: inset 0 0 20px var(--dark-dust) !important;
+  text-transform: lowercase; /* 可选：增加未加修饰的 ".txt" 纯文本感 */
+}
+
+/* AI 反馈 / 引用 */
+.ai-response, .feedback-block, blockquote, .ai-msg .bubble-content {
+  font-family: var(--font-typewriter) !important;
+  border-left: 4px solid var(--bone-white) !important;
+  padding-left: 1.5rem !important;
+  margin: 1.5rem 0 !important;
+  color: var(--pearl) !important;
+  background: var(--charcoal) !important;
+  padding: 1.5rem !important;
+  font-size: 0.95rem;
+}
+
+/* 7. 通用布局与表单 */
+.card, .panel, .container, .glass-card-prep {
+  border: 1px solid var(--faded-ash) !important;
+  background-color: var(--dark-dust) !important;
+  padding: 4vw 6vw 2vw 3vw !important; /* 不对称的粗野主义内边距 */
+  box-shadow: 10px 10px 0px var(--vanta-black) !important;
+}
+
+input:not([type="submit"]), textarea, select {
+  background-color: var(--vanta-black) !important;
+  border: 1px solid var(--faded-ash) !important;
+  color: var(--bone-white) !important;
+  padding: 1rem !important;
+  font-family: var(--font-typewriter) !important;
+  width: 100%;
+  box-sizing: border-box;
+  transition: none !important;
+}
+
+input:focus, textarea:focus {
+  outline: none !important;
+  border-color: var(--bone-white) !important;
+  background-color: var(--charcoal) !important;
+}
+
+/* 8. 粗野主义滚动条 */
+::-webkit-scrollbar {
+  width: 12px;
+  background: var(--vanta-black);
+  border-left: 1px solid var(--charcoal);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--faded-ash);
+  border: 1px solid var(--vanta-black);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--bone-white);
+}
+
+/* 重置某些框架特定的样式 */
+.navbar, .navbar-custom {
+  background-color: var(--vanta-black) !important;
+  border-bottom: 2px solid var(--bone-white) !important;
+}

@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+2: <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+3: <head>
+4:     <meta charset="UTF-8">
+5:     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+6:     <title>AI 实时面试提词器 (Copilot) - InterviewAI</title>
+7:     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+8:     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+9:     <style>
+10:         body {
+11:             background-color: #0b0f19;
+12:             color: #e2e8f0;
+13:             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+14:             height: 100vh;
+15:             display: flex;
+16:             flex-direction: column;
+17:             overflow: hidden;
+18:         }
+19:         .navbar-dark-custom {
+20:             background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+21:             border-bottom: 1px solid #374151;
+22:             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+23:         }
+24:         .main-container {
+25:             flex: 1;
+26:             display: grid;
+27:             grid-template-columns: 25% 50% 25%;
+28:             overflow: hidden;
+29:             height: calc(100vh - 73px);
+30:         }
+31:         
+32:         /* 共享面板样式 */
+33:         .panel {
+34:             display: flex;
+35:             flex-direction: column;
+36:             overflow: hidden;
+37:             padding: 15px;
+38:             height: 100%;
+39:         }
+40:         .l
+<truncated 16914 bytes>
+;">正在诊断问题意图...</div>
+413:         `;
+414:         analysisBox.appendChild(cardAnalysis);
+415:         analysisBox.scrollTop = analysisBox.scrollHeight;
+416: 
+417:         try {
+418:             const response = await fetch('/api/copilot/suggest', {
+419:                 method: 'POST',
+420:                 headers: { 'Content-Type': 'application/json' },
+421:                 body: JSON.stringify({ text: text, mode: selectedMode })
+422:             });
+423:             const data = await response.json();
+424: 
+425:             if (data.success) {
+426:                 // 格式化输出为换行转为HTML
+427:                 const formattedAnalysis = (data.analysis || '').replace(/\
+/g, '<br>');
+428:                 const formattedAnswer = (data.answer || '').replace(/\
+/g, '<br>');
+429:                 
+430:                 cardAnalysis.innerHTML = `
+431:                     <div class="text-primary small mb-2 fw-bold"><i class="bi bi-search"></i> 面试官意图</div>
+432:                     <div class="text-white">${formattedAnalysis}</div>
+433:                 `;
+434:                 
+435:                 cardAnswer.innerHTML = `
+436:                     <div class="text-warning small mb-2 fw-bold"><i class="bi bi-lightbulb-fill"></i> 针对问题：“${text}”</div>
+437:                     <div class="lh-lg text-white" style="font-size: 1.05rem;">${formattedAnswer}</div>
+438:                 `;
+439:             } else {
+440:                 cardAnalysis.innerHTML = `<div class="text-danger">诊断失败</div>`;
+441:                 cardAnswer.innerHTML = `<div class="text-danger">AI 提词失败</div>`;
+442:             }
+443:         } catch (error) {
+444:             cardAnalysis.innerHTML = `<div class="text-danger">连接错误</div>`;
+445:             cardAnswer.innerHTML = `<div class="text-danger">网络延迟/连接错误</div>`;
+446:         }
+447:     }
+448: </script>
+449: </body>
+450: </html>

@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+2: <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+3: <head>
+4:     <meta charset="UTF-8">
+5:     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+6:     <title>AI 模拟面试室 - InterviewAI</title>
+7:     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+8:     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+9:     <style>
+10:         body {
+11:             background-color: #0f172a;
+12:             color: #e2e8f0;
+13:             height: 100vh;
+14:             display: flex;
+15:             flex-direction: column;
+16:             overflow: hidden;
+17:             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+18:         }
+19:         .navbar-custom {
+20:             background-color: #1e293b;
+21:             color: white;
+22:             border-bottom: 1px solid #334155;
+23:             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+24:         }
+25:         .chat-container {
+26:             flex: 1;
+27:             overflow-y: auto;
+28:             padding: 30px;
+29:             background-color: #0b0f19;
+30:         }
+31:         .chat-message {
+32:             margin-bottom: 25px;
+33:             display: flex;
+34:             align-items: flex-start;
+35:         }
+36:         .chat-message.ai { justify-content: flex-start; }
+37:         .chat-message.user { justify-content: flex-end; }
+38:         .chat-avatar {
+39:             width: 45px;
+40:             height: 
+<truncated 29954 bytes>
+ 0; i < items.length; i++) {
+752:             if (items[i].type.indexOf('image') !== -1) {
+753:                 const blob = items[i].getAsFile();
+754:                 solverDrawer.classList.add('open');
+755:                 handleSolverFile(blob);
+756:                 break;
+757:             }
+758:         }
+759:     });
+760: 
+761:     function handleSolverFile(file) {
+762:         if (!file.type.startsWith('image/')) {
+763:             alert('仅支持上传图片文件！');
+764:             return;
+765:         }
+766:         solverFile = file;
+767:         
+768:         const reader = new FileReader();
+769:         reader.onload = (e) => {
+770:             solverPreviewImg.src = e.target.result;
+771:             solverDropZone.style.display = 'none';
+772:             solverPreviewContainer.style.display = 'flex';
+773:             startSolveBtn.disabled = false;
+774:             setSolverStatus('done', '图片已就绪');
+775:             // 自动触发开始秒解
+776:             setTimeout(() => {
+777:                 startSolveBtn.click();
+778:             }, 100);
+779:         };
+780:         reader.readAsDataURL(file);
+781:     }
+782: 
+783:     solverReuploadBtn.addEventListener('click', () => {
+784:         resetSolver();
+785:     });
+786: 
+787:     function resetSolver() {
+788:         solverFile = null;
+789:         solverFileInput.value = '';
+790:         solverPreviewImg.src = '';
+791:         solverPreviewContainer.style.display = 'none';
+792:         solverDropZone.style.display = 'flex';
+793:         startSolveBtn.disabled = true;
+794:         solverScannerContainer.style.display = 'none';
+795:         solverSolutionContainer.style.display = 'none';
+796:         solverScanLog.innerHTML = '';
+797:         setSolverStatus('idle', '就绪');
+798:     }
+799: 
+800:     copyAnswerBtn.addEventListener('click', () => {
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.
+"}
+{"step_index":3400,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-22T09:19:01Z","content":"I will view the rest of the `interview.html` file to see the remaining lines.","tool_calls":[{"name":"view_file","args":{"AbsolutePath":""H:\\java spring\\interviewai\\src\\main\\esources\\templates\\interview.html"","StartLine":"801","toolAction":""Viewing the end of interview.html"","toolSummary":""Viewing the end of interview.html""}}]}
+{"step_index":3401,"source":"MODEL","type":"VIEW_FILE","status":"DONE","created_at":"2026-05-22T09:19:05Z","content":"Created At: 2026-05-22T09:19:05Z
+Completed At: 2026-05-22T09:19:05Z
+File Path: `file:///H:/java%20spring/interviewai/src/main/resources/templates/interview.html`
+Total Lines: 891
+Total Bytes: 32936
+Showing lines 801 to 891
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+801:         const text = solverAnswerText.innerText;
+802:         navigator.clipboard.writeText(text).then(() => {
+803:             copyAnswerBtn.innerText = '已复制!';
+804:             copyAnswerBtn.classList.remove('btn-outline-success');
+805:             copyAnswerBtn.classList.add('btn-success');
+806:             setTimeout(() => {
+807:                 copyAnswerBtn.innerText = '复制答案';
+808:             }, 1500);
+809:         });
+810:     });
+811: 
+812:     startSolveBtn.addEventListener('click', async () => {
+813:         if (!solverFile) return;
+814:         
+815:         startSolveBtn.disabled = true;
+816:         solverTypeSelect.disabled = true;
+817:         solverReuploadBtn.disabled = true;
+818:         solverScannerContainer.style.display = 'block';
+819:         solverSolutionContainer.style.display = 'none';
+820:         solverScanLog.innerHTML = '';
+821:         setSolverStatus('loading', 'AI识别中...');
+822: 
+823:         const logLines = [
+824:             '[SYSTEM] 初始化 AI 视觉感知引擎...',
+825:             '[VISION] 正在提取图像边缘与特征通道...',
+826:             '[OCR] 检测到目标区域字符分布，启动深度 OCR 网络...',
+827:             '[COMPILING] 解析图像中所含文本及语义结构...',
+828:             '[LLM] 提交至大模型进行多维语义对齐...',
+829:             '[LLM] 正在生成高分智能分析与解题步骤...'
+830:         ];
+831: 
+832:         let logIdx = 0;
+833:         const logInterval = setInterval(() => {
+834:             if (logIdx < logLines.length)
+<truncated 438 bytes>
+        }, 250);
+845: 
+846:         const formData = new FormData();
+847:         formData.append('file', solverFile);
+848:         formData.append('type', solverTypeSelect.value);
+849: 
+850:         try {
+851:             const response = await fetch('/api/solver/analyze', {
+852:                 method: 'POST',
+853:                 body: formData
+854:             });
+855:             const data = await response.json();
+856: 
+857:             while (logIdx < logLines.length) {
+858:                 await new Promise(r => setTimeout(r, 100));
+859:             }
+860:             await new Promise(r => setTimeout(r, 400));
+861: 
+862:             if (data.success) {
+863:                 if (solverTypeSelect.value === 'code') {
+864:                     solverAnswerText.innerHTML = `<pre class="code-block">${data.correctAnswer}</pre>`;
+865:                 } else {
+866:                     solverAnswerText.innerHTML = `<div class="ans-text">${data.correctAnswer}</div>`;
+867:                 }
+868:                 
+869:                 solverReasoningText.innerHTML = data.reasoning;
+870:                 
+871:                 solverScannerContainer.style.display = 'none';
+872:                 solverSolutionContainer.style.display = 'block';
+873:                 setSolverStatus('done', '分析完成');
+874:             } else {
+875:                 alert('AI 分析失败，请重试！');
+876:                 resetSolver();
+877:             }
+878:         } catch (error) {
+879:             console.error(error);
+880:             alert('网络异常，解析失败！');
+881:             resetSolver();
+882:         } finally {
+883:             startSolveBtn.disabled = false;
+884:             solverTypeSelect.disabled = false;
+885:             solverReuploadBtn.disabled = false;
+886:         }
+887:     });
+888: 
+889: </body>
+890: </html>

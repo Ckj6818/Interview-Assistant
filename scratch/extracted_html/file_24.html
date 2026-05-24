@@ -1,0 +1,416 @@
+﻿<!DOCTYPE html>
+2: <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+3: <head>
+4:     <meta charset="UTF-8">
+5:     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+6:     <title>全真多轮语音模拟面试 - InterviewAI</title>
+7:     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+8:     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+9:     <style>
+10:         :root {
+11:             --bg-dark: #090d16;
+12:             --card-bg: rgba(30, 41, 59, 0.7);
+13:             --primary-neon: #10b981;
+14:             --secondary-neon: #3b82f6;
+15:             --accent-orange: #f59e0b;
+16:             --danger-red: #ef4444;
+17:             --border-color: #334155;
+18:             --text-light: #f8fafc;
+19:             --text-muted: #94a3b8;
+20:         }
+21: 
+22:         body {
+23:             background-color: var(--bg-dark);
+24:             color: var(--text-light);
+25:             height: 100vh;
+26:             display: flex;
+27:             flex-direction: column;
+28:             overflow: hidden;
+29:             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+30:         }
+31: 
+32:         /* 背景微光效果 */
+33:         .glow-overlay {
+34:             position: absolute;
+35:             top: 0;
+36:             left: 0;
+37:             width: 100%;
+38:             height: 100%;
+39:             background: 
+40:                 radial-gradient(circle at 10% 20%, rgba(59, 130
+<truncated 28850 bytes>
+47:     function startSpeechInput() {
+748:         if (isRequesting || isRecording) return;
+749:         if (!recognition) return;
+750:         
+751:         // Stop any active AI speech playing
+752:         window.speechSynthesis.cancel();
+753:         
+754:         isRecording = true;
+755:         voiceMicBtn.classList.add('active');
+756:         previewText.innerText = "正在开启麦克风...";
+757:         
+758:         try {
+759:             recognition.start();
+760:         } catch(e) {
+761:             console.error(e);
+762:         }
+763:     }
+764: 
+765:     function stopSpeechInput() {
+766:         if (!isRecording) return;
+767:         isRecording = false;
+768:         voiceMicBtn.classList.remove('active');
+769:         
+770:         if (recognition) {
+771:             try {
+772:                 recognition.stop();
+773:             } catch(e) {
+774:                 console.error(e);
+775:             }
+776:         }
+777:         
+778:         setPanelState('thinking');
+779:         
+780:         // If there was something heard, submit it
+781:         setTimeout(() => {
+782:             const answer = currentSpeechText.trim();
+783:             if (answer) {
+784:                 submitAnswer(answer);
+785:             } else {
+786:                 previewText.innerText = "未听清您的回答，请长按麦克风重新说话。";
+787:                 setPanelState('thinking'); // return to idle thinking
+788:             }
+789:         }, 300);
+790:     }
+791: 
+792:     // Event listeners for hold-to-speak (both mouse and touch)
+793:     if (recognition) {
+794:         voiceMicBtn.addEventListener('mousedown', (e) => {
+795:             e.preventDefault();
+796:             startSpeechInput();
+797:         });
+798:         
+799:         voiceMicBtn.addEventListener('mouseup', (e) => {
+800:             e.preventDefault();
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.
+"}
+{"step_index":677,"source":"SYSTEM","type":"CONVERSATION_HISTORY","status":"DONE","created_at":"2026-05-21T12:06:49Z"}
+{"step_index":678,"source":"SYSTEM","type":"KNOWLEDGE_ARTIFACTS","status":"DONE","created_at":"2026-05-21T12:06:49Z"}
+{"step_index":679,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-21T12:06:49Z","content":"I will start by analyzing the project structure under the active workspace to understand where the templates, controllers, and resources are located, so we can make sure the concept split is fully implemented and all sidebar links are correct.","tool_calls":[{"name":"list_dir","args":{"DirectoryPath":""c:\\Users\\asus\\Desktop\\interviewai"","toolAction":""Listing project directory"","toolSummary":""Project directory listing""}}]}
+{"step_index":680,"source":"MODEL","type":"LIST_DIRECTORY","status":"ERROR","created_at":"2026-05-21T12:06:51Z","content":"Created At: 2026-05-21T12:06:51Z
+Completed At: 2026-05-21T12:06:51Z
+Encountered error in step execution: error executing cascade step: CORTEX_STEP_TYPE_LIST_DIRECTORY: directory c:\Users\asus\Desktop\interviewai does not exist"}
+{"step_index":681,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-21T12:06:51Z","content":"I will list the contents of the `H:\java spring\interviewai` directory, as the active file and terminal indicate that is where the project is running.","tool_calls":[{"name":"list_dir","args":{"DirectoryPath":""H:\\java spring\\interviewai"","toolAction":""Listing backend project directory"","toolSummary":""List project directory""}}]}
+{"step_index":682,"source":"MODEL","type":"LIST_DIRECTORY","status":"DONE","created_at":"2026-05-21T12:06:53Z","content":"Created At: 2026-05-21T12:06:53Z
+Completed At: 2026-05-21T12:06:53Z
+{"name":".vscode","isDir":true}
+{"name":"InterviewAI 期末汇报.pptx","sizeBytes":"1494977"}
+{"name":"extra_questions.sql","sizeBytes":"4053"}
+{"name":"pom.xml","sizeBytes":"4622"}
+{"name":"src","isDir":true}
+{"name":"target","isDir":true}
+
+Summary: This directory contains 3 subdirectories and 3 files."}
+{"step_index":683,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-21T12:06:53Z","content":"I will view the `task.md` artifact to check the current checklist and see what has already been marked as complete or in progress.","tool_calls":[{"name":"view_file","args":{"AbsolutePath":""C:\\Users\\asus\\.gemini\\antigravity-ide\\brain\\3408e3a4-da0f-4715-8c46-82cd4f37059f\\task.md"","toolAction":""Viewing task artifact"","toolSummary":""View task list""}}]}
+{"step_index":684,"source":"MODEL","type":"VIEW_FILE","status":"DONE","created_at":"2026-05-21T12:06:56Z","content":"Created At: 2026-05-21T12:06:56Z
+Completed At: 2026-05-21T12:06:56Z
+File Path: `file:///C:/Users/asus/.gemini/antigravity-ide/brain/3408e3a4-da0f-4715-8c46-82cd4f37059f/task.md`
+Total Lines: 10
+Total Bytes: 808
+Showing lines 1 to 10
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: # 任务进度表: 全真 AI 连续对答模拟面试 (模块独立拆分)
+2: 
+3: - [x] 1. 实体层扩展：修改 InterviewRecord.java，增加长文本字段 chatLog。
+4: - [x] 2. 大模型服务改造：修改 LlmService.java，新增 chatInterviewRound() 方法。
+5: - [x] 3. 控制器建设：修改 MockInterviewController.java，新增 `/mock-interview` 大厅路由。
+6: - [x] 4. 交互界面开发：创建全新的 mock_interview.html。
+7: - [ ] 5. 独立模拟面试大厅：创建 mock_interview_lobby.html，展示独立的多轮语音对答面试入口。
+8: - [ ] 6. 题库大厅还原：恢复 questions.html 为纯净的“刷题/单题考试”模式，移除其中的多轮语音按钮。
+9: - [ ] 7. 全局导航调整：更新 sidebar 导航，使“全真模拟面试”直达 `/mock-interview` 大厅。
+10: 
+The above content shows the entire, complete file contents of the requested file.
+"}
+{"step_index":685,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-21T12:06:56Z","content":"I will list the contents of the templates folder (`H:\java spring\interviewai\src\main\esources\templates`) to see if the files like `mock_interview_lobby.html` and `mock_interview.html` exist, and what HTML templates we have.","tool_calls":[{"name":"list_dir","args":{"DirectoryPath":""H:\\java spring\\interviewai\\src\\main\\esources\\templates"","toolAction":""Listing templates directory"","toolSummary":""List templates directory""}}]}
+{"step_index":686,"source":"MODEL","type":"LIST_DIRECTORY","status":"DONE","created_at":"2026-05-21T12:06:59Z","content":"Created At: 2026-05-21T12:06:59Z
+Completed At: 2026-05-21T12:06:59Z
+{"name":"copilot.html","sizeBytes":"13549"}
+{"name":"index.html","sizeBytes":"7192"}
+{"name":"interview.html","sizeBytes":"13146"}
+{"name":"login.html","sizeBytes":"4374"}
+{"name":"mock_interview.html","sizeBytes":"35648"}
+{"name":"mock_interview_lobby.html","sizeBytes":"8513"}
+{"name":"questions.html","sizeBytes":"6591"}
+{"name":"records.html","sizeBytes":"5582"}
+{"name":"register.html","sizeBytes":"4059"}
+{"name":"report.html","sizeBytes":"9180"}
+
+Summary: This directory contains 0 subdirectories and 10 files."}
+{"step_index":687,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-21T12:06:59Z","content":"I will list the controller directory to identify all the controller files and see how the endpoints are mapped for mock interviews, questions, and other functions.","tool_calls":[{"name":"list_dir","args":{"DirectoryPath":""H:\\java spring\\interviewai\\src\\main\\java\\com\\interviewai\\controller"","toolAction":""Listing controller directory"","toolSummary":""List controller directory""}}]}
+{"step_index":688,"source":"MODEL","type":"LIST_DIRECTORY","status":"DONE","created_at":"2026-05-21T12:07:02Z","content":"Created At: 2026-05-21T12:07:02Z
+Completed At: 2026-05-21T12:07:02Z
+{"name":"AuthController.java","sizeBytes":"1243"}
+{"name":"CopilotController.java","sizeBytes":"1489"}
+{"name":"DashboardController.java","sizeBytes":"392"}
+{"name":"HomeController.java","sizeBytes":"1535"}
+{"name":"InterviewController.java","sizeBytes":"7902"}
+{"name":"MockInterviewController.java","sizeBytes":"7106"}
+{"name":"QuestionController.java","sizeBytes":"790"}
+{"name":"ReportController.java","sizeBytes":"1182"}
+
+Summary: This directory contains 0 subdirectories and 8 files."}
+{"step_index":689,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-21T12:07:02Z","content":"I will view `MockInterviewController.java` to see how it handles multi-turn voice interviews and verify its routing and endpoints.","tool_calls":[{"name":"view_file","args":{"AbsolutePath":""H:\\java spring\\interviewai\\src\\main\\java\\com\\interviewai\\controller\\MockInterviewController.java"","toolAction":""Viewing MockInterviewController"","toolSummary":""View MockInterviewController file""}}]}
+{"step_index":690,"source":"MODEL","type":"VIEW_FILE","status":"DONE","created_at":"2026-05-21T12:07:04Z","content":"Created At: 2026-05-21T12:07:04Z
+Completed At: 2026-05-21T12:07:04Z
+File Path: `file:///H:/java%20spring/interviewai/src/main/java/com/interviewai/controller/MockInterviewController.java`
+Total Lines: 166
+Total Bytes: 7106
+Showing lines 1 to 166
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: package com.interviewai.controller;
+2: 
+3: import com.fasterxml.jackson.core.type.TypeReference;
+4: import com.fasterxml.jackson.databind.ObjectMapper;
+5: import com.interviewai.entity.InterviewRecord;
+6: import com.interviewai.entity.Question;
+7: import com.interviewai.entity.User;
+8: import com.interviewai.repository.InterviewRecordRepository;
+9: import com.interviewai.repository.QuestionRepository;
+10: import com.interviewai.repository.UserRepository;
+11: import com.interviewai.service.LlmService;
+12: import org.springframework.beans.factory.annotation.Autowired;
+13: import org.springframework.http.ResponseEntity;
+14: import org.springframework.security.core.Authentication;
+15: import org.springframework.stereotype.Controller;
+16: import org.springframework.ui.Model;
+17: import org.springframework.web.bind.annotation.*;
+18: 
+19: import java.util.ArrayList;
+20: import java.util.HashMap;
+21: import java.util.List;
+22: import java.util.Map;
+23: 
+24: @Controller
+25: @RequestMapping("/mock-interview")
+26: public class MockInterviewController {
+27: 
+28:     @Autowired
+29:     private QuestionRepository questionRepository;
+30: 
+31:     @Autowired
+32:     private UserRepository userRepository;
+33: 
+34:     @Autowired
+35:     private InterviewRecordRepository interviewRecordRepository;
+36: 
+37:     @Autowired
+38:     private LlmService llmService;
+39: 
+40:     /**
+41:      * 进入全真模拟面试大厅
+42:      */
+43:     @GetMapping
+44:     public String enterMockInterviewLobby(@RequestParam(name = "category", required = false) Strin
+<truncated 4303 bytes>
+vice.evaluateAnswer(question.getTitle(), prompt, question.getAnswer(), "");
+132: 
+133:             InterviewRecord record = new InterviewRecord();
+134:             record.setUser(user);
+135:             record.setTopic(question.getTitle());
+136:             record.setStandardAnswer(question.getAnswer());
+137:             record.setChatLog(chatLogStr); // 保存完整的对话上下文
+138: 
+139:             ObjectMapper mapper = new ObjectMapper();
+140:             try {
+141:                 com.fasterxml.jackson.databind.JsonNode root = mapper.readTree(llmJsonResponse);
+142:                 record.setScore(root.has("score") ? root.get("score").asInt() : 60);
+143:                 record.setFoundationScore(root.has("foundationScore") ? root.get("foundationScore").asInt() : 60);
+144:                 record.setLogicScore(root.has("logicScore") ? root.get("logicScore").asInt() : 60);
+145:                 record.setCommunicationScore(root.has("communicationScore") ? root.get("communicationScore").asInt() : 60);
+146:                 record.setStressScore(root.has("stressScore") ? root.get("stressScore").asInt() : 60);
+147:                 record.setFeedbackReport(root.has("feedbackReport") ? root.get("feedbackReport").asText() : "暂无评价");
+148:                 record.setSuggestions(root.has("suggestions") ? root.get("suggestions").asText() : "");
+149:             } catch (Exception e) {
+150:                 record.setScore(60);
+151:                 record.setFeedbackReport(llmJsonResponse);
+152:             }
+153: 
+154:             interviewRecordRepository.save(record);
+155: 
+156:             return ResponseEntity.ok(Map.of(
+157:                     "success", true,
+158:                     "recordId", record.getId()
+159:             ));
+160:         } catch (Exception e) {
+161:             e.printStackTrace();
+162:             return ResponseEntity.status(500).body(Map.of("success", false));
+163:         }
+164:     }
+165: }
+166: 
+The above content shows the entire, complete file contents of the requested file.
+"}
+{"step_index":691,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-21T12:07:05Z","content":"I will view the contents of `mock_interview.html` to inspect the exit links, sidebar structure, and speech synthesis logic, ensuring it corresponds properly to the user's design.","tool_calls":[{"name":"view_file","args":{"AbsolutePath":""H:\\java spring\\interviewai\\src\\main\\esources\\templates\\mock_interview.html"","EndLine":"600","StartLine":"1","toolAction":""Viewing mock_interview.html"","toolSummary":""View mock_interview.html file""}}]}
+{"step_index":692,"source":"MODEL","type":"VIEW_FILE","status":"DONE","created_at":"2026-05-21T12:07:07Z","content":"Created At: 2026-05-21T12:07:07Z
+Completed At: 2026-05-21T12:07:07Z
+File Path: `file:///H:/java%20spring/interviewai/src/main/resources/templates/mock_interview.html`
+Total Lines: 1011
+Total Bytes: 35648
+Showing lines 1 to 600
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: <!DOCTYPE html>
+2: <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+3: <head>
+4:     <meta charset="UTF-8">
+5:     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+6:     <title>全真多轮语音模拟面试 - InterviewAI</title>
+7:     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+8:     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+9:     <style>
+10:         :root {
+11:             --bg-dark: #090d16;
+12:             --card-bg: rgba(30, 41, 59, 0.7);
+13:             --primary-neon: #10b981;
+14:             --secondary-neon: #3b82f6;
+15:             --accent-orange: #f59e0b;
+16:             --danger-red: #ef4444;
+17:             --border-color: #334155;
+18:             --text-light: #f8fafc;
+19:             --text-muted: #94a3b8;
+20:         }
+21: 
+22:         body {
+23:             background-color: var(--bg-dark);
+24:             color: var(--text-light);
+25:             height: 100vh;
+26:             display: flex;
+27:             flex-direction: column;
+28:             overflow: hidden;
+29:             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+30:         }
+31: 
+32:         /* 背景微光效果 */
+33:         .glow-overlay {
+34:             position: absolute;
+35:             top: 0;
+36:             left: 0;
+37:             width: 100%;
+38:             height: 100%;
+39:             background: 
+40:                 radial-gradient(circle at 10% 20%, rgba(59, 130
+<truncated 20317 bytes>
+/button>
+569:         </div>
+570:     </div>
+571: 
+572:     <!-- 右侧：面试对话历史实录 -->
+573:     <div class="chat-sidebar" id="sidebarHistory">
+574:         <div class="sidebar-header">
+575:             <span class="fw-bold text-white"><i class="bi bi-chat-dots-fill text-info me-2"></i> 对话实录</span>
+576:             <button class="btn btn-link text-muted p-0 border-0" id="closeHistoryBtn"><i class="bi bi-x-lg"></i></button>
+577:         </div>
+578:         <div class="chat-history-flow" id="historyContainer">
+579:             <!-- 聊天泡泡在此追加 -->
+580:         </div>
+581:     </div>
+582: 
+583: </div>
+584: 
+585: <!-- 结束面试二次确认 Modal -->
+586: <div class="modal fade" id="confirmFinishModal" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(5px);">
+587:     <div class="modal-dialog modal-dialog-centered">
+588:         <div class="modal-content" style="background-color: #151f32; border: 1px solid var(--border-color); border-radius: 18px;">
+589:             <div class="modal-body p-4 text-center">
+590:                 <i class="bi bi-exclamation-triangle-fill text-warning display-4 mb-3 d-block"></i>
+591:                 <h4 class="fw-bold text-white mb-2">确定结束当前模拟面试吗？</h4>
+592:                 <p class="text-muted">结束面试后，AI 将根据本场的所有问答细节为您生成详细的能力模型雷达图和诊断报告。</p>
+593:                 <div class="d-flex justify-content-center gap-3 mt-4">
+594:                     <button class="btn btn-outline-light px-4 rounded-pill" data-bs-dismiss="modal">继续面试</button>
+595:                     <button class="btn btn-danger px-4 rounded-pill" onclick="executeFinish()">确认结束</button>
+596:                 </div>
+597:             </div>
+598:         </div>
+599:     </div>
+600: </div>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.
+"}
+{"step_index":693,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-21T12:07:07Z","content":"I will view the rest of `mock_interview.html` to find all links and redirects that might need adjusting (such as back buttons, exit links, or script redirects).","tool_calls":[{"name":"view_file","args":{"AbsolutePath":""H:\\java spring\\interviewai\\src\\main\\esources\\templates\\mock_interview.html"","EndLine":"1011","StartLine":"601","toolAction":""Viewing rest of mock_interview.html"","toolSummary":""View mock_interview.html rest of file""}}]}
+{"step_index":694,"source":"MODEL","type":"VIEW_FILE","status":"DONE","created_at":"2026-05-21T12:07:11Z","content":"Created At: 2026-05-21T12:07:11Z
+Completed At: 2026-05-21T12:07:11Z
+File Path: `file:///H:/java%20spring/interviewai/src/main/resources/templates/mock_interview.html`
+Total Lines: 1011
+Total Bytes: 35648
+Showing lines 601 to 1011
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+601: 
+602: <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+603: <script th:inline="javascript">
+604:     const questionId = /*[[${question.id}]]*/ 1;
+605:     const questionTitle = /*[[${question.title}]]*/ '';
+606:     
+607:     // UI elements
+608:     const mainVoicePanel = document.getElementById('mainVoicePanel');
+609:     const statusTitle = document.getElementById('statusTitle');
+610:     const visualizerWave = document.getElementById('visualizerWave');
+611:     const previewText = document.getElementById('previewText');
+612:     const voiceMicBtn = document.getElementById('voiceMicBtn');
+613:     const micInstruction = document.getElementById('micInstruction');
+614:     const toggleTtsBtn = document.getElementById('toggleTtsBtn');
+615:     const toggleHistoryBtn = document.getElementById('toggleHistoryBtn');
+616:     const closeHistoryBtn = document.getElementById('closeHistoryBtn');
+617:     const sidebarHistory = document.getElementById('sidebarHistory');
+618:     const historyContainer = document.getElementById('historyContainer');
+619:     const prepOverlay = document.getElementById('prepOverlay');
+620:     const timerText = document.getElementById('timerText');
+621:     
+622:     // Keyboard inputs
+623:     const toggleKeyboardBtn = document.getElementById('toggleKeyboardBtn');
+624:     const keyboardDrawer = document.getElementById('keyboardDrawer');
+625:     const keyboardText = document.getElementById('keyboardText');
+626:     const keyboardSendBtn = document.getElementById('keyboard
+<truncated 13412 bytes>
+               <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
+970:                 <h3 class="fw-bold text-white mb-2">正在评估全场面试表现...</h3>
+971:                 <p class="text-muted">AI 正在深度审查您的多轮对答记录，打分并编排雷达图各项能力评测。请稍等几秒钟。</p>
+972:             </div>
+973:         `;
+974: 
+975:         // Assemble long string transcript for chatLog
+976:         let compiledChatLog = '';
+977:         messages.forEach(msg => {
+978:             const sender = msg.role === 'user' ? '候选人' : (msg.role === 'assistant' ? '面试官' : '系统');
+979:             if (msg.role !== 'system') {
+980:                 compiledChatLog += `${sender}: ${msg.content}\
+\
+`;
+981:             }
+982:         });
+983: 
+984:         try {
+985:             const response = await fetch('/mock-interview/finish', {
+986:                 method: 'POST',
+987:                 headers: { 'Content-Type': 'application/json' },
+988:                 body: JSON.stringify({
+989:                     questionId: questionId,
+990:                     chatLog: compiledChatLog
+991:                 })
+992:             });
+993:             const data = await response.json();
+994:             
+995:             if (data.success) {
+996:                 // Redirect to report page
+997:                 window.location.href = '/report/' + data.recordId;
+998:             } else {
+999:                 alert("评分生成失败，请重试！");
+1000:                 location.reload();
+1001:             }
+1002:         } catch (error) {
+1003:             console.error(error);
+1004:             alert("提交出错，网络连接中断！");
+1005:             location.reload();
+1006:         }
+1007:     }
+1008: </script>
+1009: </body>
+1010: </html>

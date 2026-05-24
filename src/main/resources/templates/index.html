@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>首页 - MindSpark 面之光</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Noto+Serif+SC:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/modern-theme.css}">
+    <style>
+        :root {
+            --font-serif: 'Playfair Display', 'Noto Serif SC', Georgia, serif;
+            --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --color-border-glow: rgba(255, 255, 255, 0.08);
+            --color-bg-card-premium: rgba(13, 17, 28, 0.75);
+            --color-text-bright: #ffffff;
+            --color-accent-blue: #3b82f6;
+            --color-accent-emerald: #10b981;
+        }
+
+        .main-content {
+            background: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.05), transparent 60%);
+            font-family: var(--font-sans);
+            color: var(--text-primary);
+        }
+
+        .serif-font {
+            font-family: var(--font-serif);
+        }
+
+        /* Hero Section */
+        .hero-container {
+            padding: 80px 0 60px;
+            text-align: center;
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-family: var(--font-sans);
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #ffffff 40%, #a3a3a3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 24px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            margin-bottom: 35px;
+            line-height: 1.8;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 35px;
+            font-size: 0.9rem;
+        }
+
+        .hero-stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-value {
+            color: var(--color-text-bright);
+            font-family: var(--font-sans);
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .hero-stat-divider {
+            width: 1px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .btn-premium-ghost {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--color-text-bright);
+            padding: 12px 28px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            text-decoration: none;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-premium-ghost:hover {
+            border-color: var(--color-text-bright);
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            color: var(--color-text-bright);
+        }
+
+        .btn-premium-primary {
+            background: var(--color-text-bright);
+            border: 1px solid var(--color-text-bright);
+            color: #000000;
+            padding: 12px 28px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            text-decoration: none;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-premium-primary:hover {
+            background: transparent;
+            color: var(--color-text-bright);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Bento Grid */
+        .bento-container {
+            margin-top: 40px;
+            margin-bottom: 80px;
+        }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+
+        .bento-card {
+            background: var(--color-bg-card-premium);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--color-border-glow);
+            border-radius: 12px;
+            padding: 30px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+        }
+
+        .bento-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .bento-card-title {
+            font-family: var(--font-sans);
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: var(--color-text-bright);
+            margin-bottom: 12px;
+            line-height: 1.3;
+            letter-spacing: -0.01em;
+        }
+
+        .bento-card-desc {
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .bento-card-link {
+            font-size: 0.85rem;
+            color: var(--color-text-bright);
+            text-decoration: none;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: transform 0.2s;
+            margin-top: auto;
+        }
+
+        .bento-card-link i {
+            transition: transform 0.2s;
+        }
+
+        .bento-card:hover .bento-card-link i {
+            transform: translateX(4px);
+        }
+
+        /* Specific Bento Cards layout sizes */
+        .card-colspan-7 {
+            grid-column: span 7;
+        }
+
+        .card-colspan-5 {
+            grid-column: span 5;
+        }
+
+        .card-colspan-4 {
+            grid-column: span 4;
+        }
+
+        .card-colspan-8 {
+            grid-column: span 8;
+        }
+
+        @media (max-width: 991px) {
+            .card-colspan-7, .card-colspan-5, .card-colspan-4, .card-colspan-8 {
+                grid-column: span 12;
+            }
+            .hero-title {
+                font-size: 2.8rem;
+            }
+        }
+
+        /* Audio wave graphic for Card 1 */
+        .voice-wave-mock {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            height: 60px;
+            padding: 10px;
+            margin-top: 15px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 8px;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .voice-wave-bar {
+            width: 4px;
+            background: linear-gradient(180deg, var(--color-accent-blue), rgba(59, 130, 246, 0.2));
+            border-radius: 2px;
+            height: 10%;
+            animation: pulse-wave 1.6s ease-in-out infinite alternate;
+        }
+
+        .voice-wave-bar:nth-child(2) { animation-delay: 0.1s; height: 30%; }
+        .voice-wave-bar:nth-child(3) { animation-delay: 0.3s; height: 55%; }
+        .voice-wave-bar:nth-child(4) { animation-delay: 0.5s; height: 80%; }
+        .voice-wave-bar:nth-child(5) { animation-delay: 0.2s; height: 45%; }
+        .voice-wave-bar:nth-child(6) { animation-delay: 0.4s; height: 65%; }
+        .voice-wave-bar:nth-child(7) { animation-delay: 0.7s; height: 90%; }
+        .voice-wave-bar:nth-child(8) { animation-delay: 0.6s; height: 50%; }
+        .voice-wave-bar:nth-child(9) { animation-delay: 0.2s; height: 30%; }
+        .voice-wave-bar:nth-child(10) { animation-delay: 0.8s; height: 75%; }
+        .voice-wave-bar:nth-child(11) { animation-delay: 0.4s; height: 40%; }
+        .voice-wave-bar:nth-child(12) { animation-delay: 0.1s; height: 20%; }
+
+        @keyframes pulse-wave {
+            0% { transform: scaleY(0.3); }
+            100% { transform: scaleY(1.1); }
+        }
+
+        /* Checklist / slider graphic for Card 2 */
+        .resume-diagnostic-mock {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .diagnostic-item {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .diagnostic-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .diagnostic-bar-bg {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .diagnostic-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 1s ease-in-out;
+        }
+
+        .fill-blue {
+            background: var(--color-accent-blue);
+            width: 88%;
+        }
+
+        .fill-emerald {
+            background: var(--color-accent-emerald);
+            width: 92%;
+        }
+
+        /* Tag grid for Card 3 */
+        .tag-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .tag-item {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            color: var(--text-secondary);
+        }
+
+        /* Quote/Core Philosophy styling */
+        .quote-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 160px;
+        }
+
+        .quote-text {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            font-style: italic;
+            color: var(--color-text-bright);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .quote-author {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* Copilot Demo Section */
+        .insights-container {
+            padding: 80px 0 100px;
+            border-top: 1px solid var(--color-border-glow);
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        @media (max-width: 991px) {
+            .insights-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+
+        /* Copilot Mockup Panel UI */
+        .copilot-window {
+            background: #0b0d19;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .copilot-header {
+            background: #0d1020;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .window-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .window-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background: #ef4444; }
+        .dot-yellow { background: #f59e0b; }
+        .dot-green { background: #10b981; }
+
+        .window-title {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            letter-spacing: 0.1em;
+        }
+
+        .copilot-body {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .panel-label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .speech-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 6px;
+            padding: 14px;
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .blinking-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 14px;
+            background: var(--color-accent-blue);
+            margin-left: 2px;
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            from, to { background-color: transparent }
+            50% { background-color: var(--color-accent-blue); }
+        }
+
+        .suggestion-box {
+            background: rgba(59, 130, 246, 0.03);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            border-radius: 6px;
+            padding: 16px;
+        }
+
+        .star-point {
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .star-point:last-child {
+            margin-bottom: 0;
+        }
+
+        .star-point strong {
+            color: var(--color-accent-blue);
+        }
+
+        .keyword-badge {
+            display: inline-block;
+            font-size: 0.72rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--color-accent-emerald);
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-right: 6px;
+            margin-bottom: 6px;
+        }
+
+        .copilot-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding-top: 12px;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--color-accent-emerald);
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+            box-shadow: 0 0 8px var(--color-accent-emerald);
+        }
+
+        .insights-text-col h2 {
+            font-family: var(--font-sans);
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--color-text-bright);
+            margin-bottom: 20px;
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+        }
+
+        .insights-text-col p {
+            color: var(--text-secondary);
+            font-size: 0.98rem;
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+
+        .insights-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 40px 0;
+        }
+
+        .insights-features li {
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .insights-features i {
+            color: var(--color-accent-emerald);
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 侧边栏 -->
+<div class="sidebar d-flex flex-column justify-content-between py-4">
+    <div>
+        <div class="logo-container mb-4 px-3">
+            <div class="logo-icon me-2">
+                <i class="bi bi-robot text-white fs-5"></i>
+            </div>
+            <div>
+                <h4 class="logo-text m-0 fw-bold text-white" style="font-size: 1.1rem; background: linear-gradient(135deg, #3b82f6, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">MindSpark 面之光</h4>
+                <div style="color: #64748b; font-size: 0.75rem; font-weight: 500;">智能面试辅助平台</div>
+            </div>
+        </div>
+        <div class="px-3">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/"><i class="bi bi-grid-fill me-2"></i> 系统首页</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/questions"><i class="bi bi-journal-text me-2"></i> 题库大厅</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/mock-interview"><i class="bi bi-mic me-2"></i> 模拟面试</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/copilot"><i class="bi bi-rocket-takeoff me-2"></i> 面试助手</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/resume"><i class="bi bi-file-earmark-person me-2"></i> 简历优化</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/records"><i class="bi bi-clock-history me-2"></i> 面试记录</a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    <div class="px-3">
+        <form action="/logout" method="post" style="margin: 0;">
+            <button type="submit" class="nav-link py-2 px-1 text-start" style="font-size: 0.88rem; gap: 8px; border: none; background: transparent; width: 100%; cursor: pointer;">
+               <i class="bi bi-box-arrow-right me-2"></i> 退出登录
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- 右侧主体 -->
+<div class="main-content">
+    <!-- Hero Section -->
+    <div class="hero-container">
+        <h1 class="hero-title">MindSpark 面之光</h1>
+        <p class="hero-subtitle">沉浸式 AI 智能语音对练与实时面试辅助系统</p>
+        
+        <!-- Live Stats Ribbon -->
+        <div class="hero-stats">
+            <div class="hero-stat-item">
+                <span class="stat-label">系统总题量</span>
+                <span class="stat-value" th:text="${totalQuestions}">24,000</span>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat-item">
+                <span class="stat-label">我的面试次数</span>
+                <span class="stat-value" th:text="${userInterviewCount}">12</span>
+            </div>
+        </div>
+
+        <div class="hero-actions">
+            <a th:href="@{/mock-interview}" class="btn-premium-primary">开启语音模拟面试</a>
+            <a th:href="@{/copilot}" class="btn-premium-ghost">进入实时提词助手</a>
+        </div>
+    </div>
+
+    <!-- Bento Grid Section -->
+    <div class="bento-container">
+        <div class="bento-grid">
+            <!-- Card 1: Mock Interview -->
+            <a th:href="@{/mock-interview}" class="bento-card card-colspan-7">
+                <div>
+                    <div class="bento-card-title">全真模拟语音面试 / Mock Session</div>
+                    <div class="bento-card-desc">微信语音级拟真对练，模拟真实大厂多轮连问。支持针对性追问与情绪压力测试，打碎开口恐惧，提供维度级复盘报告。</div>
+                </div>
+                <div class="voice-wave-mock">
+                    <div class="voice-wave-bar"></div>
+                    <div class="voice-wave-bar"></div>
+                    <div class="voice-wave-bar"></div>
+                    <div class="voice-wave-bar"></div>
+                    <div class="voice-wave-bar"></div>
+                    <div class="voice-wave-bar"></div>
+                    <div class="voice-wave-bar"></div>
+                    <div class="voice-wave-bar"></div>
+                    <div class="voice-wave-bar"></div>
+                    <div class="voice-wave-bar"></div>
+                    <div class="voice-wave-bar"></div>
+                    <div class="voice-wave-bar"></div>
+                </div>
+                <div class="bento-card-link mt-4">
+                    开始模拟对练 <i class="bi bi-arrow-right"></i>
+                </div>
+            </a>
+
+            <!-- Card 2: Resume Diagnosis -->
+            <a th:href="@{/resume}" class="bento-card card-colspan-5">
+                <div>
+                    <div class="bento-card-title">AI 简历深度诊断 / Resume Clinic</div>
+                    <div class="bento-card-desc">一键分析简历缺陷，对标目标岗位（JD）匹配度，指出核心描述漏洞并给出润色方案，为求职保驾护航。</div>
+                </div>
+                <div class="resume-diagnostic-mock">
+                    <div class="diagnostic-item">
+                        <div class="diagnostic-info">
+                            <span>岗位匹配度 (JD Fit)</span>
+                            <strong>88%</strong>
+                        </div>
+                        <div class="diagnostic-bar-bg">
+                            <div class="diagnostic-bar-fill fill-blue"></div>
+                        </div>
+                    </div>
+                    <div class="diagnostic-item">
+                        <div class="diagnostic-info">
+                            <span>专业经历完整度</span>
+                            <strong>92%</strong>
+                        </div>
+                        <div class="diagnostic-bar-bg">
+                            <div class="diagnostic-bar-fill fill-emerald"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bento-card-link mt-4">
+                    诊断你的简历 <i class="bi bi-arrow-right"></i>
+                </div>
+            </a>
+
+            <!-- Card 3: Question Bank -->
+            <a th:href="@{/questions}" class="bento-card card-colspan-4">
+                <div>
+                    <div class="bento-card-title">千万级题库与专项刷题 / Question Hall</div>
+                    <div class="bento-card-desc">覆盖大厂高频面试真题与经典算法逻辑。支持按技术标签检索，提供精解和智能自测，随时夯实你的基础。</div>
+                    <div class="tag-grid">
+                        <span class="tag-item">Spring Boot</span>
+                        <span class="tag-item">JVM</span>
+                        <span class="tag-item">MySQL</span>
+                        <span class="tag-item">LeetCode</span>
+                        <span class="tag-item">并发编程</span>
+                    </div>
+                </div>
+                <div class="bento-card-link mt-4">
+                    浏览题库大厅 <i class="bi bi-arrow-right"></i>
+                </div>
+            </a>
+
+            <!-- Card 4: Quote / Philosophy -->
+            <div class="bento-card card-colspan-8">
+                <div class="quote-container">
+                    <div class="quote-text">“在思索中闪光，在磨砺中成锋。每一次沉浸对练，都是对未来的无声宣告。”</div>
+                    <div class="quote-author">MindSpark / 智慧在磨炼中觉醒</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Smart Insights / Copilot Demo Section -->
+    <div class="insights-container">
+        <div class="insights-grid">
+            <!-- Left Side: Interactive Mock Copilot UI -->
+            <div class="copilot-window">
+                <div class="copilot-header">
+                    <div class="window-dots">
+                        <div class="window-dot dot-red"></div>
+                        <div class="window-dot dot-yellow"></div>
+                        <div class="window-dot dot-green"></div>
+                    </div>
+                    <div class="window-title">MINDSPARK COPILOT v1.2</div>
+                </div>
+                <div class="copilot-body">
+                    <div class="panel-section">
+                        <div class="panel-label">实时语音捕捉 (Audio Input)</div>
+                        <div class="speech-box">
+                            面试官问：“请谈谈您在项目中遇到的最大技术挑战，以及您是如何解决的？”<span class="blinking-cursor"></span>
+                        </div>
+                    </div>
+                    <div class="panel-section">
+                        <div class="panel-label">AI 提词火花 (Key Concepts & Outline)</div>
+                        <div class="suggestion-box">
+                            <div class="star-point">🎯 <strong>S-T (背景与目标):</strong> 描述在流量激增时遭遇的内存溢出或长时间 GC 停顿。</div>
+                            <div class="star-point">🔧 <strong>Action (关键行动):</strong> 1. 使用 jmap/jstat 导出 Heap Dump 并分析泄漏；2. 优化垃圾回收器（G1）参数；3. 引入 Redis 分布式锁缓存热点请求。</div>
+                            <div class="star-point">📈 <strong>Result (成果量化):</strong> 吞吐量提升 40%，Full GC 次数降为零，响应延迟稳定在 150ms。</div>
+                        </div>
+                    </div>
+                    <div class="panel-section">
+                        <div class="panel-label">高频技术术语推荐 (Keywords)</div>
+                        <div>
+                            <span class="keyword-badge">JVM Tuning</span>
+                            <span class="keyword-badge">G1 GC</span>
+                            <span class="keyword-badge">Heap Dump</span>
+                            <span class="keyword-badge">Memory Leak</span>
+                            <span class="keyword-badge">Redis Cache</span>
+                        </div>
+                    </div>
+                    <div class="copilot-status">
+                        <div>
+                            <span class="status-dot"></span>
+                            <span>Listening...</span>
+                        </div>
+                        <div>Latency: 120ms</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Explanation and Call to Action -->
+            <div class="insights-text-col">
+                <h2>Smart Insights.<br>实时面试提词器</h2>
+                <p>无论面对多么尖锐的问题，均可安之若素。在您进行真实的视频或电话面试时，提词助手可无感伴行，实时智能捕捉面试官提问，并结合您的求职简历与 JD 匹配，即时在屏幕端绘制结构化的应答脉络、技术高频词与 STAR 回答指南。</p>
+                <ul class="insights-features">
+                    <li><i class="bi bi-check-circle-fill"></i> 全场景低延迟实时语音转文字 (ASR)</li>
+                    <li><i class="bi bi-check-circle-fill"></i> 依据上下文生成结构化的应答大纲</li>
+                    <li><i class="bi bi-check-circle-fill"></i> 对标目标 JD 和简历的个性化回答推荐</li>
+                    <li><i class="bi bi-check-circle-fill"></i> 高保密、无感运行，提供坚实的心理护盾</li>
+                </ul>
+                <a th:href="@{/copilot}" class="btn-premium-primary d-inline-block">开启实时提词助手</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar && !document.querySelector('.sidebar-toggle')) {
+            const toggleBtn = document.createElement('div');
+            toggleBtn.className = 'sidebar-toggle';
+            toggleBtn.innerHTML = '<i class="bi bi-chevron-left"></i>';
+            toggleBtn.onclick = function() {
+                sidebar.classList.toggle('collapsed');
+                const mainContent = document.querySelector('.main-content');
+                if (mainContent) mainContent.classList.toggle('expanded');
+                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+            };
+            sidebar.appendChild(toggleBtn);
+            
+            document.querySelectorAll('.sidebar .nav-link, .sidebar .btn').forEach(el => {
+                Array.from(el.childNodes).forEach(node => {
+                    if (node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 0) {
+                        const span = document.createElement('span');
+                        span.className = 'nav-text';
+                        span.textContent = node.textContent;
+                        el.replaceChild(span, node);
+                    }
+                });
+            });
+
+            if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                sidebar.classList.add('collapsed');
+                const mainContent = document.querySelector('.main-content');
+                if (mainContent) mainContent.classList.add('expanded');
+            }
+        }
+    });
+</script>
+</body>
+</html>

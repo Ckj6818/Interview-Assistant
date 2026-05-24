@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>面试报告 - MindSpark 面之光</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- KaTeX CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            padding-bottom: 50px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        .navbar-custom {
+            background-color: #1e293b;
+            color: white;
+            border-bottom: 1px solid #334155;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .report-header {
+            background: linear-gradient(135deg, #1e3a8a, #0f172a);
+            border-bottom: 1px solid #334155;
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 40px;
+            text-align: center;
+            border-radius: 0 0 30px 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.05);
+            border: 4px solid #10b981;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #10b981;
+            margin: 0 auto 20px;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+        .card-custom {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        .card-header-custom {
+            background-color: #151f32;
+            border-bottom: 1px solid #334155;
+            padding: 20px 25px;
+            border-radius: 15px 15px 0 0 !important;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #f8fafc;
+        }
+        .feedback-content, .bubble-content {
+            line-height: 1.8;
+            font-size: 1.05rem;
+            color: #cbd5e1;
+        }
+        .feedback-content p, .bubble-content p {
+            margin-bottom: 1rem;
+        }
+        .feedback-content p:last-child, .bubble-content p:last-child {
+            margin-bottom: 0;
+        }
+        .feedback-content ul, .feedback-content ol,
+        .bubble-content ul, .bubble-content ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .feedback-content h1, .feedback-content h2, .feedback-content h3, .feedback-content h4,
+        .bubble-content h1, .bubble-content h2, .bubble-content h3, .bubble-content h4 {
+            color: #f8fafc;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .feedback-content code, .bubble-content code {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+        .feedback-content pre, .bubble-content pre {
+            background-color: #0f172a;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+        }
+        .feedback-content pre code, .bubble-content pre code {
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
+            color: inherit;
+        }
+        .feedback-content blockquote, .bubble-content blockquote {
+            border-left: 4px solid #3b82f6;
+            padding-left: 1rem;
+            color: #94a3b8;
+            margin-left: 0;
+            margin-bottom: 1rem;
+        }
+        pre.mermaid {
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 1.5rem 0 !important;
+            overflow-x: auto;
+            text-align: center;
+            width: 100%;
+        }
+        #radarChart {
+            width: 100%;
+            height: 350px;
+        }
+    </style>
+    <link rel="stylesheet" th:href="@{/css/modern-theme.css}">
+</head>
+<body>
+<!-- 侧边栏 -->
+<div class="sidebar d-flex flex-column justify-content-between py-4">
+    <div>
+        <div class="logo-container mb-4 px-3">
+            <div class="logo-icon me-2">
+                <i class="bi bi-robot text-white fs-5"></i>
+            </div>
+            <div>
+                <h4 class="logo-text m-0 fw-bold text-white" style="font-size: 1.1rem; background: linear-gradient(135deg, #3b82f6, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">MindSpark 面之光</h4>
+                <div style="color: #64748b; font-size: 0.75rem; font-weight: 500;">智能面试辅助平台</div>
+            </div>
+        </div>
+        <div class="px-3">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="/"><i class="bi bi-grid-fill me-2"></i> 系统首页</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/questions"><i class="bi bi-journal-text me-2"></i> 题库大厅</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/mock-interview"><i class="bi bi-mic me-2"></i> 模拟面试</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/copilot"><i class="bi bi-rocket-takeoff me-2"></i> 面试助手</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/resume"><i class="bi bi-file-earmark-person me-2"></i> 简历优化</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link active" href="/records"><i class="bi bi-clock-history me-2"></i> 面试记录</a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    <div class="px-3">
+        <form action="/logout" method="post" style="margin: 0;">
+            <button type="submit" class="nav-link py-2 px-1 text-start" style="font-size: 0.88rem; gap: 8px; border: none; background: transparent; width: 100%; cursor: pointer;">
+               <i class="bi bi-box-arrow-right me-2"></i> 退出登录
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="main-content">
+    <!-- Breadcrumbs -->
+    <div class="breadcrumbs mb-4" style="font-size: 0.9rem; font-weight: 500;">
+        <span style="color: #64748b; cursor: pointer;" onclick="window.location.href='/'">MindSpark AI</span>
+        <span style="color: #475569; margin: 0 8px;">/</span>
+        <span style="color: #64748b; cursor: pointer;" onclick="window.location.href='/records'">面试记录</span>
+        <span style="color: #475569; margin: 0 8px;">/</span>
+        <span id="breadcrumb-current" style="color: #f1f5f9;">面试评估报告</span>
+    </div>
+
+    <!-- Header Banner -->
+    <div class="glass-card mb-5" style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(17, 24, 39, 0.7)); border: 1px solid rgba(255, 255, 255, 0.08);">
+        <div class="row align-items-center py-3">
+            <div class="col-md-3 text-center mb-3 mb-md-0">
+                <div class="score-circle m-0 d-inline-flex" th:text="${record.score}">85</div>
+            </div>
+            <div class="col-md-9 text-md-start text-center">
+                <h2 class="fw-bold mb-2 text-gradient">面试评估报告</h2>
+                <p class="mb-1 text-secondary">面试主题：<span class="text-white fw-medium" th:text="${record.topic}"></span></p>
+                <p class="mb-0 text-secondary">评估时间：<span class="text-white" th:text="${#temporals.format(record.createTime, 'yyyy-MM-dd HH:mm')}"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- 左侧雷达图维度卡片 -->
+        <div class="col-lg-5">
+            <div class="card card-custom">
+                <div class="card-header-custom">
+                    <i class="bi bi-graph-up-arrow text-primary me-2"></i> 核心能力评估雷达图
+                </div>
+                <div class="card-body">
+                    <div id="radarChart"></div>
+                    <hr class="border-secondary">
+                    <div class="row text-center mt-3">
+                        <div class="col-4 mb-3">
+                            <span class="text-muted d-block small">专业基础</span>
+                            <strong class="fs-5 text-primary" th:text="${record.foundationScore}">60</strong>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <span class="text-muted d-block small">逻辑思维</span>
+                            <strong class="fs-5 text-success" th:text="${record.logicScore}">60</strong>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <span class="text-muted d-block small">沟通表达</span>
+                            <strong class="fs-5 text-warning" th:text="${record.communicationScore}">60</strong>
+                        </div>
+                        <div class="col-4">
+                            <span class="text-muted d-block small">抗压应变</span>
+                            <strong class="fs-5 text-danger" th:text="${record.stressScore}">60</strong>
+                        </div>
+                        <div class="col-4">
+                            <span class="text-muted d-block small">技术深度</span>
+                            <strong class="fs-5 text-info" th:text="${record.techScore != null ? record.techScore : 60}">60</strong>
+                        </div>
+                        <div class="col-4">
+                            <span class="text-muted d-block small">业务场景</span>
+                            <strong class="fs-5 text-secondary" style="color: #a855f7 !important;" th:text="${record.businessScore != null ? record.businessScore : 60}">60</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧AI报告详细评估 -->
+        <div class="col-lg-7">
+            <div class="card card-custom">
+                <div class="card-header-custom">
+                    <i class="bi bi-chat-square-quote text-primary me-2"></i> 面试评测反馈
+                </div>
+                <div class="card-body p-4">
+                    <div id="feedbackReportContainer" class="feedback-content" th:text="${record.feedbackReport}"></div>
+                </div>
+            </div>
+
+            <div class="card card-custom" id="starAnalysisCard" style="display: none;">
+                <div class="card-header-custom" style="background-color: rgba(59, 130, 246, 0.1);">
+                    <i class="bi bi-star-fill text-warning me-2"></i> STAR 法则深度结构化诊断
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3" style="background-color: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-color);">
+                                <h6 class="text-primary fw-bold"><i class="bi bi-geo-alt-fill me-1"></i> Situation 情景再现</h6>
+                                <div id="starS" class="small text-light"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3" style="background-color: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-color);">
+                                <h6 class="text-success fw-bold"><i class="bi bi-list-task me-1"></i> Task 任务拆解</h6>
+                                <div id="starT" class="small text-light"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3" style="background-color: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-color);">
+                                <h6 class="text-warning fw-bold"><i class="bi bi-lightning-fill me-1"></i> Action 行动过程</h6>
+                                <div id="starA" class="small text-light"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3" style="background-color: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-color);">
+                                <h6 class="text-danger fw-bold"><i class="bi bi-graph-up-arrow me-1"></i> Result 结果数据</h6>
+                                <div id="starR" class="small text-light"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-custom" th:if="${record.standardAnswer != null && record.standardAnswer != ''}">
+                <div class="card-header-custom">
+                    <i class="bi bi-book text-info me-2"></i> 官方标准参考答案
+                </div>
+                <div class="card-body p-4">
+                    <div id="standardAnswerContainer" class="feedback-content text-info" style="color: #38bdf8 !important;" th:text="${record.standardAnswer}"></div>
+                </div>
+            </div>
+
+            <div class="card card-custom" th:if="${record.suggestions != null && record.suggestions != ''}">
+                <div class="card-header-custom">
+                    <i class="bi bi-lightbulb text-warning me-2"></i> 改进建议与参考答案
+                </div>
+                <div class="card-body p-4">
+                    <div id="suggestionsContainer" class="feedback-content text-success" style="color: #34d399 !important;" th:text="${record.suggestions}"></div>
+                </div>
+            </div>
+            
+            <!-- 新增：面试对答实录 -->
+            <div class="card card-custom" th:if="${record.chatLog != null && record.chatLog != ''}">
+                <div class="card-header-custom">
+                    <i class="bi bi-chat-left-text-fill text-success me-2"></i> 面试对答实录
+                </div>
+                <div class="card-body p-4">
+                    <div id="chatLogContainer" class="d-flex flex-column gap-3" style="max-height: 450px; overflow-y: auto; padding-right: 5px;">
+                        <!-- 动态生成的对话气泡将在此处呈现 -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a th:href="${record.chatLog != null && !record.chatLog.startsWith('[') ? '/mock-interview' : '/questions'}" class="btn btn-primary btn-lg px-5 rounded-pill shadow">
+                    <i class="bi bi-arrow-repeat me-2"></i> <span th:text="${record.chatLog != null && !record.chatLog.startsWith('[') ? '返回模拟面试大厅' : '再练一题'}">再练一题</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<!-- Markdown and Math rendering libraries -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+<script th:inline="javascript">
+    // 从 Thymeleaf 动态获取能力值
+    const foundation = /*[[${record.foundationScore}]]*/ 60;
+    const logic = /*[[${record.logicScore}]]*/ 60;
+    const communication = /*[[${record.communicationScore}]]*/ 60;
+    const stress = /*[[${record.stressScore}]]*/ 60;
+
+    // 初始化 ECharts
+    const chartDom = document.getElementById('radarChart');
+    const myChart = echarts.init(chartDom);
+    
+    const option = {
+        backgroundColor: 'transparent',
+        radar: {
+            indicator: [
+                { name: '专业基础', max: 100 },
+                { name: '逻辑思维', max: 100 },
+                { name: '沟通表达', max: 100 },
+                { name: '抗压应变', max: 100 },
+                { name: '技术深度', max: 100 },
+                { name: '业务场景', max: 100 }
+            ],
+            axisName: {
+                color: '#94a3b8'
+            },
+            splitLine: {
+                lineStyle: {
+                    color: '#334155'
+                }
+            },
+            axisLine: {
+                lineStyle: {
+                    color: '#334155'
+                }
+            },
+            splitArea: {
+                show: true,
+                areaStyle: {
+                    color: ['#0f172a', '#1e293b']
+                }
+            }
+        },
+        series: [
+            {
+                name: '面试能力模型',
+                type: 'radar',
+                data: [
+                    {
+                        value: [
+                            foundation, 
+                            logic, 
+                            communication, 
+                            stress, 
+                            /*[[${record.techScore != null ? record.techScore : 60}]]*/ 60,
+                            /*[[${record.businessScore != null ? record.businessScore : 60}]]*/ 60
+                        ],
+                        name: '得分',
+                        areaStyle: {
+                            color: 'rgba(59, 130, 246, 0.3)'
+                        },
+                        lineStyle: {
+                            color: '#3b82f6',
+                            width: 2
+                        },
+                        itemStyle: {
+                            color: '#3b82f6'
+                        }
+                    }
+                ]
+            }
+        ]
+    };
+
+    myChart.setOption(option);
+
+    // 解析 STAR 法则 JSON 并渲染
+    const rawStarJson = /*[[${record.starAnalysisJson}]]*/ null;
+    if (rawStarJson) {
+        try {
+            const starObj = JSON.parse(rawStarJson);
+            document.getElementById('starS').innerText = starObj.situation || '未涉及';
+            document.getElementById('starT').innerText = starObj.task || '未涉及';
+            document.getElementById('starA').innerText = starObj.action || '未涉及';
+            document.getElementById('starR').innerText = starObj.result || '未涉及';
+            document.getElementById('starAnalysisCard').style.display = 'block';
+        } catch(e) {
+            console.error('Failed to parse starAnalysisJson', e);
+        }
+    }
+
+    // 响应式图表自适应
+    window.addEventListener('resize', function() {
+        myChart.resize();
+    });
+
+    // Initialize mermaid
+    mermaid.initialize({
+        startOnLoad: false,
+        theme: 'dark',
+        securityLevel: 'loose'
+    });
+
+    // Rich content renderer function
+    function renderRichContent(container, rawText) {
+        if (!rawText) return;
+        
+        // 1. Extract math blocks to prevent Markdown parsing from breaking them
+        const mathBlocks = [];
+        let textWithPlaceholders = rawText;
+        
+        // Match display math $$...$$ (including multi-line)
+        textWithPlaceholders = textWithPlaceholders.replace(/\$\$([\s\S]+?)\$\$/g, (match, math) => {
+            const id = mathBlocks.length;
+            mathBlocks.push({ type: 'display', math: math });
+            return `%%MATH_DISPLAY_${id}%%`;
+        });
+        
+        // Match inline math $...$ (ensure we don't match empty $$)
+        textWithPlaceholders = textWithPlaceholders.replace(/\$([^\$\n]+?)\$/g, (match, math) => {
+            const id = mathBlocks.length;
+            mathBlocks.push({ type: 'inline', math: math });
+            return `%%MATH_INLINE_${id}%%`;
+        });
+        
+        // 2. Parse Markdown
+        let parsedHtml = marked.parse(textWithPlaceholders);
+        
+        // 3. Restore math blocks
+        parsedHtml = parsedHtml.replace(/%%MATH_DISPLAY_(\d+)%%/g, (match, id) => {
+            const block = mathBlocks[parseInt(id)];
+            return `$$${block.math}$$`;
+        });
+        parsedHtml = parsedHtml.replace(/%%MATH_INLINE_(\d+)%%/g, (match, id) => {
+            const block = mathBlocks[parseInt(id)];
+            return `$${block.math}$`;
+        });
+        
+        // 4. Convert mermaid code blocks to <pre class="mermaid">
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = parsedHtml;
+        
+        const mermaidCodes = tempDiv.querySelectorAll('pre code.language-mermaid');
+        mermaidCodes.forEach(codeNode => {
+            const preNode = codeNode.parentNode;
+            const mermaidPre = document.createElement('pre');
+            mermaidPre.className = 'mermaid';
+            mermaidPre.textContent = codeNode.textContent;
+            preNode.replaceWith(mermaidPre);
+        });
+        
+        // Set content
+        container.innerHTML = tempDiv.innerHTML;
+        
+        // 5. Render LaTeX using KaTeX
+        if (window.renderMathInElement) {
+            renderMathInElement(container, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
+                ],
+                throwOnError: false
+            });
+        }
+    }
+
+    // 动态渲染对话实录
+    const rawChatLog = /*[[${record.chatLog}]]*/ '';
+    const chatLogContainer = document.getElementById('chatLogContainer');
+
+    if (rawChatLog && chatLogContainer) {
+        let messages = [];
+        try {
+            if (rawChatLog.trim().startsWith('[')) {
+                // 单题考试的 JSON 历史
+                const parsed = JSON.parse(rawChatLog);
+                parsed.forEach(msg => {
+                    if (msg.role !== 'system') {
+                        messages.push({
+                            sender: msg.role === 'user' ? '候选人' : '面试官',
+                            isUser: msg.role === 'user',
+                            content: msg.content
+                        });
+                    }
+                });
+            } else {
+                // 全真模拟面试的多轮文本拼接 (面试官: xxxx\n\n候选人: xxxx)
+                const turns = rawChatLog.split('\n\n');
+                turns.forEach(turn => {
+                    const trimmed = turn.trim();
+                    if (!trimmed) return;
+                    
+                    let sender = '面试官';
+                    let isUser = false;
+                    let content = trimmed;
+                    
+                    if (trimmed.startsWith('候选人:')) {
+                        sender = '候选人';
+                        isUser = true;
+                        content = trimmed.substring(4).trim();
+                    } else if (trimmed.startsWith('面试官:')) {
+                        sender = '面试官';
+                        isUser = false;
+                        content = trimmed.substring(4).trim();
+                    } else if (trimmed.startsWith('我:')) {
+                        sender = '候选人';
+                        isUser = true;
+                        content = trimmed.substring(2).trim();
+                    }
+                    
+                    messages.push({
+                        sender: sender,
+                        isUser: isUser,
+                        content: content
+                    });
+                });
+            }
+        } catch (e) {
+            console.error('Failed to parse chatLog', e);
+            messages.push({
+                sender: '对话实录',
+                isUser: false,
+                content: rawChatLog
+            });
+        }
+
+        // 渲染对话气泡
+        messages.forEach(msg => {
+            const bubbleWrapper = document.createElement('div');
+            bubbleWrapper.className = `d-flex flex-column ${msg.isUser ? 'align-items-end' : 'align-items-start'}`;
+            
+            const label = document.createElement('span');
+            label.className = 'text-muted small mb-1';
+            label.innerText = msg.sender;
+            
+            const bubble = document.createElement('div');
+            bubble.style.maxWidth = '85%';
+            bubble.style.padding = '12px 16px';
+            bubble.style.borderRadius = '12px';
+            bubble.style.lineHeight = '1.5';
+            bubble.style.fontSize = '0.95rem';
+            
+            if (msg.isUser) {
+                bubble.style.backgroundColor = '#3b82f6';
+                bubble.style.color = '#ffffff';
+                bubble.style.borderTopRightRadius = '0';
+                bubble.style.boxShadow = '0 2px 8px rgba(59, 130, 246, 0.2)';
+            } else {
+                bubble.style.backgroundColor = 'rgba(30, 41, 59, 0.6)';
+                bubble.style.color = '#f8fafc';
+                bubble.style.border = '1px solid #334155';
+                bubble.style.borderTopLeftRadius = '0';
+                bubble.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.15)';
+            }
+            bubble.className = 'bubble-content';
+            
+            // Render rich formatting inside the bubbles too!
+            renderRichContent(bubble, msg.content);
+            
+            bubbleWrapper.appendChild(label);
+            bubbleWrapper.appendChild(bubble);
+            chatLogContainer.appendChild(bubbleWrapper);
+        });
+    }
+
+    // Render report feedback cards rich content
+    const feedbackReportContainer = document.getElementById('feedbackReportContainer');
+    if (feedbackReportContainer) {
+        renderRichContent(feedbackReportContainer, feedbackReportContainer.textContent);
+    }
+    const standardAnswerContainer = document.getElementById('standardAnswerContainer');
+    if (standardAnswerContainer) {
+        renderRichContent(standardAnswerContainer, standardAnswerContainer.textContent);
+    }
+    const suggestionsContainer = document.getElementById('suggestionsContainer');
+    if (suggestionsContainer) {
+        renderRichContent(suggestionsContainer, suggestionsContainer.textContent);
+    }
+
+    // Run Mermaid after DOM insertion
+    try {
+        mermaid.run();
+    } catch (err) {
+        console.error('Mermaid run error:', err);
+    }
+
+    // 新增：异步报告等待逻辑
+    const currentScore = /*[[${record.score}]]*/ 60;
+    if (currentScore === 0) {
+        // 如果分数为 0 代表大模型还在后台生成报告，每 5 秒自动刷新一次页面
+        setTimeout(function() {
+            window.location.reload();
+        }, 5000);
+    }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar && !document.querySelector('.sidebar-toggle')) {
+            const toggleBtn = document.createElement('div');
+            toggleBtn.className = 'sidebar-toggle';
+            toggleBtn.innerHTML = '<i class="bi bi-chevron-left"></i>';
+            toggleBtn.onclick = function() {
+                sidebar.classList.toggle('collapsed');
+                const mainContent = document.querySelector('.main-content');
+                if (mainContent) mainContent.classList.toggle('expanded');
+                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+            };
+            sidebar.appendChild(toggleBtn);
+            
+            document.querySelectorAll('.sidebar .nav-link, .sidebar .btn').forEach(el => {
+                Array.from(el.childNodes).forEach(node => {
+                    if (node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 0) {
+                        const span = document.createElement('span');
+                        span.className = 'nav-text';
+                        span.textContent = node.textContent;
+                        el.replaceChild(span, node);
+                    }
+                });
+            });
+
+            if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                sidebar.classList.add('collapsed');
+                const mainContent = document.querySelector('.main-content');
+                if (mainContent) mainContent.classList.add('expanded');
+            }
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,608 @@
+﻿<!DOCTYPE html>
+2: <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+3: <head>
+4:     <meta charset="UTF-8">
+5:     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+6:     <title>AI 模拟面试室 - InterviewAI</title>
+7:     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+8:     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+9:     <style>
+10:         body {
+11:             background-color: #0f172a;
+12:             color: #e2e8f0;
+13:             height: 100vh;
+14:             display: flex;
+15:             flex-direction: column;
+16:             overflow: hidden;
+17:             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+18:         }
+19:         .navbar-custom {
+20:             background-color: #1e293b;
+21:             color: white;
+22:             border-bottom: 1px solid #334155;
+23:             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+24:         }
+25:         .chat-container {
+26:             flex: 1;
+27:             overflow-y: auto;
+28:             padding: 30px;
+29:             background-color: #0b0f19;
+30:         }
+31:         .chat-message {
+32:             margin-bottom: 25px;
+33:             display: flex;
+34:             align-items: flex-start;
+35:         }
+36:         .chat-message.ai { justify-content: flex-start; }
+37:         .chat-message.user { justify-content: flex-end; }
+38:         .chat-avatar {
+39:             width: 45px;
+40:             height: 
+<truncated 7500 bytes>
+dth: 100%;
+252:             height: 2px;
+253:             background: linear-gradient(90deg, transparent, #ef4444, transparent);
+254:             box-shadow: 0 0 10px #ef4444;
+255:             animation: scan 2s linear infinite;
+256:             z-index: 10;
+257:         }
+258:         @keyframes scan {
+259:             0% { top: 0%; }
+260:             50% { top: 100%; }
+261:             100% { top: 0%; }
+262:         }
+263:         .scan-log {
+264:             width: 100%;
+265:             background: rgba(0, 0, 0, 0.4);
+266:             border: 1px solid rgba(255, 255, 255, 0.05);
+267:             border-radius: 8px;
+268:             padding: 12px;
+269:             font-family: 'Courier New', Courier, monospace;
+270:             font-size: 0.75rem;
+271:             color: #ef4444;
+272:             margin-top: 15px;
+273:             min-height: 100px;
+274:             max-height: 140px;
+275:             overflow-y: auto;
+276:             text-align: left;
+277:             box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
+278:         }
+279:         .scan-log-line {
+280:             margin-bottom: 4px;
+281:             opacity: 0;
+282:             transform: translateX(-5px);
+283:             animation: log-fadeIn 0.3s forwards;
+284:         }
+285:         @keyframes log-fadeIn {
+286:             to { opacity: 1; transform: translateX(0); }
+287:         }
+288: 
+289:         .solution-container {
+290:             display: none;
+291:             margin-top: 15px;
+292:         }
+293:         
+294:         .answer-card {
+295:             background: linear-gradient(135deg, rgba(6, 78, 59, 0.15) 0%, rgba(15, 23, 42, 0.6) 100%);
+296:             border: 1px solid rgba(16, 185, 129, 0.25);
+297:             border-left: 4px solid #10b981;
+298:             border-radius: 10px;
+299:             padding: 15px;
+300:             margin-bottom: 15px;
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.
+"}
+{"step_index":3221,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-22T09:10:12Z","content":"I will view lines 301 to 600 of `interview.html` to check the drawer HTML layout.","tool_calls":[{"name":"view_file","args":{"AbsolutePath":""H:/java spring/interviewai/src/main/resources/templates/interview.html"","EndLine":"600","StartLine":"301","toolAction":""Viewing interview.html lines 301 to 600"","toolSummary":""Viewing template markup""}}]}
+{"step_index":3222,"source":"MODEL","type":"VIEW_FILE","status":"DONE","created_at":"2026-05-22T09:10:20Z","content":"Created At: 2026-05-22T09:10:20Z
+Completed At: 2026-05-22T09:10:20Z
+File Path: `file:///H:/java%20spring/interviewai/src/main/resources/templates/interview.html`
+Total Lines: 891
+Total Bytes: 32939
+Showing lines 301 to 600
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+301:         }
+302:         
+303:         .reasoning-card {
+304:             background: linear-gradient(135deg, rgba(124, 58, 237, 0.12) 0%, rgba(15, 23, 42, 0.6) 100%);
+305:             border: 1px solid rgba(139, 92, 246, 0.25);
+306:             border-left: 4px solid #8b5cf6;
+307:             border-radius: 10px;
+308:             padding: 15px;
+309:         }
+310: 
+311:         .code-block {
+312:             background: #050811;
+313:             border: 1px solid rgba(255, 255, 255, 0.04);
+314:             border-radius: 8px;
+315:             padding: 12px;
+316:             font-family: 'Fira Code', 'Courier New', Courier, monospace;
+317:             color: #f8fafc;
+318:             overflow-x: auto;
+319:             margin: 8px 0;
+320:             white-space: pre;
+321:             font-size: 0.85rem;
+322:             line-height: 1.5;
+323:         }
+324:         
+325:         .ans-text {
+326:             font-size: 0.95rem;
+327:             line-height: 1.5;
+328:             color: #f1f5f9;
+329:         }
+330: 
+331:         .reasoning-text {
+332:             font-size: 0.9rem;
+333:             line-height: 1.6;
+334:             color: #e2e8f0;
+335:         }
+336: 
+337:         .copy-btn {
+338:             background: rgba(16, 185, 129, 0.15);
+339:             border: 1px solid rgba(16, 185, 129, 0.3);
+340:             color: #34d399;
+341:             padding: 2px 8px;
+342:             border-radius: 4px;
+343:             font-size: 0.75rem;
+344:             font-weight: 600;
+345:             transition: all 0.2s;
+346:         }
+347:         .copy-btn:
+<truncated 9640 bytes>
+);
+565:         aiMsg.className = 'chat-message ai';
+566:         aiMsg.innerHTML = `<div class="chat-avatar"><i class="bi bi-robot"></i></div><div class="chat-bubble shadow-sm"><i class="bi bi-three-dots"></i> 面试结束，正在为您生成综合评价和深度报告...</div>`;
+567:         chatBox.appendChild(aiMsg);
+568:         scrollToBottom();
+569: 
+570:         document.body.style.cursor = 'wait';
+571:         sendBtn.disabled = true;
+572: 
+573:         try {
+574:             const payload = {
+575:                 questionId: questionId,
+576:                 chatHistoryJson: JSON.stringify(chatHistory),
+577:                 personaId: personaSelect.value
+578:             };
+579: 
+580:             const response = await fetch('/api/interview/submit', {
+581:                 method: 'POST',
+582:                 headers: { 'Content-Type': 'application/json' },
+583:                 body: JSON.stringify(payload)
+584:             });
+585:             const result = await response.json();
+586:             
+587:             if (result.success) {
+588:                 if ('speechSynthesis' in window) {
+589:                     const utterance = new SpeechSynthesisUtterance("评估已完成，正在为您生成雷达图和深度报告。");
+590:                     utterance.lang = 'zh-CN';
+591:                     window.speechSynthesis.speak(utterance);
+592:                 }
+593:                 setTimeout(() => {
+594:                     window.location.href = '/report/' + result.recordId;
+595:                 }, 1500);
+596:             } else {
+597:                 aiMsg.querySelector('.chat-bubble').innerHTML = '<span class="text-danger">生成失败</span>';
+598:             }
+599:         } catch (error) {
+600:             aiMsg.querySelector('.chat-bubble').innerHTML = '<span class="text-danger">网络连接失败</span>';
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.
+"}
+{"step_index":3224,"source":"SYSTEM","type":"CONVERSATION_HISTORY","status":"DONE","created_at":"2026-05-22T09:10:42Z","content":"# Conversation History
+Here are the conversation IDs, titles, and summaries of your most recent 1 conversations, in reverse chronological order:
+
+<conversation_summaries>
+## Conversation 98c91679-9896-45bb-9adc-fe9e5e13ff91: Unitree Robot Development Modeling
+- Created: 2026-05-22T03:12:14Z
+- Last modified: 2026-05-22T04:59:36Z
+
+</conversation_summaries>"}
+{"step_index":3225,"source":"SYSTEM","type":"KNOWLEDGE_ARTIFACTS","status":"DONE","created_at":"2026-05-22T09:10:42Z"}
+{"step_index":3226,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-22T09:10:42Z","tool_calls":[{"name":"view_file","args":{"AbsolutePath":""C:\\Users\\asus\\.gemini\\antigravity-ide\\brain\\3408e3a4-da0f-4715-8c46-82cd4f37059f\\task.md"","toolAction":""View task.md"","toolSummary":""Viewing task list""}}]}
+{"step_index":3227,"source":"MODEL","type":"VIEW_FILE","status":"DONE","created_at":"2026-05-22T09:10:46Z","content":"Created At: 2026-05-22T09:10:46Z
+Completed At: 2026-05-22T09:10:46Z
+File Path: `file:///C:/Users/asus/.gemini/antigravity-ide/brain/3408e3a4-da0f-4715-8c46-82cd4f37059f/task.md`
+Total Lines: 22
+Total Bytes: 1514
+Showing lines 1 to 22
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: # 任务列表：AI模拟面试板块集成笔试秒解
+2: 
+3: - [x] 1. 恢复 `index.html` 的侧边栏，移除 `AI 笔试秒解` 链接。
+4: - [x] 2. 恢复 `questions.html` 的侧边栏，移除 `AI 笔试秒解` 链接。
+5: - [x] 3. 恢复 `resume.html` 的侧边栏，移除 `AI 笔试秒解` 链接。
+6: - [x] 4. 恢复 `records.html` 的侧边栏，移除 `AI 笔试秒解` 链接。
+7: - [x] 5. 将 `/api/solver/analyze` 接口逻辑合并到 `InterviewController.java`。
+8: - [x] 6. 删除 `SolverController.java`。
+9: - [x] 7. 删除 `solver.html`。
+10: - [ ] 8. 在 `mock_interview.html`（全真模拟面试）中集成“AI 笔试秒解”：
+11:   - [ ] 在右下角辅助控制按钮组增加快捷入口。
+12:   - [ ] 在右侧对话实录面板顶部增加 `对话实录` 与 `AI 笔试秒解` Tab。
+13:   - [ ] 引入 `solver.html` 的相关 CSS 样式（Tab、Drop-Zone、Scanner、Solution 等）。
+14:   - [ ] 嵌入 `solver.html` 的 HTML 核心解题面板布局。
+15:   - [ ] 集成 `solver.html` 的 JS 逻辑（剪贴板监听、自动触发 API、扫描特效日志、Python 代码高亮、复制等）。
+16: - [ ] 9. 在 `interview.html`（AI 模拟面试室）中集成“AI 笔试秒解”：
+17:   - [ ] 在顶部导航栏中增加 `AI 笔试秒解` 快捷按钮。
+18:   - [ ] 新增右侧滑出的半透明抽屉 `#solverDrawer`，并嵌入 CSS 样式。
+19:   - [ ] 嵌入 `solver.html` 的 HTML 核心解题面板布局。
+20:   - [ ] 集成 `solver.html` 的 JS 逻辑。
+21: - [ ] 10. 编译运行并完成前后端功能联调验证。
+22: 
+The above content shows the entire, complete file contents of the requested file.
+"}
+{"step_index":3228,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-22T09:10:46Z","tool_calls":[{"name":"view_file","args":{"AbsolutePath":""C:\\Users\\asus\\.gemini\\antigravity-ide\\brain\\3408e3a4-da0f-4715-8c46-82cd4f37059f\\implementation_plan.md"","toolAction":""View implementation_plan.md"","toolSummary":""Viewing implementation plan""}}]}
+{"step_index":3229,"source":"MODEL","type":"VIEW_FILE","status":"DONE","created_at":"2026-05-22T09:10:49Z","content":"Created At: 2026-05-22T09:10:49Z
+Completed At: 2026-05-22T09:10:49Z
+File Path: `file:///C:/Users/asus/.gemini/antigravity-ide/brain/3408e3a4-da0f-4715-8c46-82cd4f37059f/implementation_plan.md`
+Total Lines: 76
+Total Bytes: 5687
+Showing lines 1 to 76
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: # AI 模拟面试板块集成笔试秒解功能方案
+2: 
+3: 为了满足您的最新要求——**保持原来的板块不变，只在 AI 模拟面试的板块中加入“一键截图，AI秒解各类笔试题型”功能，并把其他板块的侧边栏和多余页面全部恢复原状**，我们将进行以下改造。
+4: 
+5: ## User Review Required
+6: > [!IMPORTANT]
+7: > - **原有侧边栏链接下线**：我们将从 `index.html`、`questions.html`、`resume.html` 和 `records.html` 中彻底移除侧边栏中的 `AI 笔试秒解` 链接，还原为系统之前的状态。
+8: > - **合并路由与页面**：删除独立的 `/solver` (对应的 `solver.html`)，将其功能全部内嵌在“全真多轮语音模拟面试” (`mock_interview.html`) 和“单题 AI 模拟面试室” (`interview.html`) 中。
+9: > - **交互方式**：
+10: >   1. 在 `mock_interview.html` 右侧“对话实录”侧边栏顶部，以 Tab 选项卡（`对话实录` / `AI 笔试秒解`）的形式提供，并在右下角增加一个直达相机的快捷按钮。
+11: >   2. 在 `interview.html` 顶部导航栏增加 `AI 笔试秒解` 快捷按钮，点击可从右侧滑出一个独立的秒解小抽屉，不干扰原来的答题与对话。
+12: 
+13: ## Proposed Changes
+14: 
+15: ---
+16: 
+17: ### Frontend
+18: 
+19: #### [MODIFY] [mock_interview.html](file:///H:/java%20spring/interviewai/src/main/resources/templates/mock_interview.html)
+20: - **UI 改造**：
+21:   - 在右下角控制按钮栏（`aux-controls`）新增“AI 笔试秒解”快捷按
+<truncated 2460 bytes>
+esources/templates/records.html)
+47: - **REVERT**：删除第 80 行的 `<a class="nav-link text-danger fw-bold mt-2" th:href="@{/solver}">...</a>` 链接，让侧边栏复原。
+48: 
+49: #### [DELETE] [solver.html](file:///H:/java%20spring/interviewai/src/main/resources/templates/solver.html)
+50: - 彻底删除此独立静态页面。
+51: 
+52: ---
+53: 
+54: ### Backend
+55: 
+56: #### [MODIFY] [InterviewController.java](file:///H:/java%20spring/interviewai/src/main/java/com/interviewai/controller/InterviewController.java)
+57: - **API 移入**：将 `/api/solver/analyze` 接口移动到本控制器中，作为 AI 模拟面试相关的通用辅助 API，支持在面试过程中进行笔试图像解析。
+58: 
+59: #### [DELETE] [SolverController.java](file:///H:/java%20spring/interviewai/src/main/java/com/interviewai/controller/SolverController.java)
+60: - 彻底删除此控制器。
+61: 
+62: ## Verification Plan
+63: 
+64: ### Automated/Manual Tests
+65: 1. **侧边栏核对**：检查首页、题库大厅、简历诊断、面试记录的左侧侧边栏，确保没有 `AI 笔试秒解` 入口。
+66: 2. **全真模拟面试测试**：
+67:    - 从首页启动“全真模拟面试”。
+68:    - 点击右下角的红色相机按钮，验证侧边栏是否滑出并默认选中 `AI 笔试秒解` 页签。
+69:    - 点击 Drop-Zone 选择一张测试图片，或者使用 QQ/微信等工具截图后直接 `Ctrl+V`，检查是否成功展示预览图并自动触发解题。
+70:    - 检查控制台日志输出动效以及后续返回的代码高亮和绿底/紫底答案面板。
+71: 3. **单题面试室测试**：
+72:    - 从题库大厅选择一道题点击“开始面试”。
+73:    - 在顶部导航栏点击“AI 笔试秒解”按钮，验证右侧滑出抽屉。
+74:    - 执行上传或粘贴图片，验证解析流程是否正常。
+75: 4. **编译构建核对**：执行项目编译，确保没有任何缺失引用或语法错误。
+76: 
+The above content shows the entire, complete file contents of the requested file.
+"}
+{"step_index":3230,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-22T09:10:49Z","tool_calls":[{"name":"list_permissions","args":{"toolAction":""List permissions"","toolSummary":""Listing permission grants""}}]}
+{"step_index":3231,"source":"MODEL","type":"GENERIC","status":"DONE","created_at":"2026-05-22T09:10:52Z","content":"Created At: 2026-05-22T09:10:52Z
+Completed At: 2026-05-22T09:10:52Z
+You have read and write access to the following workspace(s):
+- c:\Users\asus\Desktop\interviewai
+
+Additionally, your current permission grants (listed in the order they are checked) are:
+- mcp(chrome_devtools/evaluate_script): denied
+- execute_url(localhost): allowed
+- write_file(h:\java spring\interviewai\src\main\esources\templates\questions.html): allowed
+- command(mvn clean): allowed
+- command(.\mvnw): allowed
+- write_file(H:\java spring\interviewai\src\main\esources\templates\interview.html): allowed
+- write_file(H:\java spring\interviewai\src\main\esources\templates\eport.html): allowed
+- command(mysql): allowed
+- read_file(H:\java spring\interviewai): allowed
+- command(Get-ChildItem): allowed
+- command(mvn compile): allowed
+- command(Get-Content): allowed
+- command(Test-Path): allowed
+- write_file(H:\java spring\interviewai\src\main\java\com\interviewai\entity\User.java): allowed
+- write_file(H:\java spring\interviewai\src\main\java\com\interviewai\entity\InterviewRecord.java): allowed
+- command($userCode): allowed
+- command($content): allowed
+- command($code): allowed
+- command($code): allowed
+- command($javaFiles): allowed
+- command($customUserDetailsCode): allowed
+- command($questionRepoCode): allowed
+- command($homeCode): allowed
+- command($securityConfigCode): allowed
+- command($authControllerCode): allowed
+- command($dataInitializerCode): allowed
+- command($yamlCode): allowed
+- command(.\mvnw): allowed
+- command($dataSql): allowed
+- write_file(h:\java spring\interviewai\src\main\java\com\interviewai\entity\InterviewerPersona.java): allowed
+- command($recordCode): allowed
+- write_file(h:\java spring\interviewai\src\main\java\com\interviewai\epository\InterviewerPersonaRepository.java): allowed
+- command($llmServiceCode): allowed
+- command($interviewControllerCode): allowed
+- command($interviewControllerCode): allowed
+- command($interviewHtml): allowed
+- command($reportHtml): allowed
+- command($taskCode): allowed
+- command($llmSe
+<truncated 2064 bytes>
+de\skills): allowed
+- write_file(C:\Users\asus\.gemini\antigravity-ide\skills): ask
+- read_file(C:\Users\asus\.gemini\antigravity-ide\conversations): ask
+- write_file(C:\Users\asus\.gemini\antigravity-ide\conversations): denied
+- read_file(C:\Users\asus\.gemini\antigravity-ide\mcp_config.json): ask
+- write_file(C:\Users\asus\.gemini\antigravity-ide\mcp_config.json): ask
+- read_file(C:\Users\asus\.gemini\config\skills): allowed
+- write_file(C:\Users\asus\.gemini\config\skills): ask
+- read_file(C:\Users\asus\.gemini\config\plugins): allowed
+- write_file(C:\Users\asus\.gemini\config\plugins): ask
+- read_file(C:\Users\asus\.gemini\config\agents): allowed
+- write_file(C:\Users\asus\.gemini\config\agents): ask
+- read_file(C:\Users\asus\.gemini\config\hooks.json): ask
+- write_file(C:\Users\asus\.gemini\config\hooks.json): ask
+- read_file(C:\Users\asus\.gemini\config\sidecars): allowed
+- write_file(C:\Users\asus\.gemini\config\sidecars): ask
+- read_file(C:\Users\asus\.gemini\config\projects): allowed
+- write_file(C:\Users\asus\.gemini\config\projects): denied
+- read_file(C:\Users\asus\.gemini\config\config.json): denied
+- write_file(C:\Users\asus\.gemini\config\config.json): denied
+- read_file(.env): ask
+- write_file(.env): ask
+- read_file(.env.local): ask
+- write_file(.env.local): ask
+- read_file(.env.production): ask
+- write_file(.env.production): ask
+- read_file(.env.development): ask
+- write_file(.env.development): ask
+- read_file(.env.staging): ask
+- write_file(.env.staging): ask
+- read_file(.npmrc): ask
+- write_file(.npmrc): ask
+- read_file(.pypirc): ask
+- write_file(.pypirc): ask
+- read_file(.netrc): ask
+- write_file(.netrc): ask
+- read_file(.git-credentials): ask
+- write_file(.git-credentials): ask
+- read_file(C:\Users\asus\.gemini\antigravity-ide): denied
+- write_file(C:\Users\asus\.gemini\antigravity-ide): denied
+- read_file(C:\Users\asus\.gemini\config): denied
+- write_file(C:\Users\asus\.gemini\config): denied
+- command(echo): allowed
+- command(date): allowed
+- command(echo): allowed
+- command(date): allowed
+"}
+{"step_index":3232,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-22T09:10:52Z","tool_calls":[{"name":"view_file","args":{"AbsolutePath":""H:\\java spring\\interviewai\\src\\main\\esources\\templates\\mock_interview.html"","toolAction":""Read mock_interview.html"","toolSummary":""Reading mock_interview.html""}}]}
+{"step_index":3233,"source":"MODEL","type":"VIEW_FILE","status":"DONE","created_at":"2026-05-22T09:10:55Z","content":"Created At: 2026-05-22T09:10:55Z
+Completed At: 2026-05-22T09:10:55Z
+File Path: `file:///H:/java%20spring/interviewai/src/main/resources/templates/mock_interview.html`
+Total Lines: 1620
+Total Bytes: 62374
+Showing lines 1 to 800
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: <!DOCTYPE html>
+2: <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+3: <head>
+4:     <meta charset="UTF-8">
+5:     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+6:     <title>全真多轮语音模拟面试 - InterviewAI</title>
+7:     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+8:     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+9:     <style>
+10:         :root {
+11:             --bg-dark: #090d16;
+12:             --card-bg: rgba(30, 41, 59, 0.7);
+13:             --primary-neon: #10b981;
+14:             --secondary-neon: #3b82f6;
+15:             --accent-orange: #f59e0b;
+16:             --danger-red: #ef4444;
+17:             --border-color: #334155;
+18:             --text-light: #f8fafc;
+19:             --text-muted: #94a3b8;
+20:         }
+21: 
+22:         body {
+23:             background-color: var(--bg-dark);
+24:             color: var(--text-light);
+25:             height: 100vh;
+26:             display: flex;
+27:             flex-direction: column;
+28:             overflow: hidden;
+29:             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+30:         }
+31: 
+32:         /* 背景微光效果 */
+33:         .glow-overlay {
+34:             position: absolute;
+35:             top: 0;
+36:             left: 0;
+37:             width: 100%;
+38:             height: 100%;
+39:             background: 
+40:                 radial-gradient(circle at 10% 20%, rgba(59, 130
+<truncated 27959 bytes>
+ass="voice-panel" id="mainVoicePanel">
+757:         <!-- 状态栏标题 -->
+758:         <h4 class="mb-4 text-center fw-bold" id="statusTitle" style="letter-spacing: 1px;">AI 面试官已连接...</h4>
+759: 
+760:         <!-- 大头像及呼吸声波环 -->
+761:         <div class="avatar-container">
+762:             <div class="avatar-ring"></div>
+763:             <div class="ai-avatar">
+764:                 <i class="bi bi-robot"></i>
+765:             </div>
+766:         </div>
+767: 
+768:         <!-- 动画声波 -->
+769:         <div class="voice-wave" id="visualizerWave">
+770:             <div class="wave-bar"></div>
+771:             <div class="wave-bar"></div>
+772:             <div class="wave-bar"></div>
+773:             <div class="wave-bar"></div>
+774:             <div class="wave-bar"></div>
+775:             <div class="wave-bar"></div>
+776:             <div class="wave-bar"></div>
+777:         </div>
+778: 
+779:         <!-- 实时结果预览 -->
+780:         <div class="transcript-preview" id="previewText">
+781:             AI 面试官正在思考开场白，请稍候...
+782:         </div>
+783: 
+784:         <!-- 控制按钮 -->
+785:         <div class="controls-area">
+786:             <div class="large-mic-btn" id="voiceMicBtn">
+787:                 <i class="bi bi-mic-fill"></i>
+788:             </div>
+789:             <span class="mic-instructions" id="micInstruction">长按麦克风开始说话</span>
+790:         </div>
+791: 
+792:         <!-- 左下：切换键盘 -->
+793:         <div class="input-switcher">
+794:             <button class="btn-circle" id="toggleKeyboardBtn" title="切换文本键盘输入">
+795:                 <i class="bi bi-keyboard-fill"></i>
+796:             </button>
+797:         </div>
+798: 
+799:         <!-- 右下：辅助音量设置等 -->
+800:         <div class="aux-controls">
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.
+"}
+{"step_index":3234,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-22T09:10:55Z","tool_calls":[{"name":"grep_search","args":{"CaseInsensitive":"true","IsRegex":"false","MatchPerLine":"true","Query":""solver"","SearchPath":""H:\\java spring\\interviewai\\src\\main\\esources\\templates\\mock_interview.html"","toolAction":""Search solver in mock_interview.html"","toolSummary":""Searching for solver occurrences in mock_interview.html""}}]}
+{"step_index":3235,"source":"MODEL","type":"GREP_SEARCH","status":"DONE","created_at":"2026-05-22T09:10:58Z","content":"Created At: 2026-05-22T09:10:58Z
+Completed At: 2026-05-22T09:10:58Z
+No results found"}
+{"step_index":3236,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-22T09:10:59Z","tool_calls":[{"name":"view_file","args":{"AbsolutePath":""H:\\java spring\\interviewai\\src\\main\\esources\\templates\\mock_interview.html"","EndLine":"1600","StartLine":"800","toolAction":""Read mock_interview.html lines 800-1600"","toolSummary":""Reading rest of mock_interview.html""}}]}
+{"step_index":3237,"source":"MODEL","type":"VIEW_FILE","status":"DONE","created_at":"2026-05-22T09:11:02Z","content":"Created At: 2026-05-22T09:11:02Z
+Completed At: 2026-05-22T09:11:02Z
+File Path: `file:///H:/java%20spring/interviewai/src/main/resources/templates/mock_interview.html`
+Total Lines: 1620
+Total Bytes: 62374
+Showing lines 800 to 1599
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+800:         <div class="aux-controls">
+801:             <button class="btn-circle" id="toggleSolverBtn" title="AI笔试秒解 (截图/粘贴)">
+802:                 <i class="bi bi-camera-fill text-danger"></i>
+803:             </button>
+804:             <button class="btn-circle active" id="toggleTtsBtn" title="开启/关闭语音播报">
+805:                 <i class="bi bi-volume-up-fill"></i>
+806:             </button>
+807:             <button class="btn-circle" id="toggleHistoryBtn" title="查看对话实录">
+808:                 <i class="bi bi-chat-text-fill"></i>
+809:             </button>
+810:         </div>
+811:     </div>
+812: 
+813:     <!-- 文本键盘输入抽屉 -->
+814:     <div class="keyboard-input-drawer" id="keyboardDrawer">
+815:         <div class="d-flex justify-content-between align-items-center mb-2">
+816:             <span class="fw-bold text-muted small"><i class="bi bi-keyboard me-1"></i> 文字键盘输入</span>
+817:             <button type="button" class="btn-close btn-close-white btn-sm" onclick="toggleKeyboardDrawer(false)"></button>
+818:         </div>
+819:         <div class="input-group">
+820:             <textarea id="keyboardText" class="form-control" rows="2" placeholder="输入你想回答的话..."></textarea>
+821:             <button class="btn btn-primary px-4 fw-bold" id="keyboardSendBtn">
+822:                 <i class="bi bi-send-fill"></i> 发送
+823:             </button>
+824:         </div>
+825:     </div>
+826: 
+827:     <!-- 右侧：面试对话历史实录 -->
+828:     <div class="chat-sidebar" id=
+<truncated 35414 bytes>
+至大模型进行多维语义对齐...',
+1558:             '[LLM] 正在生成高分智能分析与解题步骤...'
+1559:         ];
+1560: 
+1561:         let logIdx = 0;
+1562:         const logInterval = setInterval(() => {
+1563:             if (logIdx < logLines.length) {
+1564:                 const line = document.createElement('div');
+1565:                 line.className = 'scan-log-line';
+1566:                 line.innerText = logLines[logIdx];
+1567:                 solverScanLog.appendChild(line);
+1568:                 solverScanLog.scrollTop = solverScanLog.scrollHeight;
+1569:                 logIdx++;
+1570:             } else {
+1571:                 clearInterval(logInterval);
+1572:             }
+1573:         }, 250);
+1574: 
+1575:         const formData = new FormData();
+1576:         formData.append('file', solverFile);
+1577:         formData.append('type', solverTypeSelect.value);
+1578: 
+1579:         try {
+1580:             const response = await fetch('/api/solver/analyze', {
+1581:                 method: 'POST',
+1582:                 body: formData
+1583:             });
+1584:             const data = await response.json();
+1585: 
+1586:             while (logIdx < logLines.length) {
+1587:                 await new Promise(r => setTimeout(r, 100));
+1588:             }
+1589:             await new Promise(r => setTimeout(r, 400));
+1590: 
+1591:             if (data.success) {
+1592:                 if (solverTypeSelect.value === 'code') {
+1593:                     solverAnswerText.innerHTML = `<pre class="code-block">${data.correctAnswer}</pre>`;
+1594:                 } else {
+1595:                     solverAnswerText.innerHTML = `<div class="ans-text">${data.correctAnswer}</div>`;
+1596:                 }
+1597:                 
+1598:                 solverReasoningText.innerHTML = data.reasoning;
+1599:                 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.
+"}
+{"step_index":3238,"source":"MODEL","type":"PLANNER_RESPONSE","status":"DONE","created_at":"2026-05-22T09:11:02Z","tool_calls":[{"name":"view_file","args":{"AbsolutePath":""H:\\java spring\\interviewai\\src\\main\\esources\\templates\\mock_interview.html"","StartLine":"1590","toolAction":""Read mock_interview.html end"","toolSummary":""Reading mock_interview.html end""}}]}
+{"step_index":3239,"source":"MODEL","type":"VIEW_FILE","status":"DONE","created_at":"2026-05-22T09:11:06Z","content":"Created At: 2026-05-22T09:11:06Z
+Completed At: 2026-05-22T09:11:06Z
+File Path: `file:///H:/java%20spring/interviewai/src/main/resources/templates/mock_interview.html`
+Total Lines: 1620
+Total Bytes: 62374
+Showing lines 1590 to 1620
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1590: 
+1591:             if (data.success) {
+1592:                 if (solverTypeSelect.value === 'code') {
+1593:                     solverAnswerText.innerHTML = `<pre class="code-block">${data.correctAnswer}</pre>`;
+1594:                 } else {
+1595:                     solverAnswerText.innerHTML = `<div class="ans-text">${data.correctAnswer}</div>`;
+1596:                 }
+1597:                 
+1598:                 solverReasoningText.innerHTML = data.reasoning;
+1599:                 
+1600:                 solverScannerContainer.style.display = 'none';
+1601:                 solverSolutionContainer.style.display = 'block';
+1602:                 setSolverStatus('done', '分析完成');
+1603:             } else {
+1604:                 alert('AI 分析失败，请重试！');
+1605:                 resetSolver();
+1606:             }
+1607:         } catch (error) {
+1608:             console.error(error);
+1609:             alert('网络异常，解析失败！');
+1610:             resetSolver();
+1611:         } finally {
+1612:             startSolveBtn.disabled = false;
+1613:             solverTypeSelect.disabled = false;
+1614:             solverReuploadBtn.disabled = false;
+1615:         }
+1616:     });
+1617: </script>
+1618: </body>
+1619: </html>

@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-InterviewAiApplication<interviewai>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.interviewai.InterviewAiApplication",
+            "projectName": "interviewai",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

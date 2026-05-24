@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+2: <html lang="zh" xmlns:th="http://www.thymeleaf.org">
+3: <head>
+4:     <meta charset="UTF-8">
+5:     <meta name="viewport" content="width=device-width, initial-scale=1">
+6:     <title>AI简历定制与深度诊所 - InterviewAI</title>
+7:     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+8:     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+9:     <!-- Marked.js for markdown rendering -->
+10:     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+11:     <style>
+12:         body {
+13:             background-color: #0f172a;
+14:             color: #e2e8f0;
+15:             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+16:             min-height: 100vh;
+17:         }
+18:         .sidebar {
+19:             min-height: 100vh;
+20:             background-color: #1e293b;
+21:             border-right: 1px solid #334155;
+22:             box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+23:         }
+24:         .nav-link {
+25:             color: #94a3b8;
+26:             font-weight: 500;
+27:             margin-bottom: 0.5rem;
+28:             border-radius: 8px;
+29:             padding: 10px 15px;
+30:             transition: all 0.2s;
+31:         }
+32:         .nav-link:hover {
+33:             background-color: #334155;
+34:             color: #f8fafc;
+35:         }
+36:         .nav-link.active {
+37:             background-color: #10b981;
+38:             color: white;
+39:             box-shad
+<truncated 24145 bytes>
+'resultState').style.display = 'block';
+491: 
+492:         // 填充得分
+493:         document.getElementById('scoreResume').innerText = analysis.score || 0;
+494:         
+495:         // 岗位匹配度得分 (只在有JD时激活)
+496:         if (targetJd && targetJd.trim() !== '') {
+497:             document.getElementById('matchScoreContainer').style.display = 'block';
+498:             document.getElementById('scoreMatch').innerText = analysis.matchScore || 0;
+499:             document.getElementById('accordionJdBlock').style.display = 'block';
+500:         } else {
+501:             document.getElementById('matchScoreContainer').style.display = 'none';
+502:             document.getElementById('accordionJdBlock').style.display = 'none';
+503:         }
+504: 
+505:         // 使用 marked.js 渲染 Markdown 格式文本
+506:         document.getElementById('reportClinic').innerHTML = marked.parse(analysis.feedbackReport || '暂无诊断信息。');
+507:         document.getElementById('reportMatch').innerHTML = marked.parse(analysis.suggestions || '暂无优化建议。');
+508:         document.getElementById('reportOptimize').innerHTML = marked.parse(analysis.optimizedResume || '暂无建议内容。');
+509:     }
+510: 
+511:     function showEmptyState() {
+512:         document.getElementById('loadingState').style.display = 'none';
+513:         document.getElementById('resultState').style.display = 'none';
+514:         document.getElementById('emptyResultState').style.display = 'flex';
+515:     }
+516: 
+517:     function resetForm() {
+518:         selectedFile = null;
+519:         document.getElementById('fileInput').value = "";
+520:         document.getElementById('selectedFileInfo').style.display = 'none';
+521:         document.getElementById('resumePasteInput').value = "";
+522:         document.getElementById('targetJdInput').value = "";
+523:         showEmptyState();
+524:     }
+525: </script>
+526: </body>
+527: </html>

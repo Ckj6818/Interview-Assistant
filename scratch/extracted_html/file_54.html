@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+2: <html lang="zh" xmlns:th="http://www.thymeleaf.org">
+3: <head>
+4:     <meta charset="UTF-8">
+5:     <meta name="viewport" content="width=device-width, initial-scale=1">
+6:     <title>题库大厅 - LeetCode 极客刷题 - InterviewAI</title>
+7:     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+8:     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+9:     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+10:     <style>
+11:         :root {
+12:             --bg-base: #090d16;
+13:             --bg-surface: #111827;
+14:             --bg-surface-hover: #1f2937;
+15:             --border-color: #374151;
+16:             --text-primary: #f3f4f6;
+17:             --text-secondary: #9ca3af;
+18:             --color-primary: #3b82f6;
+19:             --color-success: #10b981;
+20:             --color-warning: #f59e0b;
+21:             --color-danger: #ef4444;
+22:             --color-purple: #8b5cf6;
+23:         }
+24: 
+25:         body {
+26:             background-color: var(--bg-base);
+27:             color: var(--text-primary);
+28:             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+29:             min-height: 100vh;
+30:             overflow-x: hidden;
+31:         }
+32: 
+33:         /* 侧边栏 */
+34:         .sidebar {
+35:             min-height: 100vh;
+36:             background-color: var(--bg-
+<truncated 18595 bytes>
+lty == '困难'}" class="badge-difficulty difficulty-hard">困难</span>
+502:                     </td>
+503:                     <!-- 题型 -->
+504:                     <td>
+505:                         <span th:if="${question.questionType == 'code'}" class="badge-type type-code">代码题</span>
+506:                         <span th:if="${question.questionType == 'conceptual' || question.questionType == null}" class="badge-type type-conceptual">概念题</span>
+507:                     </td>
+508:                     <!-- 操作 -->
+509:                     <td style="text-align: right;">
+510:                         <a th:href="@{'/questions/' + ${question.id} + '/solve'}" 
+511:                            th:class="${solvedTopics != null && solvedTopics.contains(question.title)} ? 'btn btn-challenge btn-challenge-outline' : 'btn btn-challenge btn-challenge-solid'">
+512:                             <i th:class="${solvedTopics != null && solvedTopics.contains(question.title)} ? 'bi bi-arrow-repeat' : 'bi bi-play-fill'"></i>
+513:                             <span th:text="${solvedTopics != null && solvedTopics.contains(question.title) ? '重新挑战' : '开始挑战'}">开始挑战</span>
+514:                         </a>
+515:                     </td>
+516:                 </tr>
+517:                 <!-- 空状态 -->
+518:                 <tr th:if="${questions == null || questions.size() == 0}">
+519:                     <td colspan="6" class="text-center py-5 text-secondary">
+520:                         <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+521:                         没有找到符合筛选条件的题目，请尝试更换关键词或过滤器。
+522:                     </td>
+523:                 </tr>
+524:             </tbody>
+525:         </table>
+526:     </div>
+527: </div>
+528: 
+529: <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+530: </body>
+531: </html>
