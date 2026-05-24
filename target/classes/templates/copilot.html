@@ -289,6 +289,10 @@
                 </select>
             </div>
             
+            <button class="btn btn-outline-success btn-sm" id="ttsBtn" style="border-radius: 8px;" title="开启/关闭语音播报 (建议佩戴耳机)">
+                <i class="bi bi-megaphone"></i> <span id="ttsBtnText">播报: 关</span>
+            </button>
+
             <button class="btn btn-outline-info btn-sm" id="pipBtn" style="border-radius: 8px;" title="开启画中画悬浮窗，在屏幕最上层显示提词">
                 <i class="bi bi-window-stack"></i> 📺 开启悬浮窗
             </button>
@@ -420,6 +424,35 @@
     const manualSubmit = document.getElementById('manualSubmit');
     const pipBtn = document.getElementById('pipBtn');
     const captureScreenBtn = document.getElementById('captureScreenBtn');
+    const ttsBtn = document.getElementById('ttsBtn');
+    const ttsBtnText = document.getElementById('ttsBtnText');
+
+    let ttsEnabled = false;
+    
+    ttsBtn.addEventListener('click', () => {
+        ttsEnabled = !ttsEnabled;
+        if (ttsEnabled) {
+            ttsBtn.classList.remove('btn-outline-success');
+            ttsBtn.classList.add('btn-success');
+            ttsBtnText.innerText = '播报: 开';
+        } else {
+            ttsBtn.classList.remove('btn-success');
+            ttsBtn.classList.add('btn-outline-success');
+            ttsBtnText.innerText = '播报: 关';
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
+        }
+    });
+
+    function playVoice(text) {
+        if (!ttsEnabled || !window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        let plainText = text.replace(/<[^>]+>/g, '').replace(/[\*\_#`~>]/g, '').trim();
+        if (!plainText) return;
+        const utterance = new SpeechSynthesisUtterance(plainText);
+        utterance.lang = 'zh-CN';
+        utterance.rate = 1.1; // 语速稍微快一点
+        window.speechSynthesis.speak(utterance);
+    }
 
     let recognition = null;
     let isListening = false;
@@ -615,6 +648,8 @@
                     <div class="lh-lg text-white markdown-body" style="font-size: 1.05rem;">${formattedAnswer}</div>
                 `;
 
+                playVoice(data.answer);
+
                 // 异步渲染 Latex 公式与 Mermaid 图表
                 setTimeout(() => {
                     if (window.renderMathInElement) {
@@ -790,6 +825,8 @@
                     <div class="text-warning small mb-2 fw-bold"><i class="bi bi-lightbulb-fill"></i> 对标解答 / 实时纠正</div>
                     <div class="lh-lg text-white markdown-body" style="font-size: 1.05rem;">${formattedAnswer}</div>
                 `;
+
+                playVoice(data.answer);
 
                 setTimeout(() => {
                     if (window.renderMathInElement) {
