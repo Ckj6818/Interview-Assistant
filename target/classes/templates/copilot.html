@@ -390,6 +390,7 @@
                 <button class="btn btn-danger py-3 px-4" id="stopBtn" disabled style="border-radius: 12px;">
                     <i class="bi bi-stop-fill"></i>
                 </button>
+                <button class="btn btn-outline-warning py-3 px-4" id="pauseBtn" style="border-radius: 12px;" title="手动暂停/恢复">暂停</button>
                 <button class="btn btn-outline-secondary py-3" id="clearBtn" title="清空" style="border-radius: 12px;">
                     <i class="bi bi-trash"></i>
                 </button>
@@ -427,7 +428,7 @@
     const ttsBtn = document.getElementById('ttsBtn');
     const ttsBtnText = document.getElementById('ttsBtnText');
 
-    let ttsEnabled = false;
+    let ttsEnabled = false; let isPaused = false; // manual pause flag
     
     ttsBtn.addEventListener('click', () => {
         ttsEnabled = !ttsEnabled;
@@ -521,8 +522,8 @@
         };
 
         recognition.onend = () => {
-            if (isListening) {
-                // 意外停止时自动重连
+            if (isListening && !isPaused) {
+                // 意外停止时自动重连（除非手动暂停）
                 try {
                     recognition.start();
                 } catch (e) {
@@ -698,11 +699,39 @@
         if (e.key === 'Escape') {
             document.body.classList.toggle('stealth-mode');
             if (window.activePipWindow) {
-                // 如果画中画存在，也顺便给个控制台提醒
                 console.log("Stealth mode toggled on main window");
             }
+        } else if (e.key === ' ') {
+            // Trigger manual pause toggle via button click
+            const pauseBtn = document.getElementById('pauseBtn');
+            if (pauseBtn) pauseBtn.click();
         }
     });
+
+    // 手动暂停/恢复按钮逻辑
+    const pauseBtn = document.getElementById('pauseBtn');
+    if (pauseBtn) {
+        pauseBtn.addEventListener('click', () => {
+            isPaused = !isPaused;
+            if (isPaused) {
+                // 手动暂停
+                if (recognition) recognition.stop();
+                pauseBtn.innerText = '继续';
+                appStatus.innerText = '已手动暂停';
+                appStatus.className = 'status-badge bg-secondary text-white';
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+            } else {
+                // 恢复
+                if (recognition) recognition.start();
+                pauseBtn.innerText = '暂停';
+                appStatus.innerText = '正在捕捉';
+                appStatus.className = 'status-badge bg-success text-white';
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+            }
+        });
+    }
 
     // ==========================================
     // 截图 OCR 上传 (支持 Ctrl+V 与 拖拽)

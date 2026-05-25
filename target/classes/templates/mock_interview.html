@@ -56,7 +56,7 @@
             z-index: 10;
         }
 
-        /* 主容器布局：左右分�?*/
+        /* 主容器布局：左右分栏 */
         .main-layout {
             flex: 1;
             display: flex;
@@ -75,7 +75,7 @@
             position: relative;
         }
 
-        /* 右侧对话历史折叠�?*/
+        /* 右侧对话历史折叠栏 */
         .chat-sidebar {
             width: 380px;
             background-color: rgba(9, 11, 17, 0.95);
@@ -120,7 +120,7 @@
             transition: all 0.4s;
         }
 
-        /* 呼吸/发声动画�?*/
+        /* 呼吸/发声动画 */
         .avatar-ring {
             position: absolute;
             width: 100%;
@@ -373,7 +373,7 @@
             border-top-right-radius: 0;
         }
 
-        /* 面试准备遮罩�?*/
+        /* 面试准备遮罩层 */
         .loading-overlay {
             position: absolute;
             top: 0;
@@ -411,7 +411,7 @@
             border-radius: 3px;
         }
 
-        /* 键盘输入文本输入框弹�?*/
+        /* 键盘输入文本输入框弹窗 */
         .keyboard-input-drawer {
             position: absolute;
             bottom: 0;
@@ -446,7 +446,7 @@
             border-color: var(--secondary-neon);
         }
 
-        /* 关键帧动�?*/
+        /* 关键帧动画 */
         @keyframes ring-pulse-green {
             0% { transform: scale(1); opacity: 0.8; }
             100% { transform: scale(1.4); opacity: 0; }
@@ -701,7 +701,7 @@
 
 <div class="glow-overlay"></div>
 
-<!-- 侧边�?-->
+<!-- 侧边栏 -->
 <div class="sidebar d-flex flex-column justify-content-between py-4">
     <div>
         <div class="logo-container mb-4 px-3">
@@ -728,7 +728,7 @@
                     <a class="nav-link" href="/copilot"><i class="bi bi-rocket-takeoff me-2"></i> 面试助手</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/resume"><i class="bi bi-file-earmark-person me-2"></i> 简历优�</a>
+                    <a class="nav-link" href="/resume"><i class="bi bi-file-earmark-person me-2"></i> 简历优化</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/records"><i class="bi bi-clock-history me-2"></i> 面试记录</a>
@@ -750,7 +750,7 @@
 <!-- 右侧主体 -->
 <div class="main-content" style="height: 100vh; overflow: hidden; display: flex; flex-direction: column; padding: 0;">
 
-    <!-- 顶部导航�?-->
+    <!-- 顶部导航栏 -->
     <nav class="navbar navbar-custom py-3">
         <div class="container-fluid pe-4 ps-5">
             <a class="navbar-brand text-white fw-bold d-flex align-items-center" href="/">
@@ -778,7 +778,7 @@
         <div class="loading-overlay" id="prepOverlay">
             <div class="glass-card-prep" style="max-width: 650px; padding: 30px;">
                 <i class="bi bi-robot text-primary display-5 mb-2"></i>
-                <h3 class="fw-bold text-white mb-2">进入 AI 全真模拟面试�</h3>
+                <h3 class="fw-bold text-white mb-2">进入 AI 全真模拟面试 🎯</h3>
                 <p class="text-light small mb-3" style="opacity: 0.85;">我们将模拟真实电话/语音面试。AI 面试官将主动提问并进行针对性追问。</p>
                 
                 <!-- 个性化 RAG 设置 -->
@@ -1319,7 +1319,7 @@
                         sentenceBuffer += text;
                         previewText.innerText = aiFullReply;
                         
-                        if (/[.?!。？�?�?；]$/.test(text.trim()) || sentenceBuffer.length > 40) {
+                        if (/[.?!。？！、；]$/.test(text.trim()) || sentenceBuffer.length > 40) {
                             speakBuffer(sentenceBuffer);
                             sentenceBuffer = "";
                         }
@@ -1365,7 +1365,7 @@
         
         const label = document.createElement('div');
         label.className = 'bubble-label';
-        label.innerText = role === 'ai' ? 'AI 面试�? : '�?;
+        label.innerText = role === 'ai' ? 'AI 面试官' : '你';
         
         const bubble = document.createElement('div');
         bubble.className = 'bubble-content markdown-body';
