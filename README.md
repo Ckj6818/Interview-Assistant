@@ -1,4 +1,4 @@
-<img width="1910" height="938" alt="image" src="https://github.com/user-attachments/assets/dc772cf7-204b-4000-8416-6592afd1d3ab" /># MindSpark (InterviewAI) - 智能模拟面试与全真技术对线平台
+# MindSpark (InterviewAI) - 智能模拟面试与全真技术对线平台
 
 <p align="center">
   <img src="https://img.shields.io/badge/Java-17-orange.svg" alt="Java 17">
