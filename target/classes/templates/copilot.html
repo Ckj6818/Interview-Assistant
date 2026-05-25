@@ -501,8 +501,18 @@
             }
 
             const bubbleTextSpan = currentBubble.querySelector('.bubble-text');
-            bubbleTextSpan.innerText = finalTranscript || interimTranscript;
+            const currentText = finalTranscript || interimTranscript;
+            bubbleTextSpan.innerText = currentText;
             transcriptionBox.scrollTop = transcriptionBox.scrollHeight;
+            
+            // 实时同步到画中画悬浮窗
+            if (window.activePipWindow) {
+                const pipDoc = window.activePipWindow.document;
+                const pipTranscriptDiv = pipDoc.getElementById('pipTranscript');
+                if (pipTranscriptDiv) {
+                    pipTranscriptDiv.innerText = currentText;
+                }
+            }
 
             if (finalTranscript) {
                 getAiSuggestion(finalTranscript);
@@ -981,6 +991,10 @@
                         <span style="color: #10b981; font-size: 0.75rem;">● 实时侦听中</span>
                     </div>
                     <div class="pip-container">
+                        <div class="pip-card" style="margin-bottom: -5px;">
+                            <div class="pip-card-title text-success" style="color: #10b981;">🎤 实时捕捉</div>
+                            <div id="pipTranscript" style="color: #cbd5e1; font-style: italic;">等待语音输入...</div>
+                        </div>
                         <div class="pip-card">
                             <div class="pip-card-title analysis">🎯 面试意图</div>
                             <div id="pipAnalysis">等待捕捉提问...</div>
