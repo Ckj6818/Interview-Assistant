@@ -1,4 +1,4 @@
-# MindSpark (InterviewAI) - 智能模拟面试与全真技术对线平台
+<img width="1910" height="938" alt="image" src="https://github.com/user-attachments/assets/dc772cf7-204b-4000-8416-6592afd1d3ab" /># MindSpark (InterviewAI) - 智能模拟面试与全真技术对线平台
 
 <p align="center">
   <img src="https://img.shields.io/badge/Java-17-orange.svg" alt="Java 17">
@@ -36,15 +36,15 @@
 
 ### 1. 🎛️ 控制面板与数据看板 (Dashboard)
 项目主控台，直观追踪模拟面试场次、累计时长及核心技术栈熟练度。
-![Dashboard](images/dashboard.png)
+
 
 ### 2. ⚔️ 沉浸式 AI 面试对线界面 (AI Interview Interface)
 深度还原高压面试。AI 面试官正在根据求职者的回答进行连环技术施压追问。
-![Interview](images/interview.png)
+
 
 ### 3. 📝 智能题目库与解析矩阵 (Question Matrix)
 基于关系型数据库建立的多维技术题库，支持按技术栈标签与难度梯度精细化检索。
-![Questions](images/questions.png)
+
 
 ---
 
