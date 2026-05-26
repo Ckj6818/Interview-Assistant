@@ -15,6 +15,35 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             min-height: 100vh;
         }
+        .sidebar {
+            min-height: 100vh;
+            background-color: #1e293b;
+            border-right: 1px solid #334155;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        }
+        .nav-link {
+            color: #94a3b8;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            padding: 10px 15px;
+            transition: all 0.2s;
+        }
+        .nav-link:hover {
+            background-color: #334155;
+            color: #f8fafc;
+        }
+        .nav-link.active {
+            background-color: #10b981;
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        .logo-text {
+            background: linear-gradient(to right, #3b82f6, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
         /* Custom UI Style */
         .glass-card {
             background: rgba(30, 41, 59, 0.7);
@@ -157,7 +186,10 @@
 </head>
 <body>
 
-<!-- 侧边栏 -->
+<div class="container-fluid">
+    <div class="row">
+        <!-- 左侧导航 -->
+        <!-- 侧边栏 -->
 <div class="sidebar d-flex flex-column justify-content-between py-4">
     <div>
         <div class="logo-container mb-4 px-3">
@@ -184,7 +216,7 @@
                     <a class="nav-link" href="/copilot"><i class="bi bi-rocket-takeoff me-2"></i> 面试助手</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="/resume"><i class="bi bi-file-earmark-person me-2"></i> 简历优化</a>
+                    <a class="nav-link" href="/resume"><i class="bi bi-file-earmark-person me-2"></i> 简历优化</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/records"><i class="bi bi-clock-history me-2"></i> 面试记录</a>
@@ -194,16 +226,28 @@
     </div>
     
     <div class="px-3">
-        <form action="/logout" method="post" style="margin: 0;">
-            <button type="submit" class="nav-link py-2 px-1 text-start" style="font-size: 0.88rem; gap: 8px; border: none; background: transparent; width: 100%; cursor: pointer;">
-               <i class="bi bi-box-arrow-right me-2"></i> 退出登录
-            </button>
-        </form>
+        <button class="btn w-100 mb-3 d-flex align-items-center justify-content-center gap-2" 
+                style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: #f1f5f9; font-size: 0.85rem; padding: 10px; border-radius: 8px; font-weight: 500;"
+                onclick="window.location.href='/mock-interview'">
+            <i class="bi bi-plus-lg"></i> 开始新面试
+        </button>
+        <ul class="nav flex-column border-top pt-3" style="border-color: rgba(255,255,255,0.05) !important;">
+            <li class="nav-item">
+                <a class="nav-link py-2 px-1" href="#" style="font-size: 0.88rem; gap: 8px;"><i class="bi bi-gear me-2"></i> 设置</a>
+            </li>
+            <li class="nav-item">
+                <form action="/logout" method="post" style="margin: 0;">
+                    <button type="submit" class="nav-link py-2 px-1 text-start" style="font-size: 0.88rem; gap: 8px; border: none; background: transparent; width: 100%;">
+                       <i class="bi bi-box-arrow-right me-2"></i> 退出登录
+                    </button>
+                </form>
+            </li>
+        </ul>
     </div>
 </div>
 
 <!-- 右侧主体 -->
-<div class="main-content">
+        <div class="col-md-10 p-4">
             <h2 class="mb-2 fw-bold text-white"><i class="bi bi-file-earmark-person-fill text-success me-2"></i>AI简历定制 & 深度诊断诊所</h2>
             <p class="text-muted mb-4">模拟资深HR视角，对你的简历进行多维度打分与诊断，并可一键导入职位JD（岗位描述）进行针对性润色以优化ATS通过率。</p>
 
@@ -349,6 +393,7 @@
                 </div>
             </div>
         </div>
+    </div>
 </div>
 
 <!-- Full Resume Optimization Modal -->
@@ -646,40 +691,6 @@
             alert('复制失败，请手动选择文本复制！');
         });
     }
-
-    // 侧边栏折叠/展开功能
-    document.addEventListener("DOMContentLoaded", function() {
-        const sidebar = document.querySelector('.sidebar');
-        if (sidebar && !document.querySelector('.sidebar-toggle')) {
-            const toggleBtn = document.createElement('div');
-            toggleBtn.className = 'sidebar-toggle';
-            toggleBtn.innerHTML = '<i class="bi bi-chevron-left"></i>';
-            toggleBtn.onclick = function() {
-                sidebar.classList.toggle('collapsed');
-                const mainContent = document.querySelector('.main-content');
-                if (mainContent) mainContent.classList.toggle('expanded');
-                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
-            };
-            sidebar.appendChild(toggleBtn);
-
-            document.querySelectorAll('.sidebar .nav-link, .sidebar .btn').forEach(el => {
-                Array.from(el.childNodes).forEach(node => {
-                    if (node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 0) {
-                        const span = document.createElement('span');
-                        span.className = 'nav-text';
-                        span.textContent = node.textContent;
-                        el.replaceChild(span, node);
-                    }
-                });
-            });
-
-            if (localStorage.getItem('sidebarCollapsed') === 'true') {
-                sidebar.classList.add('collapsed');
-                const mainContent = document.querySelector('.main-content');
-                if (mainContent) mainContent.classList.add('expanded');
-            }
-        }
-    });
 </script>
 </body>
 </html>

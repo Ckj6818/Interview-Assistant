@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI 笔试助手 - MindSpark 面之光</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Quill.js 依赖 -->
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+    <style>
+        :root {
+            --bg-base: #07090e;
+            --bg-panel: #111422;
+            --bg-editor: #0f1322;
+            --border-color: rgba(255, 255, 255, 0.06);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --color-primary: #2563eb;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-danger: #ef4444;
+            --color-purple: #8b5cf6;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 0;
+            background-color: var(--bg-base);
+        }
+
+        /* 顶部导航 */
+        .navbar-custom {
+            background-color: var(--bg-sidebar);
+            border-bottom: 1px solid var(--border-color);
+            padding: 8px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 56px;
+            flex-shrink: 0;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.15rem;
+        }
+
+        .nav-brand i {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* 主体布局 */
+        .workspace {
+            display: flex;
+            flex-grow: 1;
+            overflow: hidden;
+            background-color: var(--bg-base);
+            padding: 8px;
+            gap: 8px;
+        }
+
+        .pane {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 左面板：题目描述与参考答案 */
+        .pane-left {
+            width: 40%;
+            height: 100%;
+        }
+        .pane-left.collapsed {
+            width: 0 !important;
+            opacity: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            overflow: hidden !important;
+            pointer-events: none !important;
+        }
+
+        /* 右面板：IDE与控制台 */
+        .pane-right {
+            width: 60%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: transparent;
+            border: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .pane-right.expanded {
+            width: 100% !important;
+        }
+
+        .editor-container-wrapper {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 标签页与标头 */
+        .panel-header {
+            background-color: rgba(31, 41, 55, 0.4);
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 48px;
+            flex-shrink: 0;
+        }
+
+        .panel-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-body-scroll {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        /* Monaco 编辑器承载 */
+        #editor {
+            flex-grow: 1;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 控制台容器 */
+        .console-container {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            height: 250px;
+            min-height: 48px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: height 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .console-container.minimized {
+            height: 48px !important;
+        }
+
+        .console-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #0b0f19;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+        }
+
+        /* 徽章 */
+        .badge-difficulty {
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .difficulty-easy { background-color: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .difficulty-medium { background-color: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .difficulty-hard { background-color: rgba(239, 68, 68, 0.15); color: #f87171; }
+
+        /* 参考答案锁定面板 */
+        .answer-locked-panel {
+            background: rgba(17, 24, 39, 0.9);
+            border: 1px dashed #4b5563;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .answer-blur {
+            filter: blur(8px);
+            user-select: none;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        /* 底部操作栏 */
+        .action-bar {
+            background-color: var(--bg-panel);
+            border-top: 1px solid var(--border-color);
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 50px;
+            flex-shrink: 0;
+        }
+
+        /* 代码运行状态指示 */
+        .test-case-row {
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 8px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* 各种按钮 */
+        .btn-action {
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-run {
+            background-color: #374151;
+            color: var(--text-primary);
+            border: 1px solid #4b5563;
+        }
+
+        .btn-run:hover {
+            background-color: #4b5563;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--color-primary), #1d4ed8);
+            color: white;
+            border: none;
+        }
+
+        .btn-submit:hover {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+
+        /* 提交成功弹窗评分图 */
+        .modal-content-dark {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 16px;
+        }
+
+        .modal-header-custom {
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 24px;
+        }
+
+        .modal-footer-custom {
+            border-top: 1px solid var(--border-color);
+            padding: 16px 24px;
+        }
+
+        .radar-chart-container {
+            width: 260px;
+            height: 260px;
+            margin: 0 auto;
+        }
+
+        /* Markdown 预览区样式 */
+        #markdownPreview {
+            line-height: 1.7;
+        }
+        #markdownPreview h1, #markdownPreview h2, #markdownPreview h3, #markdownPreview h4 {
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        #markdownPreview h1 { font-size: 1.4rem; }
+        #markdownPreview h2 { font-size: 1.2rem; }
+        #markdownPreview h3 { font-size: 1.1rem; }
+        #markdownPreview p {
+            margin-bottom: 14px;
+        }
+        #markdownPreview ul, #markdownPreview ol {
+            padding-left: 20px;
+            margin-bottom: 14px;
+        }
+        #markdownPreview li {
+            margin-bottom: 4px;
+        }
+        #markdownPreview blockquote {
+            border-left: 4px solid var(--color-primary);
+            padding-left: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            font-style: italic;
+        }
+        #markdownPreview pre {
+            background-color: #0b0f19;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            overflow-x: auto;
+            margin-bottom: 14px;
+        }
+        #markdownPreview code {
+            font-family: 'Fira Code', monospace;
+            background-color: rgba(255,255,255,0.08);
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: #fb7185;
+        }
+        #markdownPreview pre code {
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
+            color: var(--text-primary);
+        }
+
+        /* Quill 暗黑磨砂玻璃皮肤深度定制 */
+        #conceptualEditorContainer {
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+
+        #conceptualToolbar {
+            background-color: var(--bg-panel) !important;
+            border-bottom: 1px solid var(--border-color) !important;
+        }
+
+        .toolbar-group {
+            background-color: rgba(17, 24, 39, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* 统一工具栏按钮样式 */
+        #conceptualToolbar button.btn-tb,
+        #conceptualToolbar button.ql-bold,
+        #conceptualToolbar button.ql-italic,
+        #conceptualToolbar button.ql-underline,
+        #conceptualToolbar button.ql-clean,
+        #conceptualToolbar button.ql-align,
+        #conceptualToolbar button.ql-image,
+        #conceptualToolbar button.ql-link,
+        #conceptualToolbar button.ql-list,
+        #conceptualToolbar button {
+            background: none !important;
+            border: none !important;
+            color: var(--text-secondary) !important;
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        #conceptualToolbar button:hover {
+            color: #60a5fa !important;
+            background-color: rgba(59, 130, 246, 0.15) !important;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.2);
+        }
+
+        /* 选中状态 */
+        #conceptualToolbar button.ql-active {
+            color: #60a5fa !important;
+            background-color: rgba(59, 130, 246, 0.2) !important;
+        }
+
+        /* select 样式 */
+        .btn-tb-select {
+            background-color: rgba(17, 24, 39, 0.6) !important;
+            color: var(--text-secondary) !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 6px;
+            padding: 2px 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            height: 28px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .btn-tb-select:hover {
+            border-color: #60a5fa !important;
+            color: var(--text-primary) !important;
+        }
+
+        .btn-tb-select option {
+            background-color: var(--bg-panel) !important;
+            color: var(--text-primary) !important;
+        }
+
+        /* Quill 编辑区域 */
+        .ql-container.ql-snow {
+            border: none !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            color: var(--text-primary) !important;
+            font-size: 1rem;
+            height: calc(100% - 50px);
+        }
+
+        .ql-editor {
+            padding: 20px !important;
+            min-height: 200px;
+            color: var(--text-primary) !important;
+            background-color: #0b0f19 !important;
+        }
+
+        /* 滚动条 */
+        .ql-editor::-webkit-scrollbar {
+            width: 8px;
+        }
+        .ql-editor::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        .ql-editor::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 4px;
+        }
+        .ql-editor::-webkit-scrollbar-thumb:hover {
+            background: #3f3f46;
+        }
+
+        .ql-editor.ql-blank::before {
+            color: var(--text-secondary) !important;
+            font-style: normal !important;
+            opacity: 0.6;
+        }
+
+        /* 表格、链接等样式在编辑区里的微调 */
+        .ql-editor table {
+            border-collapse: collapse;
+            margin: 15px 0;
+            width: 100%;
+        }
+
+        .ql-editor table td, .ql-editor table th {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Quill Picker (replaced select dropdowns) */
+        .ql-snow .ql-picker {
+            color: var(--text-secondary) !important;
+            font-size: 0.8rem !important;
+            height: 28px !important;
+        }
+        .ql-snow .ql-picker-label {
+            border: 1px solid var(--border-color) !important;
+            border-radius: 6px !important;
+            background-color: rgba(17, 24, 39, 0.6) !important;
+            padding-left: 8px !important;
+            padding-right: 18px !important;
+            display: flex !important;
+            align-items: center !important;
+            height: 100% !important;
+        }
+        .ql-snow .ql-picker-label:hover {
+            color: #60a5fa !important;
+            border-color: #60a5fa !important;
+        }
+        .ql-snow .ql-picker-options {
+            background-color: var(--bg-panel) !important;
+            border: 1px solid var(--border-color) !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
+            border-radius: 6px !important;
+            padding: 4px !important;
+        }
+        .ql-snow .ql-picker-item {
+            color: var(--text-secondary) !important;
+            padding: 4px 8px !important;
+            border-radius: 4px !important;
+        }
+        .ql-snow .ql-picker-item:hover, .ql-snow .ql-picker-item.ql-selected {
+            color: #60a5fa !important;
+            background-color: rgba(59, 130, 246, 0.15) !important;
+        }
+        .ql-snow .ql-stroke {
+            stroke: var(--text-secondary) !important;
+        }
+        .ql-snow .ql-fill {
+            fill: var(--text-secondary) !important;
+        }
+        .ql-snow .ql-picker:hover .ql-stroke {
+            stroke: #60a5fa !important;
+        }
+        .ql-snow .ql-picker.ql-expanded .ql-stroke {
+            stroke: #60a5fa !important;
+        }
+
+        /* Toast 气泡样式 */
+        .toast-container-custom {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast-custom {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 10px rgba(59, 130, 246, 0.2);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1), toastFadeOut 0.3s forwards 2.7s;
+            pointer-events: auto;
+        }
+
+        @keyframes toastSlideIn {
+            from { transform: translateY(-20px) scale(0.9); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        @keyframes toastFadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; transform: translateY(-10px) scale(0.95); }
+        }
+    </style>
+    <link rel="stylesheet" th:href="@{/css/modern-theme.css}">
+</head>
+<body>
+
+<!-- 侧边栏 -->
+<div class="sidebar d-flex flex-column justify-content-between py-4">
+    <div>
+        <div class="logo-container mb-4 px-3">
+            <div class="logo-icon me-2">
+                <i class="bi bi-robot text-white fs-5"></i>
+            </div>
+            <div>
+                <h4 class="logo-text m-0 fw-bold text-white" style="font-size: 1.1rem; background: linear-gradient(135deg, #3b82f6, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">MindSpark 面之光</h4>
+                <div style="color: #64748b; font-size: 0.75rem; font-weight: 500;">智能面试辅助平台</div>
+            </div>
+        </div>
+        <div class="px-3">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="/"><i class="bi bi-grid-fill me-2"></i> 系统首页</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/questions"><i class="bi bi-journal-text me-2"></i> 题库大厅</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/mock-interview"><i class="bi bi-mic me-2"></i> 模拟面试</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/copilot"><i class="bi bi-rocket-takeoff me-2"></i> 面试助手</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/resume"><i class="bi bi-file-earmark-person me-2"></i> 简历优化</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/records"><i class="bi bi-clock-history me-2"></i> 面试记录</a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    <div class="px-3">
+        <form action="/logout" method="post" style="margin: 0;">
+            <button type="submit" class="nav-link py-2 px-1 text-start" style="font-size: 0.88rem; gap: 8px; border: none; background: transparent; width: 100%; cursor: pointer;">
+               <i class="bi bi-box-arrow-right me-2"></i> 退出登录
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="navbar-custom" style="height: 56px; border-bottom: 1px solid rgba(255,255,255,0.05); background: var(--bg-sidebar); flex-shrink: 0; padding: 0 24px 0 48px; display: flex; align-items: center; justify-content: space-between;">
+        <!-- Breadcrumbs / Back button -->
+        <div class="breadcrumbs d-flex align-items-center" style="font-size: 0.9rem; font-weight: 500;">
+            <a href="/questions" class="text-decoration-none" style="color: #64748b; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                <i class="bi bi-arrow-left"></i> 返回题库
+            </a>
+            <span style="color: #475569; margin: 0 10px;">/</span>
+            <span style="color: #64748b;">笔试助手</span>
+            <span style="color: #475569; margin: 0 10px;">/</span>
+            <span id="breadcrumb-current" style="color: #f1f5f9; font-weight: 600;" th:text="${question.title}">题目标题</span>
+        </div>
+        
+        <div class="d-flex align-items-center gap-3">
+            <span class="badge" th:text="${question.category}" style="background-color: rgba(255,255,255,0.08) !important; border: 1px solid rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px; font-size: 0.78rem;">Java基础</span>
+            <span th:if="${question.difficulty == '简单'}" class="badge-difficulty difficulty-easy" style="padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; background-color: rgba(16, 185, 129, 0.15); color: #34d399;">简单</span>
+            <span th:if="${question.difficulty == '中等'}" class="badge-difficulty difficulty-medium" style="padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; background-color: rgba(245, 158, 11, 0.15); color: #fbbf24;">中等</span>
+            <span th:if="${question.difficulty == '困难'}" class="badge-difficulty difficulty-hard" style="padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; background-color: rgba(239, 68, 68, 0.15); color: #f87171;">困难</span>
+        </div>
+    </div>
+
+    <!-- 工作区双栏 -->
+    <div class="workspace">
+    
+    <!-- 左栏：题目描述与参考答案 -->
+    <div class="pane pane-left">
+        <div class="panel-header">
+            <span class="panel-title"><i class="bi bi-file-earmark-text text-primary"></i> 题目描述</span>
+            <span class="badge bg-dark border border-secondary text-secondary" th:text="${question.questionType == 'code' ? '代码实现题' : '概念分析题'}"></span>
+        </div>
+        <div class="panel-body-scroll">
+            <h3 class="fw-bold mb-3" th:text="${question.title}">题目名称</h3>
+            <div class="lh-lg mb-4 text-secondary" style="font-size: 0.95rem;">
+                <p><strong>作答要求：</strong></p>
+                <span th:if="${question.questionType == 'code'}">
+                    1. 请在右侧 IDE 中完善所给的代码模板。<br>
+                    2. 注意边界条件（如数组为空、k值超出范围等）。<br>
+                    3. 可以点击“运行代码”验证语法和基本用例，点击“提交解答”进行 AI 技术官的综合分析。
+                </span>
+                <span th:if="${question.questionType == 'conceptual' || question.questionType == null}">
+                    1. 本题为技术概念或系统设计主观题。<br>
+                    2. 请在右侧编辑器中，使用 Markdown 或纯文本详细阐述您的理解与设计思路。<br>
+                    3. 阐述结构建议清晰，可以分点编写，支持插入流程框图。<br>
+                    4. 编写完成后直接点击右下角“提交解答”。
+                </span>
+            </div>
+
+            <hr class="border-secondary my-4">
+
+            <!-- 参考答案折叠卡片 -->
+            <div class="mb-3">
+                <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-lightbulb-fill text-warning"></i>
+                    <span>官方参考答案</span>
+                </h5>
+                
+                <!-- 已解答解锁状态 -->
+                <div id="answerUnlocked" th:style="${isSolved} ? 'display: block;' : 'display: none;'">
+                    <div class="p-3 rounded bg-dark border border-secondary text-secondary lh-lg" style="white-space: pre-wrap; font-size: 0.9rem;" th:text="${question.answer}"></div>
+                </div>
+
+                <!-- 未解答锁定状态 -->
+                <div id="answerLocked" th:style="${!isSolved} ? 'display: block;' : 'display: none;'">
+                    <div class="answer-locked-panel">
+                        <i class="bi bi-shield-lock-fill text-warning fs-3 mb-2 d-block"></i>
+                        <p class="mb-2 fw-semibold">答案已锁定</p>
+                        <p class="text-secondary small mb-3">为保证最佳的刷题自测效果，参考答案将在您**成功提交一次评测**后解锁。</p>
+                        <button type="button" class="btn btn-sm btn-outline-warning rounded-pill" onclick="unlockAnswerForce()">
+                            <i class="bi bi-unlock"></i> 强行解锁
+                        </button>
+                    </div>
+                    <!-- 强行解锁前虚化掩饰 -->
+                    <div id="answerLockedContent" class="answer-blur p-3 rounded bg-dark border border-secondary text-secondary lh-lg mt-2" style="white-space: pre-wrap; font-size: 0.9rem;" th:text="${question.answer}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 右栏：编辑器与控制台 -->
+    <div class="pane pane-right">
+        
+        <!-- IDE 编辑器容器 -->
+        <div class="editor-container-wrapper">
+            <div class="panel-header">
+                <!-- 代码题显示的标准 Title -->
+                <span class="panel-title" id="codeEditorTitle">
+                    <i class="bi bi-code-slash text-success"></i>
+                    <span id="editorLang">Java</span>
+                </span>
+                <!-- 概念题显示的 Title -->
+                <span class="panel-title" id="conceptualTitle" style="display: none;">
+                    <i class="bi bi-pencil-square text-success"></i>
+                    <span>简答题作答区</span>
+                </span>
+
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-sm btn-outline-secondary py-1 text-white border-secondary" onclick="toggleLeftPane()" id="toggleLeftPaneBtn">
+                        <i class="bi bi-layout-sidebar-inset"></i> <span id="toggleLeftPaneText">收起左栏</span>
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary py-1 text-white border-secondary" onclick="resetEditor()">
+                        <i class="bi bi-arrow-counterclockwise"></i> <span id="resetBtnText">重置代码</span>
+                    </button>
+                </div>
+            </div>
+            <div class="flex-grow-1 position-relative d-flex flex-column" style="height: calc(100% - 48px); overflow: hidden;">
+                <!-- 代码编辑器容器 -->
+                <div id="editor" style="width: 100%; height: 100%;"></div>
+                
+                <!-- 概念题富文本编辑器容器 (学习通简答题风格) -->
+                <div id="conceptualEditorContainer" style="display: none; width: 100%; height: 100%; flex-direction: column; overflow: hidden; background-color: #0b0f19;">
+                    <!-- 自定义学习通风格工具栏 -->
+                    <div id="conceptualToolbar" class="border-0 border-bottom border-secondary d-flex flex-wrap align-items-center px-2 py-1 gap-1" style="background-color: var(--bg-panel); z-index: 5;">
+                        <!-- Group 1: 格式与刷子 -->
+                        <div class="toolbar-group d-flex align-items-center gap-1 bg-dark bg-opacity-25 px-2 py-1 rounded border border-secondary border-opacity-25">
+                            <button class="ql-clean btn-tb" title="清除格式"><i class="bi bi-eraser-fill text-secondary"></i></button>
+                            <button type="button" class="btn-tb" title="格式刷" onclick="showFeatureToast('格式刷')"><i class="bi bi-brush text-secondary"></i></button>
+                        </div>
+                        
+                        <!-- Group 2: 段落字号 -->
+                        <div class="toolbar-group d-flex align-items-center gap-1 bg-dark bg-opacity-25 px-2 py-1 rounded border border-secondary border-opacity-25">
+                            <select class="ql-header btn-tb-select" title="段落格式" style="max-width: 90px;">
+                                <option value="" selected>正文</option>
+                                <option value="1">标题1</option>
+                                <option value="2">标题2</option>
+                                <option value="3">标题3</option>
+                            </select>
+                            <select class="ql-font btn-tb-select" title="字体" style="max-width: 90px;">
+                                <option value="" selected>默认</option>
+                                <option value="serif">宋体</option>
+                                <option value="monospace">等宽</option>
+                            </select>
+                            <select class="ql-size btn-tb-select" title="字号" style="max-width: 80px;">
+                                <option value="small">小</option>
+                                <option value="" selected>中</option>
+                                <option value="large">大</option>
+                                <option value="huge">超大</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Group 3: 样式与颜色 -->
+                        <div class="toolbar-group d-flex align-items-center gap-1 bg-dark bg-opacity-25 px-2 py-1 rounded border border-secondary border-opacity-25">
+                            <button class="ql-bold btn-tb" title="加粗"><i class="bi bi-type-bold text-secondary"></i></button>
+                            <button class="ql-italic" title="倾斜"><i class="bi bi-type-italic text-secondary"></i></button>
+                            <button class="ql-underline" title="下划线"><i class="bi bi-type-underline text-secondary"></i></button>
+                            <select class="ql-color" title="颜色">
+                                <option value="" selected></option>
+                                <option value="#f3f4f6">白色</option>
+                                <option value="#f87171">红色</option>
+                                <option value="#fbbf24">黄色</option>
+                                <option value="#34d399">绿色</option>
+                                <option value="#60a5fa">蓝色</option>
+                                <option value="#a78bfa">紫色</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Group 4: 对齐与列表 -->
+                        <div class="toolbar-group d-flex align-items-center gap-1 bg-dark bg-opacity-25 px-2 py-1 rounded border border-secondary border-opacity-25">
+                            <button class="ql-align" value="" title="左对齐"><i class="bi bi-align-left text-secondary"></i></button>
+                            <button class="ql-align" value="center" title="居中对齐"><i class="bi bi-align-center text-secondary"></i></button>
+                            <button class="ql-align" value="right" title="右对齐"><i class="bi bi-align-right text-secondary"></i></button>
+                            <button class="ql-align" value="justify" title="两端对齐"><i class="bi bi-align-justify text-secondary"></i></button>
+                            <span class="border-start border-secondary mx-1" style="height: 16px;"></span>
+                            <button class="ql-list" value="ordered" title="有序列表"><i class="bi bi-list-ol text-secondary"></i></button>
+                            <button class="ql-list" value="bullet" title="无序列表"><i class="bi bi-list-ul text-secondary"></i></button>
+                        </div>
+                        
+                        <!-- Group 5: 特殊与富媒体 -->
+                        <div class="toolbar-group d-flex align-items-center gap-1 bg-dark bg-opacity-25 px-2 py-1 rounded border border-secondary border-opacity-25">
+                            <button type="button" class="btn-tb" title="特殊字符" onclick="showFeatureToast('特殊字符 Ω')"><span class="text-secondary fw-bold" style="font-size: 0.9rem;">Ω</span></button>
+                            <button type="button" class="btn-tb" title="表格" onclick="insertTable()"><i class="bi bi-grid-3x3 text-secondary"></i></button>
+                            <button type="button" class="btn-tb" title="公式编辑器 (beta)" onclick="showFeatureToast('公式编辑器 (Latex)')"><span class="text-secondary fw-bold" style="font-family: serif; font-size: 0.85rem;">T<sub>x</sub></span></button>
+                            <button type="button" class="btn-tb" title="手写公式" onclick="showFeatureToast('手写公式')"><span class="text-secondary fw-bold" style="font-family: serif; font-size: 0.85rem;">π<sup>β</sup></span></button>
+                            <span class="border-start border-secondary mx-1" style="height: 16px;"></span>
+                            <button class="ql-image btn-tb" title="图片"><i class="bi bi-image text-secondary"></i></button>
+                            <button class="ql-link btn-tb" title="超链接"><i class="bi bi-link-45deg text-secondary"></i></button>
+                            <button type="button" class="btn-tb" title="语音录入" onclick="showFeatureToast('语音录入')"><i class="bi bi-mic text-secondary"></i></button>
+                            <button type="button" class="btn-tb" title="插入音频" onclick="showFeatureToast('插入音频')"><i class="bi bi-music-note text-secondary"></i></button>
+                            <button type="button" class="btn-tb" title="拍照" onclick="showFeatureToast('拍照')"><i class="bi bi-camera text-secondary"></i></button>
+                            <button type="button" class="btn-tb" title="添加附件" onclick="showFeatureToast('添加附件')"><i class="bi bi-paperclip text-secondary"></i></button>
+                            <span class="border-start border-secondary mx-1" style="height: 16px;"></span>
+                            <button type="button" class="btn-tb" id="btnHtmlSource" title="查看HTML源码" onclick="toggleHtmlSource()"><i class="bi bi-code-slash text-secondary"></i></button>
+                        </div>
+                    </div>
+                    
+                    <!-- 编辑器主体内容区域 -->
+                    <div id="conceptualEditor" class="flex-grow-1" style="border: none !important;"></div>
+                    
+                    <!-- 源码视图容器 (默认隐藏) -->
+                    <textarea id="htmlSourceEditor" class="flex-grow-1 p-3 w-100 border-0 bg-dark text-white font-monospace" style="display: none; font-size: 0.9rem; outline: none; resize: none;"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部控制台 -->
+        <div class="console-container minimized" id="consoleContainer">
+            <div class="panel-header" style="cursor: pointer;" onclick="toggleConsole()">
+                <span class="panel-title"><i class="bi bi-terminal text-info"></i> 控制台 (Console)</span>
+                <div class="d-flex align-items-center gap-3">
+                    <span id="consoleStatus" class="small text-secondary">已最小化</span>
+                    <i class="bi bi-chevron-up text-secondary" id="consoleIcon"></i>
+                </div>
+            </div>
+            <div class="console-body">
+                <!-- 编译日志 -->
+                <div class="mb-3">
+                    <div class="text-secondary mb-1">编译及分析日志：</div>
+                    <div id="compileLog" class="text-info">等待运行...</div>
+                </div>
+                
+                <!-- 测试用例结果 -->
+                <div class="mb-3">
+                    <div class="text-secondary mb-2">测试用例运行状态：</div>
+                    <div id="testCasesContainer">
+                        <div class="text-muted small">暂无数据</div>
+                    </div>
+                </div>
+
+                <!-- 诊断日志 -->
+                <div>
+                    <div class="text-secondary mb-1">AI 编译器诊断意见：</div>
+                    <div id="diagnosticLog" class="text-muted" style="white-space: pre-wrap;">-</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- 底部控制按钮栏 -->
+<div class="action-bar">
+    <div>
+        <a th:href="@{/questions}" class="btn btn-sm btn-outline-secondary text-white border-secondary d-flex align-items-center gap-1 py-2 px-3">
+            <i class="bi bi-chevron-left"></i> 返回题库
+        </a>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+        <button id="btnRunCode" class="btn btn-run btn-action py-2 px-3" onclick="runCode()">
+            <i class="bi bi-play-fill"></i> 运行代码
+        </button>
+        <button class="btn btn-submit btn-action py-2 px-4" onclick="submitCode()">
+            <i class="bi bi-send-fill"></i> 提交解答
+        </button>
+    </div>
+</div>
+</div> <!-- Close main-content -->
+
+<!-- 结算 Modal (成绩看板) -->
+<div class="modal fade" id="submitResultModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="submitResultModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content modal-content-dark">
+            <div class="modal-header modal-header-custom">
+                <h5 class="modal-title fw-bold text-success d-flex align-items-center gap-2" id="submitResultModalLabel">
+                    <i class="bi bi-check-circle-fill"></i> 提交成功！解答已记录
+                </h5>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row align-items-center">
+                    <!-- 雷达图展示 -->
+                    <div class="col-md-5 text-center">
+                        <div class="radar-chart-container">
+                            <canvas id="scoreRadarChart"></canvas>
+                        </div>
+                        <h3 class="fw-bold mt-3 text-white">综合得分: <span id="modalScore" class="text-warning">88</span></h3>
+                    </div>
+                    <!-- 核心点评与建议 -->
+                    <div class="col-md-7 border-start border-secondary ps-4">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-file-earmark-bar-graph text-primary"></i> 测评摘要</h5>
+                        <div class="mb-3 text-secondary" style="font-size: 0.95rem; line-height: 1.6; max-height: 150px; overflow-y: auto;" id="modalFeedback">
+                            正在解析测评报告...
+                        </div>
+                        
+                        <h5 class="fw-bold mb-2 mt-4"><i class="bi bi-lightbulb text-warning"></i> 优化方向</h5>
+                        <div class="text-secondary small" style="line-height: 1.6;" id="modalSuggestions">
+                            建议优化堆调整过程。
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer modal-footer-custom justify-content-between">
+                <a th:href="@{/questions}" class="btn btn-outline-secondary text-white border-secondary">返回题库</a>
+                <a href="#" id="modalReportLink" class="btn btn-submit py-2 px-4">查看深度报告</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 全局遮罩 Loading -->
+<div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center; flex-direction:column; gap:15px;">
+    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
+    <span class="text-white fw-bold" id="loadingText">编译并运行测试用例中...</span>
+</div>
+
+<!-- 全局自定义 Toast 容器 -->
+<div id="toastContainerCustom" class="toast-container-custom"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- 引入 Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- 引入 Monaco Editor -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+
+<script th:inline="javascript">
+    /* 注入的题目核心元数据 */
+    const questionId = [[${question.id}]];
+    const questionType = [[${question.questionType}]];
+    const defaultCode = [[${question.defaultCode}]];
+    const questionTitle = [[${question.title}]];
+
+    let editor = null;
+    let quill = null;
+    let chartInstance = null;
+    let isSourceMode = false;
+
+    // 默认的富文本概念题模板 (用户要求默认为空白)
+    const defaultConceptualTemplate = ``;
+
+    // 根据题型初始化界面交互
+    document.addEventListener("DOMContentLoaded", () => {
+        if (questionType !== 'code') {
+            // 概念分析题/简答题
+            // 1. 隐藏底部控制台
+            const consoleContainer = document.getElementById('consoleContainer');
+            if (consoleContainer) {
+                consoleContainer.style.display = 'none';
+            }
+            // 2. 隐藏“运行代码”按钮
+            const btnRunCode = document.getElementById('btnRunCode');
+            if (btnRunCode) {
+                btnRunCode.style.display = 'none';
+            }
+            // 3. 显示概念题专用标题，隐藏代码题 Title，隐藏 Monaco 编辑器
+            document.getElementById('codeEditorTitle').style.display = 'none';
+            document.getElementById('conceptualTitle').style.display = 'inline-block';
+            document.getElementById('editor').style.display = 'none';
+            
+            // 4. 让编辑器容器直接撑满高度，显示富文本区域
+            const wrapper = document.querySelector('.editor-container-wrapper');
+            if (wrapper) {
+                wrapper.style.height = '100%';
+            }
+            document.getElementById('resetBtnText').innerText = '重置回答';
+            document.getElementById('conceptualEditorContainer').style.display = 'flex';
+
+            // 5. 初始化 Quill 富文本编辑器
+            quill = new Quill('#conceptualEditor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: '#conceptualToolbar',
+                    table: true
+                },
+                placeholder: '请使用富文本详细阐述您的理解与设计思路...'
+            });
+            
+            // 注入默认内容
+            quill.root.innerHTML = defaultConceptualTemplate;
+        } else {
+            // 代码题：初始化 Monaco Editor
+            require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs' }});
+            require(['vs/editor/editor.main'], function() {
+                let initialVal = '';
+                editor = monaco.editor.create(document.getElementById('editor'), {
+                    value: initialVal,
+                    language: 'java',
+                    theme: 'vs-dark',
+                    automaticLayout: true,
+                    fontSize: 14,
+                    fontFamily: "'Fira Code', monospace",
+                    minimap: { enabled: false },
+                    padding: { top: 10 }
+                });
+
+                // 新增：防抖停顿检测，触发 AI 面试官点拨
+                let typingTimer;
+                const doneTypingInterval = 5000; // 5秒停顿触发
+                
+                editor.onDidChangeModelContent((e) => {
+                    clearTimeout(typingTimer);
+                    typingTimer = setTimeout(triggerCodeHint, doneTypingInterval);
+                });
+            });
+        }
+    });
+
+    // 触发 AI 面试官代码点拨
+    function triggerCodeHint() {
+        if (!editor) return;
+        const currentCode = editor.getValue();
+        if (!currentCode || currentCode.trim().length < 10) return;
+        
+        fetch('/api/questions/code-hint', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                questionId: questionId,
+                code: currentCode
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.hint) {
+                showCodeHintToast(data.hint);
+            }
+        })
+        .catch(err => console.error(err));
+    }
+
+    function showCodeHintToast(hint) {
+        const container = document.getElementById('toastContainerCustom');
+        if (!container) return;
+        
+        const toast = document.createElement('div');
+        toast.className = 'toast-custom';
+        toast.style.border = '1px solid rgba(16, 185, 129, 0.4)';
+        toast.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.5), 0 0 10px rgba(16, 185, 129, 0.2)';
+        toast.style.animation = 'toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1), toastFadeOut 0.3s forwards 7.7s';
+        toast.innerHTML = `
+            <i class="bi bi-robot text-success fs-3 me-2"></i>
+            <div>
+                <strong class="text-success small d-block mb-1">AI 面试官观察中...</strong>
+                <span>${hint}</span>
+            </div>
+        `;
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.remove();
+            }
+        }, 8000);
+    }
+
+    // 格式刷等前台占位按钮的 Toast 提示
+    function showFeatureToast(featureName) {
+        const container = document.getElementById('toastContainerCustom');
+        if (!container) return;
+        
+        const toast = document.createElement('div');
+        toast.className = 'toast-custom';
+        toast.innerHTML = `
+            <i class="bi bi-info-circle text-info"></i>
+            <span>功能对接中：<strong>${featureName}</strong> 正在适配底层 AI 评测引擎...</span>
+        `;
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+
+    // 插入表格
+    function insertTable() {
+        if (!quill) return;
+        const rows = prompt("请输入表格行数 (如: 3):", "3");
+        if (!rows) return;
+        const cols = prompt("请输入表格列数 (如: 3):", "3");
+        if (!cols) return;
+        
+        const r = parseInt(rows);
+        const c = parseInt(cols);
+        if (isNaN(r) || isNaN(c) || r <= 0 || c <= 0) {
+            alert("请输入有效的行列数！");
+            return;
+        }
+        
+        const tableModule = quill.getModule('table');
+        if (tableModule) {
+            tableModule.insertTable(r, c);
+        } else {
+            let tableHtml = "<table>";
+            for (let i = 0; i < r; i++) {
+                tableHtml += "<tr>";
+                for (let j = 0; j < c; j++) {
+                    tableHtml += "<td>&nbsp;</td>";
+                }
+                tableHtml += "</tr>";
+            }
+            tableHtml += "</table>";
+            
+            const range = quill.getSelection();
+            if (range) {
+                quill.clipboard.dangerouslyPasteHTML(range.index, tableHtml);
+            } else {
+                quill.clipboard.dangerouslyPasteHTML(quill.getLength() - 1, tableHtml);
+            }
+        }
+    }
+
+    // 切换 HTML 源码模式
+    function toggleHtmlSource() {
+        if (!quill) return;
+        const editorDiv = document.getElementById('conceptualEditor');
+        const sourceEditor = document.getElementById('htmlSourceEditor');
+        const btn = document.getElementById('btnHtmlSource');
+        
+        if (!isSourceMode) {
+            // 切换到源码模式
+            isSourceMode = true;
+            btn.classList.add('ql-active');
+            btn.querySelector('i').className = 'bi bi-code-slash text-info';
+            
+            const content = quill.root.innerHTML;
+            sourceEditor.value = content;
+            
+            editorDiv.style.display = 'none';
+            sourceEditor.style.display = 'block';
+            sourceEditor.focus();
+        } else {
+            // 切换回富文本模式
+            isSourceMode = false;
+            btn.classList.remove('ql-active');
+            btn.querySelector('i').className = 'bi bi-code-slash text-secondary';
+            
+            const html = sourceEditor.value;
+            quill.root.innerHTML = html;
+            
+            sourceEditor.style.display = 'none';
+            editorDiv.style.display = 'block';
+        }
+    }
+
+    // 折叠/展开左栏
+    function toggleLeftPane() {
+        const leftPane = document.querySelector('.pane-left');
+        const rightPane = document.querySelector('.pane-right');
+        const btn = document.getElementById('toggleLeftPaneBtn');
+        const textSpan = document.getElementById('toggleLeftPaneText');
+        
+        if (leftPane.classList.contains('collapsed')) {
+            leftPane.classList.remove('collapsed');
+            rightPane.classList.remove('expanded');
+            textSpan.innerText = '收起左栏';
+            btn.querySelector('i').className = 'bi bi-layout-sidebar-inset';
+        } else {
+            leftPane.classList.add('collapsed');
+            rightPane.classList.add('expanded');
+            textSpan.innerText = '展开左栏';
+            btn.querySelector('i').className = 'bi bi-layout-sidebar-inset-reverse';
+        }
+        
+        // 动画过渡结束后触发编辑器自适应重绘
+        setTimeout(() => {
+            if (editor) {
+                editor.layout();
+            }
+        }, 350);
+    }
+
+    // 重置编辑器代码/回答
+    function resetEditor() {
+        if (!confirm("确定要重置当前作答区的内容吗？这会覆盖您已写入的全部内容。")) return;
+        if (questionType === 'code') {
+            if (editor) editor.setValue('');
+        } else {
+            if (isSourceMode) {
+                isSourceMode = false;
+                const btn = document.getElementById('btnHtmlSource');
+                btn.classList.remove('ql-active');
+                btn.querySelector('i').className = 'bi bi-code-slash text-secondary';
+                document.getElementById('htmlSourceEditor').style.display = 'none';
+                document.getElementById('conceptualEditor').style.display = 'block';
+            }
+            if (quill) quill.root.innerHTML = defaultConceptualTemplate;
+        }
+    }
+
+    // 强行解锁答案
+    function unlockAnswerForce() {
+        if(confirm("强行查看参考答案会跳过自测判定，是否继续？")) {
+            document.getElementById('answerLocked').style.display = 'none';
+            document.getElementById('answerUnlocked').style.display = 'block';
+        }
+    }
+
+    // 控制台折叠切换
+    function toggleConsole(forceOpen = false) {
+        const container = document.getElementById('consoleContainer');
+        const icon = document.getElementById('consoleIcon');
+        const status = document.getElementById('consoleStatus');
+
+        if (forceOpen) {
+            container.classList.remove('minimized');
+            icon.className = 'bi bi-chevron-down text-secondary';
+            status.innerText = '已展开';
+            return;
+        }
+
+        if (container.classList.contains('minimized')) {
+            container.classList.remove('minimized');
+            icon.className = 'bi bi-chevron-down text-secondary';
+            status.innerText = '已展开';
+        } else {
+            container.classList.add('minimized');
+            icon.className = 'bi bi-chevron-up text-secondary';
+            status.innerText = '已最小化';
+        }
+    }
+
+    // 显示加载器
+    function showLoading(text) {
+        document.getElementById('loadingText').innerText = text;
+        document.getElementById('loadingOverlay').style.display = 'flex';
+    }
+
+    // 隐藏加载器
+    function hideLoading() {
+        document.getElementById('loadingOverlay').style.display = 'none';
+    }
+
+    // 运行代码
+    function runCode() {
+        if (questionType !== 'code') return;
+        if (!editor) return;
+        const codeValue = editor.getValue();
+        if (!codeValue.trim()) {
+            alert("解答内容不能为空！");
+            return;
+        }
+
+        showLoading("编译代码并运行测试用例中，请稍候...");
+
+        fetch('/api/questions/run', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ questionId: questionId, code: codeValue })
+        })
+        .then(res => res.json())
+        .then(data => {
+            hideLoading();
+            toggleConsole(true); // 展开控制台
+
+            // 1. 编译状态
+            const compileLog = document.getElementById('compileLog');
+            if (data.compileOk) {
+                compileLog.className = 'text-success';
+                compileLog.innerText = '编译成功。' + (data.compilerMessage || '');
+            } else {
+                compileLog.className = 'text-danger';
+                compileLog.innerText = '编译失败！\n' + (data.compilerMessage || '');
+            }
+
+            // 2. 测试用例结果
+            const casesContainer = document.getElementById('testCasesContainer');
+            casesContainer.innerHTML = '';
+            if (data.runResults && data.runResults.length > 0) {
+                data.runResults.forEach(item => {
+                    const row = document.createElement('div');
+                    row.className = 'test-case-row';
+                    row.innerHTML = `
+                        <div>
+                            <span class="text-secondary">输入：</span><code class="text-white">${item.input}</code>
+                        </div>
+                        <div>
+                            <span class="text-secondary">输出：</span><code class="text-white">${item.actual}</code>
+                            <span class="ms-2 badge ${item.passed ? 'bg-success' : 'bg-danger'}">${item.passed ? '通过' : '不通过'}</span>
+                        </div>
+                    `;
+                    casesContainer.appendChild(row);
+                });
+            } else {
+                casesContainer.innerHTML = '<div class="text-muted small">无测试用例数据</div>';
+            }
+
+            // 3. AI 诊断
+            document.getElementById('diagnosticLog').innerText = data.diagnostic || '暂无诊断。';
+        })
+        .catch(err => {
+            hideLoading();
+            alert("请求出错了：" + err);
+        });
+    }
+
+    // 提交代码解答
+    function submitCode() {
+        let codeValue = '';
+        if (questionType === 'code') {
+            if (!editor) return;
+            codeValue = editor.getValue();
+        } else {
+            if (!quill) return;
+            if (isSourceMode) {
+                toggleHtmlSource();
+            }
+            codeValue = quill.root.innerHTML;
+            const plainText = quill.getText().trim();
+            if (!plainText) {
+                alert("解答内容不能为空！");
+                return;
+            }
+        }
+        
+        if (!codeValue.trim()) {
+            alert("解答内容不能为空！");
+            return;
+        }
+
+        if (!confirm("确认提交解答进行技术官最终评分？")) return;
+
+        showLoading("技术官进行最终评测中，正在生成报告...");
+
+        fetch('/api/questions/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ questionId: questionId, code: codeValue })
+        })
+        .then(res => res.json())
+        .then(data => {
+            hideLoading();
+            if (data.success) {
+                // 成功解锁参考答案
+                document.getElementById('answerLocked').style.display = 'none';
+                document.getElementById('answerUnlocked').style.display = 'block';
+                // 获取详细的提交成绩以渲染弹窗
+                fetch(`/api/records-detail/${data.recordId}`)
+                .then(r => r.json())
+                .then(record => {
+                    document.getElementById('modalScore').innerText = record.score;
+                    document.getElementById('modalFeedback').innerHTML = formatMarkdownToText(record.feedbackReport);
+                    document.getElementById('modalSuggestions').innerText = record.suggestions;
+                    document.getElementById('modalReportLink').href = `/report/${data.recordId}`;
+                    
+                    // 显示弹窗
+                    const modal = new bootstrap.Modal(document.getElementById('submitResultModal'));
+                    modal.show();
+
+                    // 画雷达图
+                    drawRadarChart(record);
+                })
+                .catch(() => {
+                    // 降级填充
+                    document.getElementById('modalScore').innerText = "85";
+                    document.getElementById('modalFeedback').innerText = "已成功生成深度代码诊断报告，系统已在后台完成数据结算。";
+                    document.getElementById('modalSuggestions').innerText = "请点击下方‘查看深度报告’获取完整性能瓶颈诊断与重构范例。";
+                    document.getElementById('modalReportLink').href = `/report/${data.recordId}`;
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('submitResultModal'));
+                    modal.show();
+                    drawRadarChart({ foundationScore: 85, logicScore: 90, communicationScore: 80, stressScore: 85 });
+                });
+            } else {
+                alert("提交失败：" + (data.message || "未知原因"));
+            }
+        })
+        .catch(err => {
+            hideLoading();
+            alert("请求提交出错了：" + err);
+        });
+    }
+
+    // 格式化文本
+    function formatMarkdownToText(md) {
+        if (!md) return "暂无测评";
+        return md.replace(/###/g, "").replace(/\*\*/g, "").replace(/\n/g, "<br>");
+    }
+
+    // 渲染雷达图
+    function drawRadarChart(record) {
+        const ctx = document.getElementById('scoreRadarChart').getContext('2d');
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+
+        chartInstance = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['专业基础', '逻辑算法', '代码规范', '边界处理'],
+                datasets: [{
+                    label: '能力表现',
+                    data: [
+                        record.foundationScore || 60,
+                        record.logicScore || 60,
+                        record.communicationScore || 60,
+                        record.stressScore || 60
+                    ],
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                    borderColor: 'rgba(59, 130, 246, 0.8)',
+                    pointBackgroundColor: 'rgba(16, 185, 129, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(59, 130, 246, 1)'
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        pointLabels: { color: '#9ca3af', font: { size: 11 } },
+                        ticks: { display: false, max: 100, min: 0 }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar && !document.querySelector('.sidebar-toggle')) {
+            const toggleBtn = document.createElement('div');
+            toggleBtn.className = 'sidebar-toggle';
+            toggleBtn.innerHTML = '<i class="bi bi-chevron-left"></i>';
+            toggleBtn.onclick = function() {
+                sidebar.classList.toggle('collapsed');
+                const mainContent = document.querySelector('.main-content');
+                if (mainContent) mainContent.classList.toggle('expanded');
+                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+            };
+            sidebar.appendChild(toggleBtn);
+            
+            document.querySelectorAll('.sidebar .nav-link, .sidebar .btn').forEach(el => {
+                Array.from(el.childNodes).forEach(node => {
+                    if (node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 0) {
+                        const span = document.createElement('span');
+                        span.className = 'nav-text';
+                        span.textContent = node.textContent;
+                        el.replaceChild(span, node);
+                    }
+                });
+            });
+
+            if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                sidebar.classList.add('collapsed');
+                const mainContent = document.querySelector('.main-content');
+                if (mainContent) mainContent.classList.add('expanded');
+            }
+        }
+    });
+</script>
+</body>
+</html>

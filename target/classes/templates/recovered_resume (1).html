@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AI简历定制与深度诊所 - MindSpark 面之光</title>
+    <title>AI简历定制与深度诊所 - MindSpark 面之�?/title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <!-- Marked.js for markdown rendering -->
@@ -14,6 +14,35 @@
             color: #e2e8f0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             min-height: 100vh;
+        }
+        .sidebar {
+            min-height: 100vh;
+            background-color: #1e293b;
+            border-right: 1px solid #334155;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        }
+        .nav-link {
+            color: #94a3b8;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            padding: 10px 15px;
+            transition: all 0.2s;
+        }
+        .nav-link:hover {
+            background-color: #334155;
+            color: #f8fafc;
+        }
+        .nav-link.active {
+            background-color: #10b981;
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        .logo-text {
+            background: linear-gradient(to right, #3b82f6, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
         }
         /* Custom UI Style */
         .glass-card {
@@ -157,7 +186,10 @@
 </head>
 <body>
 
-<!-- 侧边栏 -->
+<div class="container-fluid">
+    <div class="row">
+        <!-- 左侧导航 -->
+        <!-- 侧边栏 -->
 <div class="sidebar d-flex flex-column justify-content-between py-4">
     <div>
         <div class="logo-container mb-4 px-3">
@@ -184,7 +216,7 @@
                     <a class="nav-link" href="/copilot"><i class="bi bi-rocket-takeoff me-2"></i> 面试助手</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="/resume"><i class="bi bi-file-earmark-person me-2"></i> 简历优化</a>
+                    <a class="nav-link" href="/resume"><i class="bi bi-file-earmark-person me-2"></i> 简历优化</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/records"><i class="bi bi-clock-history me-2"></i> 面试记录</a>
@@ -194,25 +226,37 @@
     </div>
     
     <div class="px-3">
-        <form action="/logout" method="post" style="margin: 0;">
-            <button type="submit" class="nav-link py-2 px-1 text-start" style="font-size: 0.88rem; gap: 8px; border: none; background: transparent; width: 100%; cursor: pointer;">
-               <i class="bi bi-box-arrow-right me-2"></i> 退出登录
-            </button>
-        </form>
+        <button class="btn w-100 mb-3 d-flex align-items-center justify-content-center gap-2" 
+                style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: #f1f5f9; font-size: 0.85rem; padding: 10px; border-radius: 8px; font-weight: 500;"
+                onclick="window.location.href='/mock-interview'">
+            <i class="bi bi-plus-lg"></i> 开始新面试
+        </button>
+        <ul class="nav flex-column border-top pt-3" style="border-color: rgba(255,255,255,0.05) !important;">
+            <li class="nav-item">
+                <a class="nav-link py-2 px-1" href="#" style="font-size: 0.88rem; gap: 8px;"><i class="bi bi-gear me-2"></i> 设置</a>
+            </li>
+            <li class="nav-item">
+                <form action="/logout" method="post" style="margin: 0;">
+                    <button type="submit" class="nav-link py-2 px-1 text-start" style="font-size: 0.88rem; gap: 8px; border: none; background: transparent; width: 100%;">
+                       <i class="bi bi-box-arrow-right me-2"></i> 退出登录
+                    </button>
+                </form>
+            </li>
+        </ul>
     </div>
 </div>
 
 <!-- 右侧主体 -->
-<div class="main-content">
-            <h2 class="mb-2 fw-bold text-white"><i class="bi bi-file-earmark-person-fill text-success me-2"></i>AI简历定制 & 深度诊断诊所</h2>
-            <p class="text-muted mb-4">模拟资深HR视角，对你的简历进行多维度打分与诊断，并可一键导入职位JD（岗位描述）进行针对性润色以优化ATS通过率。</p>
+        <div class="col-md-10 p-4">
+            <h2 class="mb-2 fw-bold text-white"><i class="bi bi-file-earmark-person-fill text-success me-2"></i>AI简历定�?& 深度诊断诊所</h2>
+            <p class="text-muted mb-4">模拟资深HR视角，对你的简历进行多维度打分与诊断，并可一键导入职位JD（岗位描述）进行针对性润色以优化ATS通过率�?/p>
 
             <div class="row g-4">
-                <!-- 左侧配置栏 -->
+                <!-- 左侧配置�?-->
                 <div class="col-xl-5">
                     <div class="card glass-card p-4 h-100">
                         <h5 class="text-white fw-bold mb-3 d-flex align-items-center">
-                            <i class="bi bi-clipboard2-data text-success me-2"></i> 输入简历内容
+                            <i class="bi bi-clipboard2-data text-success me-2"></i> 输入简历内�?
                         </h5>
                         
                         <!-- 输入模式切换 -->
@@ -230,7 +274,7 @@
                             <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
                                 <i class="bi bi-cloud-arrow-up upload-icon mb-2 d-block"></i>
                                 <span class="d-block text-white fw-bold">拖拽简历文件到此处，或点击上传</span>
-                                <span class="d-block text-muted small mt-1">支持 .pdf, .docx, .txt, .md 文件 (最大 5MB)</span>
+                                <span class="d-block text-muted small mt-1">支持 .pdf, .docx, .txt, .md 文件 (最�?5MB)</span>
                                 <div id="selectedFileInfo" class="mt-3 text-info fw-semibold" style="display: none;">
                                     <i class="bi bi-file-earmark-check me-1"></i> <span id="fileName"></span>
                                 </div>
@@ -240,23 +284,23 @@
 
                         <!-- 手动粘贴经历文本视图 -->
                         <div id="textPasteContainer" class="mb-4" style="display: none;">
-                            <label for="resumePasteInput" class="form-label text-muted small">请将您的完整经历或旧简历内容粘贴在下方：</label>
-                            <textarea id="resumePasteInput" class="form-control bg-dark text-white border-secondary" rows="8" placeholder="例如：
-姓名：张三
-教育经历：2020-2024 某大学 软件工程
+                            <label for="resumePasteInput" class="form-label text-muted small">请将您的完整经历或旧简历内容粘贴在下方�?/label>
+                            <textarea id="resumePasteInput" class="form-control bg-dark text-white border-secondary" rows="8" placeholder="例如�?
+姓名：张�?
+教育经历�?020-2024 某大�?软件工程
 项目经历：主导商城订单系统开发，使用Spring Boot+Redis缓存..."></textarea>
                         </div>
 
-                        <!-- 目标JD输入框 -->
+                        <!-- 目标JD输入�?-->
                         <div class="mb-4">
                             <h5 class="text-white fw-bold mb-3 d-flex align-items-center">
-                                <i class="bi bi-bullseye text-warning me-2"></i> 目标职位JD（岗位描述 - 可选）
+                                <i class="bi bi-bullseye text-warning me-2"></i> 目标职位JD（岗位描�?- 可选）
                             </h5>
                             <label for="targetJdInput" class="form-label text-muted small">导入您希望投递岗位的JD，AI将智能为您润色以提高核心亮点与ATS匹配度：</label>
-                            <textarea id="targetJdInput" class="form-control bg-dark text-white border-secondary" rows="5" placeholder="例如：
-1. 具备3年以上的Java开发经验，熟练掌握Spring Boot/Spring Cloud微服务架构。
-2. 熟悉高并发、高性能分布式系统的设计与开发，熟练使用Redis、RabbitMQ等。
-3. 拥有大流量系统优化与调优经验者优先。"></textarea>
+                            <textarea id="targetJdInput" class="form-control bg-dark text-white border-secondary" rows="5" placeholder="例如�?
+1. 具备3年以上的Java开发经验，熟练掌握Spring Boot/Spring Cloud微服务�?
+2. 熟悉高并发、高性能分布式系统的设计与开发，熟练使用Redis、RabbitMQ�?
+3. 拥有大流量系统优化与调优经验者优先�?></textarea>
                         </div>
 
                         <!-- 启动按钮 -->
@@ -266,21 +310,21 @@
                     </div>
                 </div>
 
-                <!-- 右侧结果栏 -->
+                <!-- 右侧结果�?-->
                 <div class="col-xl-7">
-                    <!-- 默认空闲状态 -->
+                    <!-- 默认空闲状�?-->
                     <div id="emptyResultState" class="card glass-card p-5 text-center flex-column align-items-center justify-content-center h-100 py-5" style="display: flex;">
                         <i class="bi bi-heart-pulse text-success mb-3" style="font-size: 5rem; opacity: 0.6;"></i>
-                        <h4 class="text-white fw-bold">等待导入简历...</h4>
-                        <p class="text-muted w-75 mt-2">请在左侧上传简历文件或输入经历内容，点击“启动 AI 深度诊断诊所”开启多维度诊断评分与岗位匹配优化建议。</p>
+                        <h4 class="text-white fw-bold">等待导入简�?..</h4>
+                        <p class="text-muted w-75 mt-2">请在左侧上传简历文件或输入经历内容，点击“启�?AI 深度诊断诊所”开启多维度诊断评分与岗位匹配优化建议�?/p>
                     </div>
 
                     <!-- 动态载入中 -->
                     <div id="loadingState" class="card glass-card p-5 text-center h-100 loading-overlay">
                         <div class="spinner-glow"></div>
-                        <h4 class="text-white fw-bold mt-4">AI 诊所正在分析您的简历...</h4>
-                        <div class="loading-step" id="loadingProgressMsg">正在读取并解析简历文件...</div>
-                        <p class="text-muted small mt-2 w-75">根据简历内容大小以及网络吞吐量，诊断分析通常需要 5 - 15 秒，请耐心等待。</p>
+                        <h4 class="text-white fw-bold mt-4">AI 诊所正在分析您的简�?..</h4>
+                        <div class="loading-step" id="loadingProgressMsg">正在读取并解析简历文�?..</div>
+                        <p class="text-muted small mt-2 w-75">根据简历内容大小以及网络吞吐量，诊断分析通常需�?5 - 15 秒，请耐心等待�?/p>
                     </div>
 
                     <!-- 分析结果诊断大屏 -->
@@ -290,31 +334,31 @@
                             <button class="btn btn-outline-light btn-sm" onclick="resetForm()"><i class="bi bi-arrow-counterclockwise me-1"></i>重新上传</button>
                         </h4>
 
-                        <!-- 环形进度条打分 -->
+                        <!-- 环形进度条打�?-->
                         <div class="row text-center mb-4 g-3">
                             <div class="col-6">
                                 <div class="score-circle">
                                     <div class="score-value" id="scoreResume">0</div>
-                                    <div class="score-label">简历综合得分</div>
+                                    <div class="score-label">简历综合得�?/div>
                                 </div>
                             </div>
                             <div class="col-6" id="matchScoreContainer">
                                 <div class="score-circle blue-theme">
                                     <div class="score-value" id="scoreMatch">0</div>
-                                    <div class="score-label">JD 岗位匹配度</div>
+                                    <div class="score-label">JD 岗位匹配�?/div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- 诊断报告详细展板 (扁平化无折叠) -->
                         <div class="report-sections mt-4">
-                            <!-- 1. 智能简历诊所 (多维度缺陷分析) -->
+                            <!-- 1. 智能简历诊所 (多维度缺陷分�? -->
                             <div class="p-4 mb-4 rounded-4 border border-danger border-opacity-25" style="background: rgba(220, 53, 69, 0.05);">
                                 <h5 class="text-white fw-bold mb-3 border-bottom border-danger border-opacity-25 pb-2 d-flex align-items-center">
                                     <i class="bi bi-exclamation-triangle text-danger me-2 fs-4"></i> 1. 智能简历诊所（扣分项与不足）
                                 </h5>
                                 <div class="markdown-content text-light" id="reportClinic" style="line-height: 1.8;">
-                                    加载中...
+                                    加载�?..
                                 </div>
                             </div>
 
@@ -324,17 +368,17 @@
                                     <i class="bi bi-shield-check text-warning me-2 fs-4"></i> 2. JD 精准匹配优化（ATS关键词提升）
                                 </h5>
                                 <div class="markdown-content text-light" id="reportMatch" style="line-height: 1.8;">
-                                    加载中...
+                                    加载�?..
                                 </div>
                             </div>
 
-                            <!-- 3. 一键优化示范 (润色精修) -->
+                            <!-- 3. 一键优化示�?(润色精修) -->
                             <div class="p-4 rounded-4 border border-info border-opacity-25" style="background: rgba(13, 202, 240, 0.05);">
                                 <h5 class="text-white fw-bold mb-3 border-bottom border-info border-opacity-25 pb-2 d-flex align-items-center">
                                     <i class="bi bi-magic text-info me-2 fs-4"></i> 3. 简历深度精修与优化示范
                                 </h5>
                                 <div class="markdown-content text-light" id="reportOptimize" style="line-height: 1.8;">
-                                    加载中...
+                                    加载�?..
                                 </div>
                             </div>
                         </div>
@@ -342,13 +386,14 @@
                         <!-- 全量精修按钮 -->
                         <div class="mt-4 text-center pb-3">
                             <button id="btnOptimizeFull" class="btn btn-primary btn-lg rounded-pill px-5 fw-bold shadow-lg" style="background: linear-gradient(to right, #3b82f6, #10b981); border: none;" onclick="startFullOptimization()">
-                                <i class="bi bi-stars me-2"></i> 一键生成全量 ATS 精修版简历
+                                <i class="bi bi-stars me-2"></i> 一键生成全�?ATS 精修版简�?
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 </div>
 
 <!-- Full Resume Optimization Modal -->
@@ -358,28 +403,28 @@
             <div class="modal-header border-secondary flex-column align-items-start">
                 <div class="d-flex w-100 justify-content-between align-items-center mb-3">
                     <h5 class="modal-title fw-bold">
-                        <i class="bi bi-stars text-warning me-2"></i> ATS 友好版精修简历 (AI定制生成)
+                        <i class="bi bi-stars text-warning me-2"></i> ATS 友好版精修简�?(AI定制生成)
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <!-- 顶部版本切换 Tabs -->
                 <ul class="nav nav-pills w-100" id="resumeVersionTabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active rounded-pill fw-bold" id="tab-standard" data-bs-toggle="tab" type="button" role="tab" aria-selected="true" onclick="switchResumeVersion('standard')">🛡️ 务实精修版 (真实的自己)</button>
+                        <button class="nav-link active rounded-pill fw-bold" id="tab-standard" data-bs-toggle="tab" type="button" role="tab" aria-selected="true" onclick="switchResumeVersion('standard')">🛡�?务实精修�?(真实的自�?</button>
                     </li>
                     <li class="nav-item mx-2" role="presentation">
-                        <button class="nav-link rounded-pill fw-bold" id="tab-aggressive" data-bs-toggle="tab" type="button" role="tab" aria-selected="false" onclick="switchResumeVersion('aggressive')">🚀 高维打击版 (想象的自己)</button>
+                        <button class="nav-link rounded-pill fw-bold" id="tab-aggressive" data-bs-toggle="tab" type="button" role="tab" aria-selected="false" onclick="switchResumeVersion('aggressive')">🚀 高维打击�?(想象的自�?</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link rounded-pill fw-bold" id="tab-hr_target" data-bs-toggle="tab" type="button" role="tab" aria-selected="false" onclick="switchResumeVersion('hr_target')">🎯 JD狙击版 (HR想要的你)</button>
+                        <button class="nav-link rounded-pill fw-bold" id="tab-hr_target" data-bs-toggle="tab" type="button" role="tab" aria-selected="false" onclick="switchResumeVersion('hr_target')">🎯 JD狙击�?(HR想要的你)</button>
                     </li>
                 </ul>
             </div>
             <div class="modal-body p-4" style="background: #0f172a;">
                 <div id="fullResumeLoading" class="text-center py-5" style="display: none;">
                     <div class="spinner-border text-success mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
-                    <h5 class="text-white fw-bold">AI 顶级猎头正在为您全盘重塑简历...</h5>
-                    <p class="text-muted">这可能需要 15-30 秒，深度定制中，请耐心等待</p>
+                    <h5 class="text-white fw-bold">AI 顶级猎头正在为您全盘重塑简�?..</h5>
+                    <p class="text-muted">这可能需�?15-30 秒，深度定制中，请耐心等待</p>
                 </div>
                 <div id="fullResumeContent" class="markdown-content" style="display: none; line-height: 1.8;">
                     <!-- Rendered markdown goes here -->
@@ -401,15 +446,15 @@
     let selectedFile = null;
     let loadingTimer = null;
     const progressMsgs = [
-        "正在解析并分析您的简历文件...",
+        "正在解析并分析您的简历文�?..",
         "大模型诊断中：评估量化指标与项目难点...",
         "AI 专家诊断中：检查技术栈分级排版...",
-        "结合您的经历，正在重组核心亮点...",
+        "结合您的经历，正在重组核心亮�?..",
         "计算目标岗位JD关联匹配指数...",
         "生成一键式高质对比优化示范..."
     ];
 
-    // 初始化上传区域拖拽事件
+    // 初始化上传区域拖拽事�?
     const uploadZone = document.getElementById('uploadZone');
     
     uploadZone.addEventListener('dragover', (e) => {
@@ -452,25 +497,25 @@
 
         if (activeInputTab === 'file') {
             if (!selectedFile) {
-                alert("请先上传简历文件！");
+                alert("请先上传简历文件�?);
                 return;
             }
             formData.append('resumeFile', selectedFile);
         } else {
             const pasteText = document.getElementById('resumePasteInput').value;
             if (!pasteText.trim()) {
-                alert("请在文本框内粘贴您的个人经历！");
+                alert("请在文本框内粘贴您的个人经历�?);
                 return;
             }
             formData.append('resumeText', pasteText);
         }
 
-        // 切换到 Loading 视图
+        // 切换�?Loading 视图
         document.getElementById('emptyResultState').style.display = 'none';
         document.getElementById('resultState').style.display = 'none';
         document.getElementById('loadingState').style.display = 'flex';
         
-        // 动态消息轮询
+        // 动态消息轮�?
         let msgIndex = 0;
         document.getElementById('loadingProgressMsg').innerText = progressMsgs[msgIndex];
         if (loadingTimer) clearInterval(loadingTimer);
@@ -479,7 +524,7 @@
             document.getElementById('loadingProgressMsg').innerText = progressMsgs[msgIndex];
         }, 2200);
 
-        // 发送 AJAX 请求
+        // 发�?AJAX 请求
         fetch('/resume/analyze', {
             method: 'POST',
             body: formData
@@ -496,7 +541,7 @@
         })
         .catch(err => {
             clearInterval(loadingTimer);
-            alert("发生系统故障，请稍后再试！");
+            alert("发生系统故障，请稍后再试�?);
             showEmptyState();
         });
     }
@@ -508,7 +553,7 @@
         // 填充得分
         document.getElementById('scoreResume').innerText = analysis.score || 0;
         
-        // 岗位匹配度得分 (只在有JD时激活)
+        // 岗位匹配度得�?(只在有JD时激�?
         if (targetJd && targetJd.trim() !== '') {
             document.getElementById('matchScoreContainer').style.display = 'block';
             document.getElementById('scoreMatch').innerText = analysis.matchScore || 0;
@@ -519,9 +564,9 @@
         }
 
         // 使用 marked.js 渲染 Markdown 格式文本
-        document.getElementById('reportClinic').innerHTML = marked.parse(analysis.feedbackReport || '暂无诊断信息');
-        document.getElementById('reportMatch').innerHTML = marked.parse(analysis.suggestions || '暂无优化建议');
-        document.getElementById('reportOptimize').innerHTML = marked.parse(analysis.optimizedResume || '暂无建议内容');
+        document.getElementById('reportClinic').innerHTML = marked.parse(analysis.feedbackReport || '暂无诊断信息�?);
+        document.getElementById('reportMatch').innerHTML = marked.parse(analysis.suggestions || '暂无优化建议�?);
+        document.getElementById('reportOptimize').innerHTML = marked.parse(analysis.optimizedResume || '暂无建议内容�?);
     }
 
     function showEmptyState() {
@@ -539,7 +584,7 @@
         showEmptyState();
     }
 
-    // --- 新增：全量简历优化功能 (多版本) ---
+    // --- 新增：全量简历优化功�?(多版�? ---
     const resumeCache = {
         standard: "",
         aggressive: "",
@@ -554,7 +599,7 @@
         resumeCache.aggressive = "";
         resumeCache.hr_target = "";
 
-        // UI切回标准版
+        // UI切回标准�?
         document.querySelectorAll('#resumeVersionTabs .nav-link').forEach(btn => btn.classList.remove('active'));
         document.getElementById('tab-standard').classList.add('active');
 
@@ -586,7 +631,7 @@
 
         if (activeInputTab === 'file') {
             if (!selectedFile) {
-                alert("请先上传简历文件！");
+                alert("请先上传简历文件�?);
                 fullResumeModal.hide();
                 return;
             }
@@ -594,7 +639,7 @@
         } else {
             const pasteText = document.getElementById('resumePasteInput').value;
             if (!pasteText.trim()) {
-                alert("请在文本框内粘贴您的个人经历！");
+                alert("请在文本框内粘贴您的个人经历�?);
                 fullResumeModal.hide();
                 return;
             }
@@ -605,7 +650,7 @@
         document.getElementById('fullResumeContent').style.display = 'none';
         document.getElementById('btnCopyResume').style.display = 'none';
 
-        // 发送 AJAX 请求到 optimizeFull 接口
+        // 发�?AJAX 请求�?optimizeFull 接口
         fetch('/resume/optimizeFull', {
             method: 'POST',
             body: formData
@@ -627,7 +672,7 @@
         })
         .catch(err => {
             if (currentVersion === version) fullResumeModal.hide();
-            alert("发生系统故障，请稍后再试！");
+            alert("发生系统故障，请稍后再试�?);
         });
     }
 
@@ -643,43 +688,9 @@
                 btn.classList.replace('btn-outline-success', 'btn-success');
             }, 2000);
         }).catch(err => {
-            alert('复制失败，请手动选择文本复制！');
+            alert('复制失败，请手动选择文本复制�?);
         });
     }
-
-    // 侧边栏折叠/展开功能
-    document.addEventListener("DOMContentLoaded", function() {
-        const sidebar = document.querySelector('.sidebar');
-        if (sidebar && !document.querySelector('.sidebar-toggle')) {
-            const toggleBtn = document.createElement('div');
-            toggleBtn.className = 'sidebar-toggle';
-            toggleBtn.innerHTML = '<i class="bi bi-chevron-left"></i>';
-            toggleBtn.onclick = function() {
-                sidebar.classList.toggle('collapsed');
-                const mainContent = document.querySelector('.main-content');
-                if (mainContent) mainContent.classList.toggle('expanded');
-                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
-            };
-            sidebar.appendChild(toggleBtn);
-
-            document.querySelectorAll('.sidebar .nav-link, .sidebar .btn').forEach(el => {
-                Array.from(el.childNodes).forEach(node => {
-                    if (node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 0) {
-                        const span = document.createElement('span');
-                        span.className = 'nav-text';
-                        span.textContent = node.textContent;
-                        el.replaceChild(span, node);
-                    }
-                });
-            });
-
-            if (localStorage.getItem('sidebarCollapsed') === 'true') {
-                sidebar.classList.add('collapsed');
-                const mainContent = document.querySelector('.main-content');
-                if (mainContent) mainContent.classList.add('expanded');
-            }
-        }
-    });
 </script>
 </body>
 </html>
