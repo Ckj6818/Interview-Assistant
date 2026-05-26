@@ -205,7 +205,7 @@ public class LlmService {
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("model", modelName);
             requestBody.put("messages", chatHistory);
-            requestBody.put("temperature", 0.7);
+            requestBody.put("temperature", 0.3);
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
             ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, entity, String.class);
@@ -231,7 +231,7 @@ public class LlmService {
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model", modelName);
         requestBody.put("messages", chatHistory);
-        requestBody.put("temperature", 0.7);
+        requestBody.put("temperature", 0.3);
         requestBody.put("stream", true);
 
         return webClient.post()

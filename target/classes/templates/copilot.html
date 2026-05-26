@@ -502,7 +502,7 @@
             }
 
             const bubbleTextSpan = currentBubble.querySelector('.bubble-text');
-            const currentText = finalTranscript || interimTranscript;
+            const currentText = finalTranscript + interimTranscript;
             bubbleTextSpan.innerText = currentText;
             transcriptionBox.scrollTop = transcriptionBox.scrollHeight;
             

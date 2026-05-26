@@ -1079,7 +1079,7 @@
 
             let interimTranscript = '';
             let finalTranscript = '';
-            for (let i = event.resultIndex; i < event.results.length; ++i) {
+            for (let i = 0; i < event.results.length; ++i) {
                 if (event.results[i].isFinal) {
                     finalTranscript += event.results[i][0].transcript;
                 } else {
@@ -1087,8 +1087,8 @@
                 }
             }
             
-            let liveText = finalTranscript || interimTranscript;
-            if (liveText.trim().length() > 0) {
+            let liveText = finalTranscript + interimTranscript;
+            if (liveText.trim().length > 0) {
                 // Interrupt AI speech
                 if (mainVoicePanel.classList.contains('status-speaking') || (window.speechSynthesis && window.speechSynthesis.speaking)) {
                     if (window.speechSynthesis) {
@@ -1111,7 +1111,7 @@
                             currentSpeechText = '';
                         }
                     }
-                }, 2500);
+                }, 4000);
             }
         };
 
