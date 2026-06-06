@@ -21,3 +21,6 @@ scratch/
 
 # Local runtime copies
 target/classes/application-local.yml
+
+# 本地启动脚本（含机器路径，请复制 run.cmd.example 为 run.cmd）
+run.cmd

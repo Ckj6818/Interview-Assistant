@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
 import java.util.*;
 
@@ -31,6 +32,90 @@ public class LlmService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper mapper = new ObjectMapper();
     private final WebClient webClient = WebClient.builder().build();
+
+    private String buildAnalysisAnswerJson(String analysis, String answer) {
+        try {
+            Map<String, String> payload = new HashMap<>();
+            payload.put("analysis", analysis != null ? analysis : "");
+            payload.put("answer", answer != null ? answer : "");
+            return mapper.writeValueAsString(payload);
+        } catch (Exception e) {
+            return "{\"analysis\":\"系统错误\",\"answer\":\"请稍后重试\"}";
+        }
+    }
+
+    private boolean isApiUnavailableError(Throwable e) {
+        String msg = extractErrorMessage(e);
+        return msg.contains("402")
+                || msg.contains("401")
+                || msg.contains("403")
+                || msg.contains("Payment Required")
+                || msg.contains("Insufficient Balance")
+                || msg.contains("invalid_api_key")
+                || msg.contains("Invalid API Key")
+                || msg.contains("余额");
+    }
+
+    private String extractErrorMessage(Throwable e) {
+        if (e == null) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        if (e.getMessage() != null) {
+            sb.append(e.getMessage());
+        }
+        if (e instanceof WebClientResponseException wce) {
+            sb.append(' ').append(wce.getStatusCode().value()).append(' ').append(wce.getResponseBodyAsString());
+        }
+        return sb.toString();
+    }
+
+    private String resolveLlmErrorMessage(Throwable e) {
+        String msg = extractErrorMessage(e);
+        if (msg.contains("402") || msg.contains("Payment Required") || msg.contains("Insufficient Balance")) {
+            return "DeepSeek API 余额不足。请前往 https://platform.deepseek.com/usage 充值；或在 application-local.yml 将 enable-real-api 设为 false 使用离线演示。";
+        }
+        if (msg.contains("401") || msg.contains("invalid_api_key") || msg.contains("Invalid API Key")) {
+            return "API Key 无效或已过期。请在 application-local.yml 中更新 api-key。";
+        }
+        if (msg.contains("429") || msg.contains("rate limit")) {
+            return "API 调用频率超限，请稍后再试。";
+        }
+        return "大模型服务暂时不可用，请检查网络或 API 配置。";
+    }
+
+    private String getMockInterviewOfflineReply(List<Map<String, String>> chatHistory) {
+        int userTurns = 0;
+        if (chatHistory != null) {
+            for (Map<String, String> msg : chatHistory) {
+                if ("user".equals(msg.get("role"))) {
+                    userTurns++;
+                }
+            }
+        }
+        if (userTurns == 0) {
+            return "你好，我是今天的面试官。请先做一个一分钟左右的自我介绍，重点讲你的技术栈和最近负责的项目。";
+        }
+        if (userTurns == 1) {
+            return "你刚才提到的项目里，最核心的技术难点是什么？你具体是怎么解决的？";
+        }
+        return "继续深入一下：如果流量再涨十倍，你这个方案最先会出现什么瓶颈？";
+    }
+
+    private String getMockOcrSuggestion(String ocrText, String mode) {
+        String preview = ocrText == null ? "" : ocrText.trim();
+        if (preview.length() > 180) {
+            preview = preview.substring(0, 180) + "...";
+        }
+        String analysis = "【离线演示】已从截图提取文字。配置有效 API Key 后可获得完整 AI 解析。";
+        String answer = "识别内容摘要：\n" + preview;
+        if ("algorithm".equals(mode)) {
+            answer += "\n\n解题思路（离线模板）：先明确输入输出与边界条件，再选择合适的数据结构，最后分析时间/空间复杂度。";
+        } else if ("system_design".equals(mode)) {
+            answer += "\n\n设计思路（离线模板）：从 QPS、可用性、一致性三方面拆解，再给出缓存、限流、降级方案。";
+        }
+        return buildAnalysisAnswerJson(analysis, answer);
+    }
 
     /**
      * 调用大模型进行面试评测，并返回结构化的评估结果。
@@ -184,9 +269,23 @@ public class LlmService {
             }
         } catch (Exception e) {
             System.err.println("调用大模型提词 API 异常，进入保护级降级逻辑: " + e.getMessage());
+            if (isApiUnavailableError(e)) {
+                return buildAnalysisAnswerJson(
+                        "【API 不可用】" + resolveLlmErrorMessage(e),
+                        getMockCopilotAnswerText(interviewerQuestion, mode, isUserSpeaking)
+                );
+            }
         }
 
         return getMockCopilot(interviewerQuestion, mode, isUserSpeaking);
+    }
+
+    private String getMockCopilotAnswerText(String interviewerQuestion, String mode, boolean isUserSpeaking) {
+        try {
+            return mapper.readTree(getMockCopilot(interviewerQuestion, mode, isUserSpeaking)).path("answer").asText();
+        } catch (Exception e) {
+            return "【离线演示】请结合题目要点，分层次作答。";
+        }
     }
 
     /**
@@ -216,6 +315,9 @@ public class LlmService {
             }
         } catch (Exception e) {
             System.err.println("调用大模型聊天 API 异常: " + e.getMessage());
+            if (isApiUnavailableError(e)) {
+                return "【API 不可用】" + resolveLlmErrorMessage(e) + "\n\n【离线演示】" + getMockInterviewOfflineReply(chatHistory);
+            }
         }
         return "【异常】似乎网络连接中断了，请再说一遍或者稍后再试。";
     }
@@ -261,7 +363,19 @@ public class LlmService {
                         // ignore parse errors for split chunks
                     }
                     return "";
-                }).filter(s -> !s.isEmpty());
+                })
+                .filter(s -> !s.isEmpty())
+                .switchIfEmpty(Flux.defer(() -> {
+                    String offline = getMockInterviewOfflineReply(chatHistory);
+                    return Flux.just("【API 无响应，已切换离线演示】\n" + offline);
+                }))
+                .onErrorResume(e -> {
+                    System.err.println("流式大模型 API 异常: " + e.getMessage());
+                    String message = isApiUnavailableError(e)
+                            ? "【API 不可用】" + resolveLlmErrorMessage(e) + "\n\n【离线演示】"
+                            : "【连接异常】";
+                    return Flux.just(message + getMockInterviewOfflineReply(chatHistory));
+                });
     }
 
     /**
@@ -816,7 +930,7 @@ public class LlmService {
      */
     public String generateOcrSuggestion(String ocrText, String mode) {
         if (!enableRealApi || apiKey == null || apiKey.trim().isEmpty() || apiKey.contains("YOUR_DEEPSEEK_API_KEY")) {
-            return "{\"analysis\":\"【模拟解析】这是一张测试截图文字。\",\"answer\":\"【模拟回答】检测到API Key未配置，请配置大模型API Key后进行真实多语言图文解析。\"}";
+            return getMockOcrSuggestion(ocrText, mode);
         }
 
         try {
@@ -860,12 +974,22 @@ public class LlmService {
                 String content = root.path("choices").get(0).path("message").path("content").asText();
                 content = content.replaceAll("```json", "").replaceAll("```", "").trim();
                 return content;
-            } else {
-                return "{\"analysis\":\"请求失败\",\"answer\":\"API 响应错误: " + response.getStatusCode() + "\"}";
             }
+            return buildAnalysisAnswerJson("请求失败", "API 响应错误: " + response.getStatusCode());
         } catch (Exception e) {
             e.printStackTrace();
-            return "{\"analysis\":\"异常\",\"answer\":\"调用大模型发生错误: " + e.getMessage() + "\"}";
+            if (isApiUnavailableError(e)) {
+                try {
+                    JsonNode mock = mapper.readTree(getMockOcrSuggestion(ocrText, mode));
+                    return buildAnalysisAnswerJson(
+                            "【API 不可用】" + resolveLlmErrorMessage(e),
+                            mock.path("answer").asText()
+                    );
+                } catch (Exception ignored) {
+                    return getMockOcrSuggestion(ocrText, mode);
+                }
+            }
+            return buildAnalysisAnswerJson("调用异常", resolveLlmErrorMessage(e));
         }
     }
 }

@@ -97,9 +97,15 @@ public class CopilotController {
             com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
             Map<String, Object> data = mapper.readValue(jsonResult, new com.fasterxml.jackson.core.type.TypeReference<Map<String, Object>>() {});
             data.put("success", true);
-            data.put("ocrText", ocrText); // 返回提取的原始文本供前端校验
+            data.put("ocrText", ocrText);
             return ResponseEntity.ok(data);
 
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            e.printStackTrace();
+            return ResponseEntity.ok(Map.of(
+                    "success", false,
+                    "error", "AI 返回格式异常，请重试。若持续失败，请检查 DeepSeek API 余额与 Key 配置。"
+            ));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.ok(Map.of("success", false, "error", "OCR处理异常: " + e.getMessage()));

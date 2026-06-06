@@ -1323,12 +1323,24 @@
                             speakBuffer(sentenceBuffer);
                             sentenceBuffer = "";
                         }
+                    } else if (line.trim() && line.trim() !== '[DONE]') {
+                        // 兼容非 SSE 包装的纯文本流
+                        aiFullReply += line;
+                        sentenceBuffer += line;
+                        previewText.innerText = aiFullReply;
                     }
                 }
             }
             
             if (sentenceBuffer.length > 0) {
                 speakBuffer(sentenceBuffer);
+            }
+
+            if (!aiFullReply.trim()) {
+                previewText.innerText = "AI 服务无响应。请检查 DeepSeek API 余额（application-local.yml），或暂时关闭 enable-real-api 使用离线演示。";
+                setPanelState('thinking');
+                isRequesting = false;
+                return;
             }
             
             messages.push({ role: 'assistant', content: aiFullReply });
