@@ -2,11 +2,13 @@ server:
   port: 8081
 
 spring:
+  config:
+    import: optional:classpath:application-local.yml
   datasource:
-    # MySQL 连接配置。若您的本地 MySQL 账号密码不同，请修改此处
+    # MySQL 连接配置。账号密码请在 application-local.yml 中覆盖（勿提交到 Git）
     url: jdbc:mysql://localhost:3306/interviewai?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&useSSL=false
     username: root
-    password: 123456
+    password: your_mysql_password
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   servlet:
@@ -46,7 +48,7 @@ interviewai:
     enable-real-api: true
     # 您的 OpenAI/DeepSeek 兼容 API URL
     api-url: https://api.deepseek.com/v1/chat/completions
-    # 您的 API Key
-    api-key: ""
+    # API Key 请在 application-local.yml 或环境变量 DEEPSEEK_API_KEY 中配置
+    api-key: ${DEEPSEEK_API_KEY:YOUR_DEEPSEEK_API_KEY_HERE}
     # 模型名称
     model: deepseek-chat

@@ -1,0 +1,19 @@
+# Maven
+target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Local secrets (copy from application-local.yml.example)
+application-local.yml
+src/main/resources/application-local.yml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs & temp
+*.log
+*.tmp

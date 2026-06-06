@@ -72,13 +72,41 @@
 * MySQL 8.0+
 
 ### 2. 配置初始化
-修改 `src/main/resources/application.yml` 中的数据库配置与大模型 API Key：
+
+**请勿将 API Key 写入 Git。** 按以下步骤配置本地密钥：
+
+```bash
+cd src/main/resources
+copy application-local.yml.example application-local.yml   # Windows
+# cp application-local.yml.example application-local.yml  # macOS / Linux
+```
+
+编辑 `application-local.yml`，填入 MySQL 密码与 DeepSeek API Key：
+
 ```yaml
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/interviewai?useSSL=false&serverTimezone=UTC
-    username: your_username
-    password: your_password
+    password: your_mysql_password
 
-llm:
-  api-key: your_llm_api_key_here
+interviewai:
+  llm:
+    enable-real-api: true
+    api-key: YOUR_DEEPSEEK_API_KEY_HERE
+```
+
+也可通过环境变量注入（优先级更高）：
+
+```bash
+set DEEPSEEK_API_KEY=your_key_here    # Windows CMD
+$env:DEEPSEEK_API_KEY="your_key_here" # PowerShell
+```
+
+### 3. 启动项目
+
+```bash
+mvn spring-boot:run
+```
+
+浏览器访问：http://localhost:8081
+
+> 若 API Key 曾泄露到 GitHub，请立即在 DeepSeek 控制台作废并重新生成。

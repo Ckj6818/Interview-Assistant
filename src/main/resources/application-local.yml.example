@@ -1,0 +1,13 @@
+# 复制本文件为 application-local.yml，填入本地密钥（该文件已被 .gitignore 忽略，不会提交到 Git）
+#
+# cp application-local.yml.example application-local.yml
+
+spring:
+  datasource:
+    username: root
+    password: your_mysql_password
+
+interviewai:
+  llm:
+    enable-real-api: true
+    api-key: YOUR_DEEPSEEK_API_KEY_HERE
