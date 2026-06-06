@@ -1,6 +1,12 @@
 # 复制本文件为 application-local.yml，填入本地密钥（该文件已被 .gitignore 忽略，不会提交到 Git）
 #
-# cp application-local.yml.example application-local.yml
+# Windows:  copy application-local.yml.example application-local.yml
+# Linux:   cp application-local.yml.example application-local.yml
+#
+# 获取 API Key：
+#   登录 https://platform.deepseek.com/sign_in
+#   管理密钥 https://platform.deepseek.com/api_keys
+#   查看用量 https://platform.deepseek.com/usage
 
 spring:
   datasource:

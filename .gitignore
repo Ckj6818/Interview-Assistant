@@ -17,3 +17,7 @@ Thumbs.db
 # Logs & temp
 *.log
 *.tmp
+scratch/
+
+# Local runtime copies
+target/classes/application-local.yml
