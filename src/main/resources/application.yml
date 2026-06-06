@@ -47,6 +47,6 @@ interviewai:
     # 您的 OpenAI/DeepSeek 兼容 API URL
     api-url: https://api.deepseek.com/v1/chat/completions
     # 您的 API Key
-    api-key: "sk-3d4c04ac92564146b20864cc087cb7eb"
+    api-key: ""
     # 模型名称
     model: deepseek-chat
