@@ -135,6 +135,58 @@ mvn spring-boot:run
 
 ---
 
+## REST API
+
+对外 REST 接口统一使用 `ApiResponse<T>` 包装响应，无需登录即可访问（`/api/v1/**` 已放行）。
+
+### 查询题库列表
+
+```
+GET /api/v1/questions
+```
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `tag` | string | 否 | 技术栈标签，对应题目 `category`，如 `Java基础` |
+| `difficulty` | string | 否 | 难度筛选：`简单` / `中等` / `困难` |
+
+**示例**
+
+```bash
+# 全部题目
+curl http://localhost:8081/api/v1/questions
+
+# 按标签筛选
+curl "http://localhost:8081/api/v1/questions?tag=Java基础"
+
+# 标签 + 难度
+curl "http://localhost:8081/api/v1/questions?tag=Java基础&difficulty=简单"
+```
+
+**响应示例**
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": [
+    {
+      "id": 1,
+      "category": "Java基础",
+      "title": "请解释一下 Java 中的多态是什么，并给出一个实际应用场景？",
+      "answer": "...",
+      "difficulty": "简单",
+      "questionType": "conceptual",
+      "defaultCode": null
+    }
+  ]
+}
+```
+
+数据来自 `QuestionService`，优先读 Redis 缓存（30 分钟 TTL），Redis 不可用时自动降级查 MySQL。
+
+---
+
 ## Docker Compose 一键部署
 
 ### 1. 准备环境变量

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @Service
 public class QuestionService {
@@ -47,6 +48,26 @@ public class QuestionService {
 
     public List<String> getDistinctCategories() {
         return getFromCacheOrLoad(CACHE_KEY_CATEGORIES, questionRepository::findDistinctCategories, new TypeReference<>() {});
+    }
+
+    /**
+     * 按技术栈标签与难度查询题库（供 REST API 与页面复用）。
+     * tag 对应 category；difficulty 在内存中二次过滤。
+     */
+    public List<Question> listQuestions(String tag, String difficulty) {
+        List<Question> questions = (tag != null && !tag.isBlank())
+                ? getQuestionsByCategory(tag.trim())
+                : getAllQuestions();
+
+        if (difficulty == null || difficulty.isBlank()) {
+            return questions;
+        }
+
+        String normalizedDifficulty = difficulty.trim();
+        return questions.stream()
+                .filter(q -> q.getDifficulty() != null
+                        && q.getDifficulty().equalsIgnoreCase(normalizedDifficulty))
+                .collect(Collectors.toList());
     }
 
     private <T> T getFromCacheOrLoad(String cacheKey, Supplier<T> loader, TypeReference<T> typeRef) {
