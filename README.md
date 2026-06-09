@@ -1,75 +1,89 @@
-# MindSpark (InterviewAI) - 智能模拟面试与全真技术对线平台
+# AI 面试助手（Interview-Assistant）
 
 <p align="center">
   <img src="https://img.shields.io/badge/Java-17-orange.svg" alt="Java 17">
-  <img src="https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen.svg" alt="Spring Boot 3.x">
-  <img src="https://img.shields.io/badge/Spring%20Security-6.x-blue.svg" alt="Spring Security 6">
-  <img src="https://img.shields.io/badge/UI-Dark%20Theme-black.svg" alt="Dark Theme">
+  <img src="https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen.svg" alt="Spring Boot 3">
+  <img src="https://img.shields.io/badge/MySQL-8.0-blue.svg" alt="MySQL 8">
+  <img src="https://img.shields.io/badge/Redis-7-red.svg" alt="Redis 7">
+  <img src="https://img.shields.io/badge/Thymeleaf-3.x-green.svg" alt="Thymeleaf">
 </p>
 
----
-
-## 💡 项目背景与核心痛点 (Background & Pain Points)
-
-在当前竞争激烈的招聘环境下，求职者面临**“缺乏真实高压面试环境”**与**“传统八股文背诵失效”**的痛点。
-**MindSpark (InterviewAI)** 是一款基于大语言模型（LLM）驱动的沉浸式全真模拟面试与智能评测平台。项目采用全面适配开发者的**全暗黑（Dark Theme）低能耗视觉设计**，后端基于 **Spring Boot 3.x** 工业级架构，实现了“智能题库检索 -> 简历解析诊断 -> AI 流式对线追问 -> 多维复盘报告”的完整全栈业务闭环。
+基于大语言模型的智能模拟面试与评测平台。后端采用 **Java 17 + Spring Boot 3** 分层架构，前端使用 **Thymeleaf** 服务端渲染，通过自研 **LlmService** 接入 **DeepSeek API**（WebClient 异步调用），实现流式面试、代码评测、简历分析与报告生成。
 
 ---
 
-## ✨ 核心特性 (Key Features)
+## 技术栈
 
-### 1. 🎭 动态面试官人设与流式追问引擎
-* **多身份上下文注入：** 系统支持动态配置面试官人设（如大厂严厉架构师、资深 HR 专家等），后端 Service 自动拼装系统级提示词（System Prompt）。
-* **技术深度追问：** 拒绝简单的“一问一答”模式，AI 会根据用户前一句回答中的技术漏洞发起**连续施压追问**，高保真还原大厂真实的技术对线场景。
-
-### 2. 📊 智能复盘与结构化多维诊断报告
-* **结构化 JSON 解析：** 后端服务对 AI 反馈的长文本和评分进行深度解析，动态提取并发处理、源码理解、系统架构等核心指标。
-* **能力可视化：** 将清洗后的评分数据落库，为前端生成多维能力雷达图提供精准的数据支撑，量化技术盲区并给出大厂标准修复建议。
-
-### 3. 🛡️ 工业级容灾防御与文本清洗链（项目亮点）
-* **流式文本容错拦截：** 针对大模型流式传输或多字符集转换中极易出现的 `FFFD` 替换字符及 `BOM` 编码格式问题，内置自动化清洗组件，确保前端数据百分之百渲染稳定。
-* **数据恢复与容灾机制：** 自研完备的离线日志状态恢复工具（Log-to-HTML Recovery），在系统突发崩溃的极端场景下，能够根据运行日志实现用户历史面试会话的无损还原。
+| 层次 | 技术 |
+|------|------|
+| 语言 / 框架 | Java 17 · Spring Boot 3 · Spring Security · Spring Data JPA |
+| 数据库 | MySQL 8.0 |
+| 缓存 | Redis 7（热点题库缓存，30 分钟 TTL，Redis 不可用时降级查 MySQL） |
+| 前端 | Thymeleaf · HTML / CSS / JavaScript |
+| AI 接入 | WebClient · DeepSeek API · SSE 流式响应 |
+| 接口文档 | SpringDoc OpenAPI（Swagger UI） |
+| 部署 | Docker · Docker Compose |
 
 ---
 
-## 📸 系统预览 (System Preview)
+## 系统架构
 
-### 1. 🎛️ 控制面板与数据看板 (Dashboard)
-项目主控台，直观追踪模拟面试场次、累计时长及核心技术栈熟练度。
+```mermaid
+flowchart TB
+    User[用户浏览器] --> Thymeleaf[Thymeleaf 页面]
+    Thymeleaf --> Controller[Controller 层]
+    Controller --> Service[Service 层]
+    Service --> Repository[Repository 层]
+    Repository --> MySQL[(MySQL)]
+    Service --> LlmService[LlmService]
+    LlmService --> WebClient[WebClient]
+    WebClient --> DeepSeek[DeepSeek API]
+    Service --> Redis[(Redis 缓存)]
+    Redis -.->|未命中 / 降级| MySQL
+```
 
-
-### 2. ⚔️ 沉浸式 AI 面试对线界面 (AI Interview Interface)
-深度还原高压面试。AI 面试官正在根据求职者的回答进行连环技术施压追问。
-
-
-### 3. 📝 智能题目库与解析矩阵 (Question Matrix)
-基于关系型数据库建立的多维技术题库，支持按技术栈标签与难度梯度精细化检索。
-
-
----
-
-## 🛠️ 技术架构与选型 (Tech Stack & Architecture)
-
-### 后端核心技术 (Backend Stack)
-* **核心框架：** `Java 17` + `Spring Boot 3.x`（享受新版 GraalVM 原生镜像生态与极致启动速度）
-* **安全鉴权：** `Spring Security 6.x`（基于 RBAC 权限模型，实现用户、面试官数据全方位隔离）
-* **网络通信：** `Spring WebClient`（全面弃用传统的同步阻塞式 `RestTemplate`，面对大模型长文本响应采用**异步非阻塞通信**，避免高并发下对 Tomcat 线程池的死锁式消耗）
-* **持久层：** `Spring Data JPA` + `MySQL 8.0`（利用实体映射机制，配合 `@Transactional` 保证多表联查与数据写入的一致性）
-
-### 鲁棒性与工程工具集 (System Tools)
-为保障生产环境的健壮性，项目中开发并集成了多套自研底层脚本：
-* `SearchTranscript` / `CheckNul`：自适应文本流高并发字符清洗过滤检测器。
-* `RemoveBOM` / `FixHtmlSyntax`：跨平台字符集格式不一致修正引擎，阻断前端 HTML/JS 渲染瑕疵。
-* `RecoverFromLog` / `ExtractHistory`：会话级容灾恢复工具，支持基于历史日志无损重建用户面试上下文。
+**请求链路：** 用户 → Thymeleaf 页面 → Controller → Service → Repository → MySQL  
+**AI 链路：** Service → LlmService → WebClient → DeepSeek API
 
 ---
 
-## 🚀 快速开始 (Quick Start)
+## 核心功能
+
+- **题库浏览与刷题**：按技术栈标签、难度、题型筛选，支持 LeetCode 风格代码作答
+- **AI 模拟面试**：SSE 流式对话，多面试官人设，连续技术追问
+- **全真模拟面试**：无固定题库，结合简历与目标岗位自由对话
+- **简历诊断与优化**：PDF / Word 解析，AI 打分与 ATS 优化
+- **多维评估报告**：结构化 JSON 解析，能力维度评分与改进建议
+
+---
+
+## 系统预览
+
+> 以下截图为本地运行 `http://localhost:8081` 的实际界面（MindSpark 面之光 / Interview-Assistant）。  
+> 如需重新生成，启动应用后执行：`py scripts/capture_screenshots.py`
+
+### 系统首页
+
+![系统首页](docs/screenshots/01-home.png)
+
+### 题库大厅
+
+![题库大厅](docs/screenshots/02-questions.png)
+
+### 全真模拟面试
+
+![全真模拟面试](docs/screenshots/03-mock-interview.png)
+
+---
+
+## 快速开始（本地开发）
 
 ### 1. 环境依赖
-* Java 17+
-* Maven 3.8+
-* MySQL 8.0+
+
+- Java 17+
+- Maven 3.8+
+- MySQL 8.0+
+- Redis 7+（可选，未启动时自动降级查 MySQL）
 
 ### 2. 配置初始化
 
@@ -81,12 +95,16 @@ copy application-local.yml.example application-local.yml   # Windows
 # cp application-local.yml.example application-local.yml  # macOS / Linux
 ```
 
-编辑 `application-local.yml`，填入 MySQL 密码与 DeepSeek API Key：
+编辑 `application-local.yml`，填入 MySQL 密码、Redis 地址与 DeepSeek API Key：
 
 ```yaml
 spring:
   datasource:
     password: your_mysql_password
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 interviewai:
   llm:
@@ -109,4 +127,78 @@ mvn spring-boot:run
 
 浏览器访问：http://localhost:8081
 
-> 若 API Key 曾泄露到 GitHub，请立即在 DeepSeek 控制台作废并重新生成。
+### 4. API 文档（Swagger）
+
+启动后访问：http://localhost:8081/swagger-ui.html
+
+> 若 API Key 曾泄露到 GitHub，请立即在 [DeepSeek 控制台](https://platform.deepseek.com/api_keys) 作废并重新生成。
+
+---
+
+## Docker Compose 一键部署
+
+### 1. 准备环境变量
+
+```bash
+copy .env.example .env   # Windows
+# cp .env.example .env    # macOS / Linux
+```
+
+编辑 `.env`，填入 `DEEPSEEK_API_KEY` 和 MySQL 密码。
+
+### 2. 启动全部服务
+
+```bash
+docker-compose up -d
+```
+
+将自动拉起 **MySQL + Redis + 应用**，应用端口映射为 `8081`。
+
+### 3. 访问
+
+- 应用：http://localhost:8081
+- Swagger：http://localhost:8081/swagger-ui.html
+
+### 4. 停止
+
+```bash
+docker-compose down
+```
+
+---
+
+## Redis 缓存说明
+
+题库列表与分类标签查询走 **Cache-Aside** 模式：
+
+1. 先查 Redis → 命中则直接返回（日志 `[Redis HIT]`）
+2. 未命中则查 MySQL → 写入 Redis，TTL 30 分钟（日志 `[Redis MISS]` / `[Redis SET]`）
+3. Redis 连接失败时自动降级查 MySQL（日志 `[Redis DOWN]`），不影响正常业务
+
+---
+
+## 项目结构
+
+```
+interviewai/
+├── src/main/java/com/interviewai/
+│   ├── controller/     # 控制器（Thymeleaf 页面 + REST API）
+│   ├── service/        # 业务逻辑（含 LlmService、QuestionService）
+│   ├── repository/     # JPA 数据访问
+│   ├── entity/         # 实体类
+│   └── config/         # Security、Redis、OpenAPI 配置
+├── src/main/resources/
+│   ├── templates/      # Thymeleaf 模板
+│   ├── application.yml
+│   └── application-local.yml.example
+├── docs/screenshots/   # README 功能截图
+├── Dockerfile
+├── docker-compose.yml
+└── .env.example
+```
+
+---
+
+## License
+
+MIT

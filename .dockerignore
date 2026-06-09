@@ -1,0 +1,7 @@
+target/
+.idea/
+*.iml
+.git/
+scratch/
+**/application-local.yml
+run.cmd

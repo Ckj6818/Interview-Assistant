@@ -152,6 +152,51 @@
         .markdown-content li {
             margin-bottom: 8px;
         }
+
+        /* 深色背景下提升次要文字可读性 */
+        .main-content .text-muted {
+            color: #cbd5e1 !important;
+        }
+        .main-content .form-label {
+            color: #e2e8f0 !important;
+            font-weight: 500;
+        }
+        .main-content .form-label.small {
+            color: #cbd5e1 !important;
+        }
+        .main-content p.text-muted {
+            line-height: 1.65;
+            font-size: 0.95rem;
+        }
+        .upload-zone .text-muted,
+        .upload-zone .small {
+            color: #94a3b8 !important;
+        }
+        .tab-btn {
+            color: #cbd5e1;
+        }
+        .tab-btn:hover {
+            color: #f1f5f9;
+        }
+        .score-label {
+            color: #cbd5e1;
+        }
+        .upload-icon {
+            color: #94a3b8;
+        }
+        .form-control::placeholder {
+            color: #94a3b8 !important;
+            opacity: 1;
+        }
+        .resume-lead {
+            color: #e2e8f0 !important;
+            font-size: 1rem;
+        }
+        #emptyResultState .text-muted {
+            color: #cbd5e1 !important;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
     </style>
     <link rel="stylesheet" th:href="@{/css/modern-theme.css}">
 </head>
@@ -205,7 +250,7 @@
 <!-- 右侧主体 -->
 <div class="main-content">
             <h2 class="mb-2 fw-bold text-white"><i class="bi bi-file-earmark-person-fill text-success me-2"></i>AI简历定制 & 深度诊断诊所</h2>
-            <p class="text-muted mb-4">模拟资深HR视角，对你的简历进行多维度打分与诊断，并可一键导入职位JD（岗位描述）进行针对性润色以优化ATS通过率。</p>
+            <p class="text-muted mb-4 resume-lead">模拟资深HR视角，对你的简历进行多维度打分与诊断，并可一键导入职位JD（岗位描述）进行针对性润色以优化ATS通过率。</p>
 
             <div class="row g-4">
                 <!-- 左侧配置栏 -->

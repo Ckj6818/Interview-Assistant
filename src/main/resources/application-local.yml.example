@@ -12,6 +12,10 @@ spring:
   datasource:
     username: root
     password: your_mysql_password
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 interviewai:
   llm:

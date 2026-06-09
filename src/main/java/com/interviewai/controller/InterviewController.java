@@ -12,6 +12,9 @@ import com.interviewai.repository.QuestionRepository;
 import com.interviewai.repository.UserRepository;
 import com.interviewai.service.AsyncReportService;
 import com.interviewai.service.LlmService;
+import com.interviewai.service.QuestionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -32,10 +35,14 @@ import java.util.stream.Collectors;
  * 面试与题库控制器
  */
 @Controller
+@Tag(name = "Interview", description = "题库浏览、模拟面试、代码评测与记录管理")
 public class InterviewController {
 
     @Autowired
     private QuestionRepository questionRepository;
+
+    @Autowired
+    private QuestionService questionService;
 
     @Autowired
     private InterviewRecordRepository interviewRecordRepository;
@@ -65,8 +72,8 @@ public class InterviewController {
             Model model,
             Authentication authentication) {
         
-        List<String> categories = questionRepository.findDistinctCategories();
-        List<Question> allQuestions = questionRepository.findAll();
+        List<String> categories = questionService.getDistinctCategories();
+        List<Question> allQuestions = questionService.getAllQuestions();
         
         // 获取当前用户已解答的题目
         Set<String> solvedTopics = new HashSet<>();
@@ -184,6 +191,7 @@ public class InterviewController {
     /**
      * 运行代码测试
      */
+    @Operation(summary = "运行代码测试", description = "对提交的代码进行编译与运行检测")
     @PostMapping("/api/questions/run")
     @ResponseBody
     public ResponseEntity<?> runCode(@RequestBody Map<String, Object> payload) {
@@ -212,6 +220,7 @@ public class InterviewController {
     /**
      * 实时在线算法协作：根据停顿检测返回点拨
      */
+    @Operation(summary = "获取代码点拨", description = "根据当前代码进度返回 AI 提示")
     @PostMapping("/api/questions/code-hint")
     @ResponseBody
     public ResponseEntity<?> getCodeHint(@RequestBody Map<String, Object> payload) {
@@ -236,6 +245,7 @@ public class InterviewController {
     /**
      * 提交代码评测并保存记录
      */
+    @Operation(summary = "提交代码评测", description = "提交代码并由 AI 打分，保存面试记录")
     @PostMapping("/api/questions/submit")
     @ResponseBody
     public ResponseEntity<?> submitCode(@RequestBody Map<String, Object> payload, Authentication authentication) {
@@ -304,6 +314,7 @@ public class InterviewController {
     /**
      * 获取单条面试/刷题记录详情的 API 接口
      */
+    @Operation(summary = "获取记录详情", description = "按记录 ID 返回评分与反馈报告")
     @GetMapping("/api/records-detail/{recordId}")
     @ResponseBody
     public ResponseEntity<?> getRecordDetail(@PathVariable("recordId") Long recordId, Authentication authentication) {
@@ -330,6 +341,7 @@ public class InterviewController {
     /**
      * 接收前端 Ajax 提交的单轮聊天请求 (SSE 流式打字机)
      */
+    @Operation(summary = "流式面试对话", description = "SSE 流式返回 AI 面试官回复")
     @PostMapping(value = "/api/interview/chat-stream", produces = org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE)
     public reactor.core.publisher.Flux<String> chatRoundStream(@RequestBody Map<String, Object> payload) {
         List<Map<String, String>> chatHistory = (List<Map<String, String>>) payload.get("chatHistory");
@@ -357,6 +369,7 @@ public class InterviewController {
     /**
      * 接收前端 Ajax 提交的完整面试记录，进行全场结算评分，并保存记录
      */
+    @Operation(summary = "提交面试会话", description = "保存完整聊天记录并异步生成评估报告")
     @PostMapping("/api/interview/submit")
     @ResponseBody
     public ResponseEntity<?> submitSession(
@@ -430,6 +443,7 @@ public class InterviewController {
     /**
      * AI 笔试秒解分析接口 (由 AI 模拟面试板块调用)
      */
+    @Operation(summary = "笔试图片分析", description = "上传笔试截图并返回 AI 解析结果")
     @PostMapping("/api/solver/analyze")
     @ResponseBody
     public ResponseEntity<?> analyzeImage(
@@ -473,6 +487,7 @@ public class InterviewController {
     /**
      * 清空当前用户的所有面试记录
      */
+    @Operation(summary = "清空面试记录", description = "删除当前登录用户的全部面试记录")
     @DeleteMapping("/api/records/clear")
     @ResponseBody
     public ResponseEntity<?> clearAllRecords(Authentication authentication) {

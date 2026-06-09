@@ -4,6 +4,8 @@ import com.interviewai.entity.User;
 import com.interviewai.service.LlmService;
 import com.interviewai.service.UserService;
 import com.interviewai.util.ResumeParser;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/resume")
+@Tag(name = "Resume", description = "简历上传、AI 诊断与 ATS 优化")
 public class ResumeController {
 
     @Autowired
@@ -36,6 +39,7 @@ public class ResumeController {
         return "resume";
     }
 
+    @Operation(summary = "简历诊断分析", description = "上传或粘贴简历，返回 AI 打分与 JD 匹配分析")
     @PostMapping("/analyze")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> analyzeResume(
@@ -83,6 +87,7 @@ public class ResumeController {
         }
     }
 
+    @Operation(summary = "简历全量优化", description = "生成 ATS 友好的 Markdown 优化版简历")
     @PostMapping("/optimizeFull")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> optimizeFullResume(

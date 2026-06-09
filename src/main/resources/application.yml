@@ -41,6 +41,18 @@ spring:
       # 忽略如果没有找到脚本等错误
       continue-on-error: true
 
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 3000ms
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
 # 自定义配置（LLM 大模型 API）
 interviewai:
   llm:

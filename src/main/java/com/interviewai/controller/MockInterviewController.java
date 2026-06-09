@@ -9,6 +9,8 @@ import com.interviewai.repository.InterviewRecordRepository;
 import com.interviewai.repository.QuestionRepository;
 import com.interviewai.repository.UserRepository;
 import com.interviewai.service.LlmService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -23,6 +25,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/mock-interview")
+@Tag(name = "Mock Interview", description = "全真模拟面试：流式对话与结束评估")
 public class MockInterviewController {
 
     @Autowired
@@ -48,6 +51,7 @@ public class MockInterviewController {
     /**
      * 接收前台的聊天记录数组，调用大模型返回 AI 的下一句回复
      */
+    @Operation(summary = "模拟面试对话", description = "同步返回 AI 面试官的下一句回复")
     @PostMapping("/chat")
     @ResponseBody
     public ResponseEntity<?> chat(@RequestBody Map<String, Object> payload) {
@@ -112,6 +116,7 @@ public class MockInterviewController {
     /**
      * 流式交互接口：接收新对话并返回 SSE 流
      */
+    @Operation(summary = "流式模拟面试", description = "SSE 流式返回 AI 面试官回复")
     @PostMapping(value = "/chat-stream", produces = "text/event-stream")
     @ResponseBody
     public reactor.core.publisher.Flux<String> chatInterviewStream(@RequestBody Map<String, Object> payload) {
@@ -167,6 +172,7 @@ public class MockInterviewController {
     /**
      * 结束面试，保存全量聊天记录并生成总评
      */
+    @Operation(summary = "结束模拟面试", description = "保存聊天记录并生成综合评估报告")
     @PostMapping("/finish")
     @ResponseBody
     public ResponseEntity<?> finishInterview(
