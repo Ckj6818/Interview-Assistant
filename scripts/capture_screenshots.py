@@ -7,7 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.edge.options import Options
 
 OUT_DIR = Path(__file__).resolve().parents[1] / "docs" / "screenshots"
-BASE_URL = "http://localhost:8081"
+BASE_URL = "http://127.0.0.1:8081"
 
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
