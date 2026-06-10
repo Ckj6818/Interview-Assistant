@@ -9,6 +9,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -45,11 +46,20 @@ public class SecurityConfig {
                         "/v3/api-docs/**",
                         "/api/v1/**"
                 ).permitAll()
+                .requestMatchers("/admin/access-denied").authenticated()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
+            )
+            .exceptionHandling(ex -> ex
+                .accessDeniedPage("/admin/access-denied")
             )
             .formLogin(form -> form
                 .loginPage("/login")
-                .defaultSuccessUrl("/")
+                .successHandler((request, response, authentication) -> {
+                    boolean isAdmin = AuthorityUtils.authorityListToSet(authentication.getAuthorities())
+                            .contains("ROLE_ADMIN");
+                    response.sendRedirect(isAdmin ? "/admin" : "/");
+                })
                 .permitAll()
             )
             .logout(logout -> logout

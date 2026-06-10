@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -604,6 +605,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/records"><i class="bi bi-clock-history me-2"></i> 面试记录</a>
                 </li>
+                <li th:replace="~{fragments/user-nav :: adminLink}"></li>
                 
             </ul>
         </div>

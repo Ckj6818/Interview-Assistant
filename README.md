@@ -1,14 +1,14 @@
 # AI 面试助手（Interview-Assistant）
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Java-17-orange.svg" alt="Java 17">
+  <img src="https://img.shields.io/badge/Java-21-orange.svg" alt="Java 21">
   <img src="https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen.svg" alt="Spring Boot 3">
   <img src="https://img.shields.io/badge/MySQL-8.0-blue.svg" alt="MySQL 8">
   <img src="https://img.shields.io/badge/Redis-7-red.svg" alt="Redis 7">
   <img src="https://img.shields.io/badge/Thymeleaf-3.x-green.svg" alt="Thymeleaf">
 </p>
 
-基于大语言模型的智能模拟面试与评测平台。后端采用 **Java 17 + Spring Boot 3** 分层架构，前端使用 **Thymeleaf** 服务端渲染，通过自研 **LlmService** 接入 **DeepSeek API**（WebClient 异步调用），实现流式面试、代码评测、简历分析与报告生成。
+基于大语言模型的智能模拟面试与评测平台。后端采用 **Java 21 + Spring Boot 3** 分层架构，前端使用 **Thymeleaf** 服务端渲染，通过自研 **LlmService** 接入 **DeepSeek API**（WebClient 异步调用），实现流式面试、代码评测、简历分析与报告生成。系统包含 **管理员 / 普通用户** 双角色：管理员维护题库，用户刷题与 AI 面试。
 
 ---
 
@@ -16,7 +16,7 @@
 
 | 层次 | 技术 |
 |------|------|
-| 语言 / 框架 | Java 17 · Spring Boot 3 · Spring Security · Spring Data JPA |
+| 语言 / 框架 | Java 21 · Spring Boot 3 · Spring Security · Spring Data JPA |
 | 数据库 | MySQL 8.0 |
 | 缓存 | Redis 7（热点题库缓存，30 分钟 TTL，Redis 不可用时降级查 MySQL） |
 | 前端 | Thymeleaf · HTML / CSS / JavaScript |
@@ -52,8 +52,12 @@ flowchart TB
 - **题库浏览与刷题**：按技术栈标签、难度、题型筛选，支持 LeetCode 风格代码作答
 - **AI 模拟面试**：SSE 流式对话，多面试官人设，连续技术追问
 - **全真模拟面试**：无固定题库，结合简历与目标岗位自由对话
+- **面试助手 Copilot**：实时提词 + 截图 OCR，辅助真实面试场景
 - **简历诊断与优化**：PDF / Word 解析，AI 打分与 ATS 优化
 - **多维评估报告**：结构化 JSON 解析，能力维度评分与改进建议
+- **管理员后台**：题库 CRUD、分类/关键词检索（`/admin`，ROLE_ADMIN）
+
+**演示账号：** `admin` / `123456`（管理员） · `user` / `123456`（普通用户）
 
 ---
 
@@ -80,7 +84,7 @@ flowchart TB
 
 ### 1. 环境依赖
 
-- Java 17+
+- Java 21+
 - Maven 3.8+
 - MySQL 8.0+
 - Redis 7+（可选，未启动时自动降级查 MySQL）

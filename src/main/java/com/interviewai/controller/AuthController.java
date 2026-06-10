@@ -16,24 +16,27 @@ public class AuthController {
 
     @GetMapping("/login")
     public String loginPage() {
-        return "login"; // 对应 login.html
+        return "login";
     }
 
     @GetMapping("/register")
-    public String registerPage() {
-        return "register"; // 对应 register.html
+    public String registerPage(Model model) {
+        model.addAttribute("username", "");
+        return "register";
     }
 
     @PostMapping("/register")
     public String doRegister(
             @RequestParam("username") String username,
             @RequestParam("password") String password,
+            @RequestParam("confirmPassword") String confirmPassword,
             Model model) {
         try {
-            userService.register(username, password); // 调用 UserService 的 register 方法
+            userService.register(username, password, confirmPassword);
             return "redirect:/login?registered=true";
-        } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            model.addAttribute("username", username != null ? username.trim() : "");
             return "register";
         }
     }

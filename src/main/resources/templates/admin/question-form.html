@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/admin-layout :: head(${isEdit} ? '编辑题目' : '新增题目')}"></th:block>
+</head>
+<body class="admin-console">
+
+<div th:replace="~{fragments/admin-layout :: sidebar(questions)}"></div>
+<div th:replace="~{fragments/admin-layout :: topbar(${isEdit} ? '编辑题目' : '新增题目')}"></div>
+
+<div class="admin-main">
+    <div class="mb-3">
+        <a th:href="@{/admin/questions}" class="text-decoration-none"
+           style="color: var(--admin-text-muted); font-size: 0.88rem;">
+            <i class="bi bi-arrow-left me-1"></i> 返回列表
+        </a>
+    </div>
+
+    <div class="admin-card" style="max-width: 860px;">
+        <div class="admin-card-header">
+            <h4 class="mb-0" style="font-weight: 700; color: var(--admin-text);"
+                th:text="${isEdit} ? '编辑题目' : '新增题目'">新增题目</h4>
+            <span th:if="${isEdit}" class="badge admin-badge-category" th:text="'ID: ' + ${question.id}">ID</span>
+        </div>
+        <div class="p-4">
+            <form th:action="@{/admin/questions}" th:object="${question}" method="post">
+                <input type="hidden" th:field="*{id}"/>
+
+                <div class="mb-3">
+                    <label class="admin-form-label" for="category">分类 / 技术栈</label>
+                    <input type="text" class="form-control admin-form-control" id="category"
+                           th:field="*{category}" placeholder="如：Java基础、Spring框架" required
+                           list="categoryList"/>
+                    <datalist id="categoryList">
+                        <option th:each="cat : ${categories}" th:value="${cat}"></option>
+                    </datalist>
+                </div>
+
+                <div class="mb-3">
+                    <label class="admin-form-label" for="title">题目标题</label>
+                    <input type="text" class="form-control admin-form-control" id="title"
+                           th:field="*{title}" placeholder="题目名称（唯一）" required maxlength="500"/>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="admin-form-label" for="difficulty">难度</label>
+                        <select class="form-select admin-form-select" id="difficulty" th:field="*{difficulty}">
+                            <option value="">请选择</option>
+                            <option value="简单">简单</option>
+                            <option value="中等">中等</option>
+                            <option value="困难">困难</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="admin-form-label" for="questionType">题目类型</label>
+                        <select class="form-select admin-form-select" id="questionType" th:field="*{questionType}">
+                            <option value="">请选择</option>
+                            <option value="conceptual">概念题 (conceptual)</option>
+                            <option value="code">代码题 (code)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="admin-form-label" for="answer">参考答案</label>
+                    <textarea class="form-control admin-form-control" id="answer" th:field="*{answer}"
+                              rows="6" placeholder="标准答案或解析" required></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="admin-form-label" for="defaultCode">默认代码模板（代码题可选）</label>
+                    <textarea class="form-control admin-form-control font-monospace" id="defaultCode"
+                              th:field="*{defaultCode}" rows="5"
+                              placeholder="public class Solution { ... }"></textarea>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn admin-btn-primary px-4">
+                        <i class="bi bi-check-lg me-1"></i>
+                        <span th:text="${isEdit} ? '保存修改' : '确认新增'">保存</span>
+                    </button>
+                    <a th:href="@{/admin/questions}" class="btn admin-btn-outline px-4">取消</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

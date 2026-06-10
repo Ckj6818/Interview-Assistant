@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/admin-layout :: head('控制台首页')}"></th:block>
+</head>
+<body class="admin-console">
+
+<div th:replace="~{fragments/admin-layout :: sidebar(dashboard)}"></div>
+<div th:replace="~{fragments/admin-layout :: topbar('控制台首页')}"></div>
+
+<div class="admin-main">
+    <div th:replace="~{fragments/admin-layout :: flash}"></div>
+
+    <h2 class="mb-4" style="font-weight: 800; color: var(--admin-text);">
+        <i class="bi bi-speedometer2 me-2" style="color: var(--admin-accent);"></i>
+        管理控制台
+    </h2>
+
+    <div class="admin-stat-grid">
+        <div class="admin-stat-card">
+            <div class="stat-value" th:text="${totalCount}">0</div>
+            <div class="stat-label">题库总题量</div>
+        </div>
+        <div class="admin-stat-card">
+            <div class="stat-value" th:text="${#lists.size(categories)}">0</div>
+            <div class="stat-label">技术栈分类数</div>
+        </div>
+        <div class="admin-stat-card">
+            <div class="stat-value" style="font-size: 1.4rem; color: #fcd34d;">
+                <i class="bi bi-shield-lock-fill me-1"></i> ADMIN
+            </div>
+            <div class="stat-label">当前身份：管理员</div>
+        </div>
+    </div>
+
+    <div class="admin-card">
+        <div class="admin-card-header">
+            <h5 class="mb-0" style="color: var(--admin-text);">快捷操作</h5>
+        </div>
+        <div class="p-4 d-flex flex-wrap gap-3">
+            <a th:href="@{/admin/questions}" class="btn admin-btn-primary px-4 py-2">
+                <i class="bi bi-journal-code me-2"></i> 进入题库管理
+            </a>
+            <a th:href="@{/admin/questions/new}" class="btn admin-btn-outline px-4 py-2">
+                <i class="bi bi-plus-lg me-2"></i> 新增题目
+            </a>
+            <a th:href="@{/}" class="btn admin-btn-outline px-4 py-2">
+                <i class="bi bi-box-arrow-up-right me-2"></i> 查看用户前台
+            </a>
+        </div>
+    </div>
+
+    <div class="admin-card mt-4">
+        <div class="admin-card-header">
+            <h5 class="mb-0" style="color: var(--admin-text);">界面说明</h5>
+        </div>
+        <div class="p-4" style="color: var(--admin-text-muted); line-height: 1.8; font-size: 0.92rem;">
+            <p class="mb-2">
+                <span class="admin-topbar-badge" style="font-size: 0.65rem; padding: 4px 10px;">ADMIN CONSOLE</span>
+                标识表示您正处于<strong style="color: var(--admin-accent);">管理员后台</strong>（琥珀色主题）。
+            </p>
+            <p class="mb-0">
+                用户前台为蓝绿色主题，仅提供刷题与面试功能；题库增删改查请在本管理后台完成。
+            </p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

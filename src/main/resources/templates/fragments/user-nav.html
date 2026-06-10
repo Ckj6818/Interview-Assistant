@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<!-- 管理员入口（仅 ADMIN 可见，插入各页侧边栏「面试记录」下方） -->
+<li th:fragment="adminLink" class="nav-item" sec:authorize="hasRole('ADMIN')">
+    <a class="nav-link" th:href="@{/admin}"
+       style="border: 1px dashed rgba(245,158,11,0.4); color: #f59e0b !important;">
+        <i class="bi bi-shield-lock me-2"></i> 管理后台
+    </a>
+</li>
+
+</html>

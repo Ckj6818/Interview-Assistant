@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/admin-layout :: head('题目详情')}"></th:block>
+</head>
+<body class="admin-console">
+
+<div th:replace="~{fragments/admin-layout :: sidebar(questions)}"></div>
+<div th:replace="~{fragments/admin-layout :: topbar('题目详情 · 查看')}"></div>
+
+<div class="admin-main">
+    <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <a th:href="@{/admin/questions}" class="text-decoration-none"
+           style="color: var(--admin-text-muted); font-size: 0.88rem;">
+            <i class="bi bi-arrow-left me-1"></i> 返回列表
+        </a>
+        <div class="d-flex gap-2">
+            <a th:href="@{/admin/questions/{id}/edit(id=${question.id})}" class="btn admin-btn-primary btn-sm">
+                <i class="bi bi-pencil me-1"></i> 编辑
+            </a>
+            <form th:action="@{/admin/questions/{id}/delete(id=${question.id})}" method="post"
+                  class="d-inline" onsubmit="return confirm('确定删除该题目？');">
+                <button type="submit" class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-trash me-1"></i> 删除
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="admin-card">
+        <div class="admin-card-header">
+            <div>
+                <span class="badge admin-badge-category me-2" th:text="${question.category}">分类</span>
+                <span class="badge admin-badge-difficulty me-2"
+                      th:text="${question.difficulty != null ? question.difficulty : '未设难度'}">难度</span>
+                <span class="badge bg-secondary"
+                      th:text="${question.questionType != null ? question.questionType : '未设类型'}">类型</span>
+            </div>
+            <span style="color: var(--admin-text-muted); font-size: 0.85rem;" th:text="'ID: ' + ${question.id}">ID</span>
+        </div>
+
+        <div class="admin-detail-section">
+            <div class="admin-detail-label">题目标题</div>
+            <div class="admin-detail-content" style="font-size: 1.15rem; font-weight: 600;"
+                 th:text="${question.title}">标题</div>
+        </div>
+
+        <div class="admin-detail-section">
+            <div class="admin-detail-label">参考答案</div>
+            <div class="admin-detail-content" th:text="${question.answer}">答案</div>
+        </div>
+
+        <div class="admin-detail-section"
+             th:if="${question.defaultCode != null and !#strings.isEmpty(question.defaultCode)}">
+            <div class="admin-detail-label">默认代码模板</div>
+            <pre class="admin-code-block mb-0" th:text="${question.defaultCode}">code</pre>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

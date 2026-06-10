@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/admin-layout :: head('题库管理')}"></th:block>
+</head>
+<body class="admin-console">
+
+<div th:replace="~{fragments/admin-layout :: sidebar(questions)}"></div>
+<div th:replace="~{fragments/admin-layout :: topbar('题库管理 · 增删改查')}"></div>
+
+<div class="admin-main">
+    <div th:replace="~{fragments/admin-layout :: flash}"></div>
+
+    <div class="admin-card">
+        <div class="admin-card-header">
+            <div>
+                <h4 class="mb-1" style="font-weight: 700; color: var(--admin-text);">题库管理</h4>
+                <p class="mb-0" style="color: var(--admin-text-muted); font-size: 0.88rem;">
+                    全库 <span th:text="${totalCount}">0</span> 题 ·
+                    当前筛选 <span th:text="${filteredCount}">0</span> 题
+                </p>
+            </div>
+            <a th:href="@{/admin/questions/new}" class="btn admin-btn-primary">
+                <i class="bi bi-plus-lg me-1"></i> 新增题目
+            </a>
+        </div>
+
+        <form class="admin-search-bar" th:action="@{/admin/questions}" method="get">
+            <input type="text" name="keyword" class="form-control admin-form-control"
+                   style="max-width: 220px;" placeholder="搜索标题..." th:value="${keyword}"/>
+            <select name="category" class="form-select admin-form-select" style="max-width: 160px;">
+                <option value="">全部分类</option>
+                <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"
+                        th:selected="${cat == category}"></option>
+            </select>
+            <select name="difficulty" class="form-select admin-form-select" style="max-width: 120px;">
+                <option value="">全部难度</option>
+                <option value="简单" th:selected="${difficulty == '简单'}">简单</option>
+                <option value="中等" th:selected="${difficulty == '中等'}">中等</option>
+                <option value="困难" th:selected="${difficulty == '困难'}">困难</option>
+            </select>
+            <button type="submit" class="btn admin-btn-outline">
+                <i class="bi bi-search me-1"></i> 查询
+            </button>
+            <a th:href="@{/admin/questions}" class="btn btn-link" style="color: var(--admin-text-muted);">重置</a>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table admin-table mb-0">
+                <thead>
+                <tr>
+                    <th style="width: 56px;">ID</th>
+                    <th style="width: 110px;">分类</th>
+                    <th>标题</th>
+                    <th style="width: 72px;">难度</th>
+                    <th style="width: 80px;">类型</th>
+                    <th style="width: 180px;">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="q : ${questions}">
+                    <td th:text="${q.id}">1</td>
+                    <td><span class="badge admin-badge-category" th:text="${q.category}">Java</span></td>
+                    <td class="title-cell" th:text="${q.title}" th:title="${q.title}">标题</td>
+                    <td><span class="badge admin-badge-difficulty"
+                              th:classappend="${q.difficulty == '简单' ? ' easy' : (q.difficulty == '困难' ? ' hard' : ' medium')}"
+                              th:text="${q.difficulty != null ? q.difficulty : '-'}">中等</span></td>
+                    <td style="color: #e7e5e4;" th:text="${q.questionType != null ? q.questionType : '-'}">conceptual</td>
+                    <td>
+                        <a th:href="@{/admin/questions/{id}(id=${q.id})}"
+                           class="btn btn-sm admin-btn-outline me-1" title="查看">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a th:href="@{/admin/questions/{id}/edit(id=${q.id})}"
+                           class="btn btn-sm admin-btn-outline me-1" title="编辑">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <form th:action="@{/admin/questions/{id}/delete(id=${q.id})}" method="post"
+                              class="d-inline" onsubmit="return confirm('确定删除该题目？');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="删除">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(questions)}">
+                    <td colspan="6" class="text-center py-5" style="color: var(--admin-text-muted);">
+                        暂无匹配题目，可调整筛选条件或点击「新增题目」
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
