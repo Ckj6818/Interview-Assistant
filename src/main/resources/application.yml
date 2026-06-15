@@ -33,13 +33,10 @@ spring:
     mode: HTML
     encoding: UTF-8
 
-  # 初始化 SQL 数据脚本
+  # 初始化 SQL 数据脚本（仅首次由 DataInitializer 执行，避免每次启动重复插入）
   sql:
     init:
-      mode: always
-      data-locations: classpath:data.sql
-      # 忽略如果没有找到脚本等错误
-      continue-on-error: true
+      mode: never
 
   data:
     redis:

@@ -11,7 +11,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -41,13 +44,13 @@ public class QuestionService {
 
     public List<Question> getAllQuestions() {
         JavaType type = objectMapper.getTypeFactory().constructCollectionType(List.class, Question.class);
-        return getFromCacheOrLoad(CACHE_KEY_ALL, questionRepository::findAll, type);
+        return deduplicateByTitle(getFromCacheOrLoad(CACHE_KEY_ALL, questionRepository::findAll, type));
     }
 
     public List<Question> getQuestionsByCategory(String category) {
         String cacheKey = CACHE_KEY_CATEGORY_PREFIX + category;
         JavaType type = objectMapper.getTypeFactory().constructCollectionType(List.class, Question.class);
-        return getFromCacheOrLoad(cacheKey, () -> questionRepository.findByCategory(category), type);
+        return deduplicateByTitle(getFromCacheOrLoad(cacheKey, () -> questionRepository.findByCategory(category), type));
     }
 
     public List<String> getDistinctCategories() {
@@ -121,6 +124,34 @@ public class QuestionService {
         }
 
         return questions;
+    }
+
+    /**
+     * 按题目标题去重，保留 ID 最大（最新）的一条，并清理题库缓存。
+     */
+    public int deduplicateQuestions() {
+        int removed = questionRepository.deleteDuplicateQuestions();
+        if (removed > 0) {
+            evictAllCaches();
+        }
+        return removed;
+    }
+
+    private List<Question> deduplicateByTitle(List<Question> questions) {
+        if (questions == null || questions.isEmpty()) {
+            return questions;
+        }
+        Map<String, Question> keeperByTitle = new LinkedHashMap<>();
+        for (Question q : questions) {
+            if (q.getTitle() == null) {
+                continue;
+            }
+            Question existing = keeperByTitle.get(q.getTitle());
+            if (existing == null || q.getId() > existing.getId()) {
+                keeperByTitle.put(q.getTitle(), q);
+            }
+        }
+        return new ArrayList<>(keeperByTitle.values());
     }
 
     private <T> T getFromCacheOrLoad(String cacheKey, Supplier<T> loader, JavaType javaType) {
