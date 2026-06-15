@@ -153,6 +153,28 @@
         .markdown-content li {
             margin-bottom: 8px;
         }
+        .full-resume-editor {
+            min-height: 480px;
+            background: #fff;
+            color: #1e293b;
+            font-family: "Segoe UI", Roboto, sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 1.25rem;
+            resize: vertical;
+        }
+        .full-resume-editor:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.25);
+            outline: none;
+        }
+        .edit-mode-hint {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 0.75rem;
+        }
 
         /* 深色背景下提升次要文字可读性 */
         .main-content .text-muted {
@@ -428,15 +450,27 @@
                     <h5 class="text-white fw-bold">AI 顶级猎头正在为您全盘重塑简历...</h5>
                     <p class="text-muted">这可能需要 15-30 秒，深度定制中，请耐心等待</p>
                 </div>
+                <div id="fullResumeEditHint" class="edit-mode-hint" style="display: none;">
+                    <i class="bi bi-pencil me-1"></i> 在线编辑模式：可直接修改下方文本，支持 Markdown 格式，完成后点击「完成编辑」返回预览。
+                </div>
                 <div id="fullResumeContent" class="markdown-content" style="display: none; line-height: 1.8;">
                     <!-- Rendered markdown goes here -->
                 </div>
+                <textarea id="fullResumeEditor" class="form-control full-resume-editor" style="display: none;" spellcheck="false" placeholder="在此编辑简历内容，支持 Markdown 格式..."></textarea>
             </div>
-            <div class="modal-footer border-secondary">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-success" id="btnCopyResume" onclick="copyFullResume()">
-                    <i class="bi bi-clipboard me-1"></i> 一键复制纯文本
+            <div class="modal-footer border-secondary d-flex w-100 align-items-center">
+                <button type="button" class="btn btn-outline-warning btn-sm" id="btnRegenerateResume" style="display: none;" onclick="regenerateFullResume()">
+                    <i class="bi bi-arrow-clockwise me-1"></i> 重新生成
                 </button>
+                <div class="ms-auto d-flex gap-2">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-outline-info" id="btnEditResume" style="display: none;" onclick="toggleResumeEdit()">
+                        <i class="bi bi-pencil-square me-1"></i> 在线编辑
+                    </button>
+                    <button type="button" class="btn btn-success" id="btnCopyResume" style="display: none;" onclick="copyFullResume()">
+                        <i class="bi bi-clipboard me-1"></i> 一键复制纯文本
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -583,42 +617,218 @@
         document.getElementById('selectedFileInfo').style.display = 'none';
         document.getElementById('resumePasteInput').value = "";
         document.getElementById('targetJdInput').value = "";
+        invalidateResumeCache();
         showEmptyState();
     }
 
-    // --- 新增：全量简历优化功能 (多版本) ---
+    // --- 全量简历优化（多版本 + 本地缓存） ---
+    const RESUME_CACHE_STORAGE_KEY = 'interviewai_full_resume_cache';
+    const RESUME_FINGERPRINT_STORAGE_KEY = 'interviewai_full_resume_fingerprint';
     const resumeCache = {
         standard: "",
         aggressive: "",
         hr_target: ""
     };
+    let cachedInputFingerprint = null;
     let currentVersion = 'standard';
+    let isEditMode = false;
     const fullResumeModal = new bootstrap.Modal(document.getElementById('fullResumeModal'));
 
-    function startFullOptimization() {
-        // 重置缓存
+    function hashText(str) {
+        let h = 0;
+        for (let i = 0; i < str.length; i++) {
+            h = ((h << 5) - h) + str.charCodeAt(i);
+            h |= 0;
+        }
+        return h.toString(36);
+    }
+
+    function getInputFingerprint() {
+        const targetJd = document.getElementById('targetJdInput').value.trim();
+        if (activeInputTab === 'file') {
+            if (!selectedFile) return null;
+            return `file:${selectedFile.name}:${selectedFile.size}:${selectedFile.lastModified}:${hashText(targetJd)}`;
+        }
+        const pasteText = document.getElementById('resumePasteInput').value.trim();
+        if (!pasteText) return null;
+        return `paste:${hashText(pasteText)}:${hashText(targetJd)}`;
+    }
+
+    function loadResumeCacheFromStorage() {
+        try {
+            const storedFp = localStorage.getItem(RESUME_FINGERPRINT_STORAGE_KEY);
+            const raw = localStorage.getItem(RESUME_CACHE_STORAGE_KEY);
+            if (!storedFp || !raw) return false;
+            const data = JSON.parse(raw);
+            resumeCache.standard = data.standard || "";
+            resumeCache.aggressive = data.aggressive || "";
+            resumeCache.hr_target = data.hr_target || "";
+            cachedInputFingerprint = storedFp;
+            return !!resumeCache.standard;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function persistResumeCache() {
+        const fp = getInputFingerprint();
+        if (!fp || !resumeCache.standard) return;
+        cachedInputFingerprint = fp;
+        try {
+            localStorage.setItem(RESUME_FINGERPRINT_STORAGE_KEY, fp);
+            localStorage.setItem(RESUME_CACHE_STORAGE_KEY, JSON.stringify({
+                standard: resumeCache.standard,
+                aggressive: resumeCache.aggressive,
+                hr_target: resumeCache.hr_target
+            }));
+        } catch (e) {
+            console.warn('无法保存精修简历缓存', e);
+        }
+    }
+
+    function invalidateResumeCache() {
         resumeCache.standard = "";
         resumeCache.aggressive = "";
         resumeCache.hr_target = "";
+        cachedInputFingerprint = null;
+        localStorage.removeItem(RESUME_CACHE_STORAGE_KEY);
+        localStorage.removeItem(RESUME_FINGERPRINT_STORAGE_KEY);
+    }
 
-        // UI切回标准版
+    function isCacheValidForCurrentInput() {
+        const fp = getInputFingerprint();
+        if (!fp || !resumeCache.standard) return false;
+        if (cachedInputFingerprint === fp) return true;
+        const storedFp = localStorage.getItem(RESUME_FINGERPRINT_STORAGE_KEY);
+        if (storedFp === fp) {
+            if (!resumeCache.standard) loadResumeCacheFromStorage();
+            return !!resumeCache.standard;
+        }
+        return false;
+    }
+
+    function validateResumeInput() {
+        if (activeInputTab === 'file') {
+            if (!selectedFile) {
+                alert("请先上传简历文件！");
+                return false;
+            }
+        } else if (!document.getElementById('resumePasteInput').value.trim()) {
+            alert("请在文本框内粘贴您的个人经历！");
+            return false;
+        }
+        return true;
+    }
+
+    document.getElementById('fullResumeModal').addEventListener('hidden.bs.modal', () => {
+        syncEditorToCache();
+        persistResumeCache();
+        if (isEditMode) exitEditMode(false);
+    });
+
+    function startFullOptimization() {
+        if (!validateResumeInput()) return;
+
+        syncEditorToCache();
+        if (isEditMode) exitEditMode(false);
+
         document.querySelectorAll('#resumeVersionTabs .nav-link').forEach(btn => btn.classList.remove('active'));
         document.getElementById('tab-standard').classList.add('active');
+        currentVersion = 'standard';
 
         fullResumeModal.show();
+
+        if (!resumeCache.standard) {
+            loadResumeCacheFromStorage();
+        }
+
+        if (isCacheValidForCurrentInput()) {
+            showFullResumePreview(resumeCache.standard);
+            return;
+        }
+
+        invalidateResumeCache();
         fetchResumeVersion('standard');
     }
 
+    function regenerateFullResume() {
+        if (!confirm('将重新调用 AI 生成简历，当前内容（含手动编辑）将被覆盖，是否继续？')) return;
+        syncEditorToCache();
+        invalidateResumeCache();
+        currentVersion = 'standard';
+        document.querySelectorAll('#resumeVersionTabs .nav-link').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('tab-standard').classList.add('active');
+        fetchResumeVersion('standard');
+    }
+
+    function showFullResumePreview(markdown) {
+        document.getElementById('fullResumeLoading').style.display = 'none';
+        document.getElementById('fullResumeEditHint').style.display = 'none';
+        document.getElementById('fullResumeEditor').style.display = 'none';
+        document.getElementById('fullResumeContent').innerHTML = marked.parse(markdown);
+        document.getElementById('fullResumeContent').style.display = 'block';
+        document.getElementById('btnEditResume').style.display = 'inline-block';
+        document.getElementById('btnCopyResume').style.display = 'inline-block';
+        document.getElementById('btnRegenerateResume').style.display = 'inline-block';
+    }
+
+    function syncEditorToCache() {
+        if (isEditMode) {
+            resumeCache[currentVersion] = document.getElementById('fullResumeEditor').value;
+            persistResumeCache();
+        }
+    }
+
+    function enterEditMode() {
+        if (!resumeCache[currentVersion]) return;
+        isEditMode = true;
+        document.getElementById('fullResumeEditor').value = resumeCache[currentVersion];
+        document.getElementById('fullResumeContent').style.display = 'none';
+        document.getElementById('fullResumeEditHint').style.display = 'block';
+        document.getElementById('fullResumeEditor').style.display = 'block';
+
+        const btn = document.getElementById('btnEditResume');
+        btn.innerHTML = '<i class="bi bi-check2-square me-1"></i> 完成编辑';
+        btn.classList.replace('btn-outline-info', 'btn-info');
+        document.getElementById('btnCopyResume').style.display = 'inline-block';
+        document.getElementById('fullResumeEditor').focus();
+    }
+
+    function exitEditMode(renderPreview) {
+        isEditMode = false;
+        document.getElementById('fullResumeEditor').style.display = 'none';
+        document.getElementById('fullResumeEditHint').style.display = 'none';
+
+        const btn = document.getElementById('btnEditResume');
+        btn.innerHTML = '<i class="bi bi-pencil-square me-1"></i> 在线编辑';
+        btn.classList.replace('btn-info', 'btn-outline-info');
+
+        if (renderPreview && resumeCache[currentVersion]) {
+            showFullResumePreview(resumeCache[currentVersion]);
+        }
+    }
+
+    function toggleResumeEdit() {
+        if (!resumeCache[currentVersion]) return;
+        if (isEditMode) {
+            resumeCache[currentVersion] = document.getElementById('fullResumeEditor').value;
+            persistResumeCache();
+            exitEditMode(true);
+        } else {
+            enterEditMode();
+        }
+    }
+
     function switchResumeVersion(version) {
-        if (currentVersion === version && resumeCache[version]) return;
-        
+        if (currentVersion === version && resumeCache[version] && !isEditMode) return;
+
+        syncEditorToCache();
+        if (isEditMode) exitEditMode(false);
+
         currentVersion = version;
-        
+
         if (resumeCache[version]) {
-            document.getElementById('fullResumeContent').innerHTML = marked.parse(resumeCache[version]);
-            document.getElementById('fullResumeLoading').style.display = 'none';
-            document.getElementById('fullResumeContent').style.display = 'block';
-            document.getElementById('btnCopyResume').style.display = 'block';
+            showFullResumePreview(resumeCache[version]);
         } else {
             fetchResumeVersion(version);
         }
@@ -650,7 +860,11 @@
 
         document.getElementById('fullResumeLoading').style.display = 'block';
         document.getElementById('fullResumeContent').style.display = 'none';
+        document.getElementById('fullResumeEditor').style.display = 'none';
+        document.getElementById('fullResumeEditHint').style.display = 'none';
+        document.getElementById('btnEditResume').style.display = 'none';
         document.getElementById('btnCopyResume').style.display = 'none';
+        document.getElementById('btnRegenerateResume').style.display = 'none';
 
         // 发送 AJAX 请求到 optimizeFull 接口
         fetch('/resume/optimizeFull', {
@@ -661,11 +875,9 @@
         .then(data => {
             if (data.success) {
                 resumeCache[version] = data.markdown;
+                persistResumeCache();
                 if (currentVersion === version) {
-                    document.getElementById('fullResumeContent').innerHTML = marked.parse(data.markdown);
-                    document.getElementById('fullResumeLoading').style.display = 'none';
-                    document.getElementById('fullResumeContent').style.display = 'block';
-                    document.getElementById('btnCopyResume').style.display = 'block';
+                    showFullResumePreview(data.markdown);
                 }
             } else {
                 if (currentVersion === version) fullResumeModal.hide();
@@ -679,6 +891,7 @@
     }
 
     function copyFullResume() {
+        syncEditorToCache();
         if (!resumeCache[currentVersion]) return;
         navigator.clipboard.writeText(resumeCache[currentVersion]).then(() => {
             const btn = document.getElementById('btnCopyResume');
@@ -696,6 +909,8 @@
 
     // 侧边栏折叠/展开功能
     document.addEventListener("DOMContentLoaded", function() {
+        loadResumeCacheFromStorage();
+
         const sidebar = document.querySelector('.sidebar');
         if (sidebar && !document.querySelector('.sidebar-toggle')) {
             const toggleBtn = document.createElement('div');
